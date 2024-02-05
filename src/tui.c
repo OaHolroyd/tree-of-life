@@ -1,6 +1,5 @@
 #include "tui.h"
 
-
 /* include notcurses but ignore the warnings associated with it */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wredundant-decls"
@@ -10,13 +9,59 @@
 
 #include "utils.h"
 #include "game.h"
+#include "clade-list.h"
+
+
+/* ======================================================================================== */
+/*   LAYOUT                                                                                 */
+/*                                                                                          */
+/*     0    0    1    1    2    2    3    3    4    4    5    5    6    6    7    7         */
+/*     0    5    0    5    0    5    0    5    0    5    0    5    0    5    0    5         */
+/*    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓    */
+/* 00 ┃x╭─────────────────────╮                                                       x┃ 00 */
+/* 01 ┃x│ STATS PLANE         │                                                       x┃ 01 */
+/* 02 ┃x│                     │                                                       x┃ 02 */
+/* 03 ┃x╰─────────────────────╯                                                       x┃ 03 */
+/* 04 ┃x╭─────────────────────╮                                                       x┃ 04 */
+/* 05 ┃x│ GUESS PLANE         │                                                       x┃ 05 */
+/* 06 ┃x╰─────────────────────╯                                                       x┃ 06 */
+/* 07 ┃x│ HINT PLANE          │                                                       x┃ 07 */
+/* 08 ┃x│                     │                                                       x┃ 08 */
+/* 09 ┃x│                     │                                                       x┃ 09 */
+/* 10 ┃x│                     │                                                       x┃ 10 */
+/* 11 ┃x│                     │                                                       x┃ 11 */
+/* 12 ┃x│                     │                                                       x┃ 12 */
+/* 13 ┃x│                     │                                                       x┃ 13 */
+/* 14 ┃x│                     │                                                       x┃ 14 */
+/* 15 ┃x│                     │                                                       x┃ 15 */
+/* 16 ┃x│                     │                                                       x┃ 16 */
+/* 17 ┃x│                     │                                                       x┃ 17 */
+/* 18 ┃x│                     │                                                       x┃ 18 */
+/* 19 ┃x│                     │                                                       x┃ 19 */
+/* 20 ┃x│                     │                                                       x┃ 20 */
+/* 21 ┃x│                     │                                                       x┃ 21 */
+/* 22 ┃x╰─────────────────────╯                                                       x┃ 22 */
+/* 23 ┃x┄ESC┄PLANE┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄x┃ 23 */
+/*    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛    */
+/*     0    0    1    1    2    2    3    3    4    4    5    5    6    6    7    7         */
+/*     0    5    0    5    0    5    0    5    0    5    0    5    0    5    0    5         */
+/*                                                                                          */
+/* ======================================================================================== */
+/*   TODO LIST                                                                              */
+/*  > Add scrolling to the hints so that they can overlap the text-only portion of the      */
+/*    clade plane                                                                           */
+/*  > Add the tree plane (and decide how it will be displayed)                              */
+/*  > Write some help/instruction text and allow it to be displayed                         */
+/*                                                                                          */
+/* ======================================================================================== */
+
 
 
 /* ========================================================================== */
 /*   TYPE DEFINITIONS                                                         */
 /* ========================================================================== */
-#define MAX_GUESS (25)
-#define MAX_HINTS (30)
+#define CHEAT_MODE (1)
+#define MAX_GUESS (20) // TODO: get this from the clade-list
 
 /**
  * The focus-state represents which plane is currently in focus.
@@ -32,27 +77,36 @@ typedef enum Focus {
  * handles outputting to the screen.
  */
 typedef struct GameUI {
-  Game *game;
+  Game *game; // the game to render
 
+  /* focus */
+  Focus focus; // the focus state
+  Focus prev_focus; // the previous focus state
+
+  /* notcurses */
   struct notcurses *nc;
   unsigned int rows; // rows in terminal
   unsigned int cols; // cols in terminal
 
-  /* images */
+  /* image rendering */
   int images_flag; // whether images are supported
   ncblitter_e blitter; // best blitter available
   ncscale_e scaling; // which image scaling to use
 
   /* planes */
   struct ncplane *pln_std; // standard plane (ie the entire screen)
-  struct ncplane *pln_stats; // plane containing game statistics
+
+  struct ncplane *pln_stats; // plane containing game statistics/state
   struct ncplane *pln_guess; // plane for input guess
   struct ncplane *pln_esc; // plane for esc-mode controls
+
   struct ncplane *pln_hint; // plane for guess hints (ie completions)
+
+  /* clade plane group */
   struct ncplane *pln_clade; // plane for displaying the best clade
   struct ncplane *pln_clade_text; // plane for displaying the best clade's text
-  struct ncplane *pln_clade_img; // plane for displaying the best clade's image
-  struct ncplane *pln_clade_img_child; // plane containing the image
+  struct ncplane *pln_clade_img_frame; // plane for displaying the best clade's image
+  struct ncplane *pln_clade_img; // plane containing the image
 
   /* guess state */
   char guess[MAX_GUESS]; // array of chars currently typed in
@@ -61,14 +115,10 @@ typedef struct GameUI {
   int guess_max_len; // maximum length of input
 
   /* hints */
-  const char *hints[MAX_HINTS];
+  const char *hints[NUM_SPECIES];
   int hint_idx; // index of scroll position
   int hint_len; // number of hints
-  int hint_max_len; // maximum number of hints
-
-  /* focus */
-  Focus focus; // the focus state
-  Focus prev_focus; // the previous focus state
+  int hint_max_len; // maximum number of hints to find
 } GameUI;
 
 /**
@@ -87,12 +137,24 @@ typedef enum Update {
 /* ========================================================================== */
 /*   AUXILIARY FUNCTION DEFINITIONS                                           */
 /* ========================================================================== */
+/* function declarations */
 void pln_guess_submit(GameUI *ui);
 void pln_clade_update(GameUI *ui);
+void pln_esc_update(GameUI *ui);
+void pln_guess_update(GameUI *ui);
+void pln_stats_update(GameUI *ui);
+void pln_hint_update(GameUI *ui, Update update);
+
 
 /* ======================== */
 /*   HELPERS                */
 /* ======================== */
+// #define CHANNEL(fg, bg) (bg + 0x40u + fg + 0x40u)
+// #define CHANNEL(fg, bg) (((((uint64_t)0x40u << 24) + (uint64_t)fg) << 8 + (uint64_t)0x40u) << 24 + fg)
+
+/**
+ * Draws a perimeter round a ncplane.
+ */
 void ncplane_rounded_perimeter(struct ncplane *n) {
   /* define color/style etc */
   unsigned ctlword = 0;
@@ -115,6 +177,10 @@ void ncplane_rounded_perimeter(struct ncplane *n) {
   nccell_release(n, &hl); nccell_release(n, &vl);
 }
 
+/**
+ * Draws a perimeter round a ncplane starting in the top left that is a maximum
+ * of hmax high.
+ */
 void ncplane_rounded_perimeter_sized(struct ncplane *n, unsigned hmax) {
   /* define color/style etc */
   unsigned ctlword = 0;
@@ -152,6 +218,7 @@ void set_blitter(GameUI *ui) {
     return;
   }
 
+  // Potential scaling options
   // NCSCALE_NONE
   // NCSCALE_SCALE
   // NCSCALE_STRETCH
@@ -166,7 +233,7 @@ void set_blitter(GameUI *ui) {
   }
 
   // TODO: other blitting methods don't automatically preserve shape
-  error("only support for NCBLIT_PIXEL currently due to scaling issues");
+  error("only support for NCBLIT_PIXEL due to scaling issues");
   if (notcurses_cansextant(ui->nc)) {
     // TODO: can't test this one, iTerm2 doesn't support it
     ui->blitter = NCBLIT_3x2;
@@ -190,6 +257,18 @@ void set_blitter(GameUI *ui) {
   return;
 }
 
+/**
+ * Update all the planes.
+ */
+void update_all(GameUI *ui) {
+  pln_clade_update(ui);
+  pln_esc_update(ui);
+  pln_guess_update(ui);
+  pln_stats_update(ui);
+  pln_hint_update(ui, UP_ALL);
+}
+
+
 /* ======================== */
 /*   ESC PLANE              */
 /* ======================== */
@@ -199,24 +278,33 @@ void set_blitter(GameUI *ui) {
 void pln_esc_update(GameUI *ui) {
   ncplane_erase(ui->pln_esc);
 
+  /* set up channels */
+  // TODO: can do this statically
   char ecg = ' ';
   uint64_t channels = 0;
-
-  /* set up channels */
   if (ui->focus == FC_ESC) {
+    /* highlight if focussed */
     ncchannels_set_fg_rgb8(&channels, 0x00, 0x00, 0x00);
     ncchannels_set_bg_rgb8(&channels, 0xFF, 0xFF, 0xFF);
   } else {
+    /* dim if not focussed */
     ncchannels_set_fg_rgb8(&channels, 0x99, 0x99, 0x99);
     ncchannels_set_bg_rgb8(&channels, 0x00, 0x00, 0x00);
   }
 
-  /* potential text */
-  const char esc_text[] = " ESC ON   |  [Q]uit  |  [R]estart  |  [H]int";
+  /* set plane base color and style */
+  ncplane_set_base(ui->pln_esc, &ecg, NCSTYLE_BOLD, channels);
 
   /* add text to plane */
-  ncplane_set_base(ui->pln_esc, &ecg, NCSTYLE_BOLD, channels);
-  ncplane_putstr_yx(ui->pln_esc, 0, 0, esc_text);
+  const char text[] = "|  [Q]uit  |  [R]estart  |  [C]lue  |  [H]elp";
+  if (ui->focus == FC_ESC) {
+    ncplane_putstr_yx(ui->pln_esc, 0, 0, " ESC ON   ");
+  } else {
+    ncplane_putstr_yx(ui->pln_esc, 0, 0, " ESC OFF  ");
+  }
+  ncplane_putstr(ui->pln_esc, text);
+
+  /* strick through '[C]lue' if it is not available */
   if (!game_can_hint(ui->game)) {
     ncplane_format(ui->pln_esc, 0, 38, 1, 6, NCSTYLE_STRUCK);
   }
@@ -226,28 +314,74 @@ void pln_esc_update(GameUI *ui) {
  * Sets up the esc-mode plane
  */
 void pln_esc_create(GameUI *ui) {
-  /* define dimensions */
-  const int width = ui->cols;
-  // height is always 1
-
-  /* create the framing plane */
+  /* create the plane */
   ncplane_options opts = {
-    .y = ui->rows-1,
-    .x = 0,
+    .y = ui->rows-1, // always use the bottom row
+    .x = 1, // margin of 1 cell
     .rows = 1,
-    .cols = width,
+    .cols = ui->cols,
     .name = "pln_esc",
     // TODO: add resizing callbacks
   };
   ui->pln_esc = ncplane_create(ui->pln_std, &opts);
-  // ncplane_rounded_perimeter(ui->pln_esc);
 
   pln_esc_update(ui);
 }
 
+/**
+ * Handle inputs passed to the esc plane. Returns 1 if need to exit, 0
+ * otherwise.
+ */
+int pln_esc_input(GameUI *ui, ncinput *input) {
+  /* unpack info from input */
+  uint32_t id = input->id;
+
+  switch (id) {
+    /* ESC to toggle off */
+    case NCKEY_ESC:
+      ui->focus = ui->prev_focus;
+      break;
+
+    /* Q to quit */
+    case 'Q':
+    case 'q':
+      return 1;
+
+    /* C for clue */
+    case 'C':
+    case 'c':
+      game_hint(ui->game);
+      ui->focus = FC_GUESS;
+      update_all(ui);
+      break;
+
+    /* R for restart */
+    case 'R':
+    case 'r':
+      game_reset(ui->game);
+      ui->focus = FC_GUESS;
+      update_all(ui);
+      break;
+
+    /* H for help */
+    case 'H':
+    case 'h':
+      // TODO: implement help
+      log("TODO: implement help");
+      return 1;
+      break;
+
+    /* unrecognised input */
+    default :
+      return 0;
+  }
+
+  return 0;
+}
+
 
 /* ======================== */
-/*   HINT PLANE             */
+/*   STATS PLANE            */
 /* ======================== */
 /**
  * Updates the hints plane
@@ -259,12 +393,16 @@ void pln_stats_update(GameUI *ui) {
 
   /* game has been won */
   if (ui->game->state == GAME_WON) {
-    ncplane_printf_yx(ui->pln_stats, 2, 1, "YOU WIN!");
+    ncplane_putstr_yx(ui->pln_stats, 1, 1, "YOU WIN!");
+    ncplane_putstr_yx(ui->pln_stats, 2, 1, "ANSWER");
+    ncplane_putstr_yx(ui->pln_stats, 3, 2, ui->game->answer->com_name);
   }
 
   /* game has been lost */
   else if (ui->game->state == GAME_LOST) {
-    ncplane_printf_yx(ui->pln_stats, 2, 1, "YOU LOSE");
+    ncplane_putstr_yx(ui->pln_stats, 1, 1, "YOU LOSE");
+    ncplane_putstr_yx(ui->pln_stats, 2, 1, "ANSWER");
+    ncplane_putstr_yx(ui->pln_stats, 3, 2, ui->game->answer->com_name);
   }
 
   /* game still in progress */
@@ -280,9 +418,9 @@ void pln_stats_update(GameUI *ui) {
                       rank_str(ui->game->best_clade->rank));
 
     /* cheat mode */
-    ncplane_printf_yx(ui->pln_stats, 3, 1,
-                      "answer: %s",
-                      ui->game->answer->com_name);
+    if (CHEAT_MODE) {
+      ncplane_putstr_yx(ui->pln_stats, 3, 2, ui->game->answer->com_name);
+    }
   }
 }
 
@@ -290,18 +428,12 @@ void pln_stats_update(GameUI *ui) {
  * Sets up the hints plane
  */
 void pln_stats_create(GameUI *ui) {
-  /* find location and size of guess plane */
-  int y0, x0;
-  ncplane_yx(ui->pln_guess, &y0, &x0);
-  unsigned rows, cols;
-  ncplane_dim_yx(ui->pln_guess, &rows, &cols);
-
   /* create the framing plane */
   ncplane_options opts = {
     .y = 0,
     .x = 1,
     .rows = 5,
-    .cols = cols,
+    .cols = MAX_GUESS + 3,
     .name = "pln_stats",
     // TODO: add resizing callbacks
   };
@@ -316,85 +448,155 @@ void pln_stats_create(GameUI *ui) {
 /*   HINT PLANE             */
 /* ======================== */
 /**
- * Updates the hints plane
+ * Returns 1 if s starts with sub, 0 otherwise.
  */
-void pln_hint_update(GameUI *ui, Update change_type) {
-  /* update the list of completions */
-  // TODO: can be much faster for certain change-types
-  if (change_type != UP_NONE && ui->guess_len > 0) {
-    // TODO: if it's just a letter added to the end, then update is quicker
+static inline int matches_start(const char *s, const char *sub, int sub_len) {
+  for (int j = 0; j < sub_len; j++) {
+    if (sub[j] != s[j]) {
+      return 0;
+      break;
+    }
+  } // j end
+
+  return 1;
+}
+
+/**
+ * Returns 1 if s contains - but does not begin with - sub, 0 otherwise.
+ */
+static inline int matches_mid(const char *s, int s_len, const char *sub, int sub_len) {
+  for (int k = 1; k < s_len-sub_len+1; k++) {
+    /* try and find a match starting at the kth character of s */
+    int has_failed = 0;
+    for (int j = 0; j < sub_len; j++) {
+      if (sub[j] != s[k+j]) {
+        has_failed = 1;
+        break;
+      }
+    } // j end
+
+    /* found a match */
+    if (!has_failed) {
+      return 1;
+    }
+  } // k end
+
+  return 0;
+}
+
+/**
+ * Updates the list of completions (or hints) matching the current text.
+ */
+void populate_hints(GameUI *ui, Update update) {
+  /* no guess, no hints */
+  if (ui->guess_len == 0) {
+    ui->hint_len = 0;
+    return;
+  }
+
+  /* no update, no change */
+  if (update == UP_NONE) {
+    return;
+  }
+
+  /* updating the hint list is quicker if a char has been added to the end */
+  if (update == UP_ADD_END && ui->guess_len > 1) {
+    /* start with no hints in the list */
+    int old_hints = ui->hint_len;
+    ui->hint_len = 0;
+
+    /* first pass matches start of names only */
+    int i = 0; // position in (about to be overwritten) hint list
+    for (; i < old_hints; i++) {
+      /* stop if hint list is full */
+      if (ui->hint_len == ui->hint_max_len) {
+        break;
+      }
+
+      const char *com_name = ui->hints[i]; // just use the old list
+
+      /* if the start chars don't match then move to the second type of match */
+      if (com_name[0] != ui->guess[0]) {
+        break;
+      }
+
+      /* add to the list if the starts match */
+      int match = matches_start(com_name, ui->guess, ui->guess_len);
+      if (match) {
+        ui->hints[ui->hint_len] = com_name;
+        ui->hint_len++;
+      }
+    } // i end (loop over species)
+
+    /* second pass matches substrings */
+    for (; i < old_hints; i++) {
+      /* stop if full */
+      if (ui->hint_len == ui->hint_max_len) {
+        break;
+      }
+
+      const char *com_name = ui->hints[i]; // just use the old list
+
+      /* add to the list if the interior matches */
+      int match = matches_mid(com_name, (int)strlen(com_name), ui->guess, ui->guess_len);
+      if (match) {
+        ui->hints[ui->hint_len] = com_name;
+        ui->hint_len++;
+      }
+    } // i end
+  }
+
+  /* otherwise iterate though all of the species */
+  else {
+    /* start with no hints in the list */
     ui->hint_len = 0;
 
     /* first pass matches start of names only */
     for (int i = 0; i < ui->game->tree->num_species; i++) {
-      /* stop if full */
+      /* stop if hint list is full */
       if (ui->hint_len == ui->hint_max_len) {
         break;
       }
 
+      /* add to the list if the starts match */
       const char *com_name = ui->game->tree->species[i]->com_name;
-
-      /* check if the starts match */
-      int matches_start = 1;
-      for (int j = 0; j < ui->guess_len; j++) {
-        if (ui->guess[j] != com_name[j]) {
-          matches_start = 0;
-          break;
-        }
-      } // j end
-
-      /* add to list */
-      if (matches_start) {
+      int match = matches_start(com_name, ui->guess, ui->guess_len);
+      if (match) {
         ui->hints[ui->hint_len] = com_name;
         ui->hint_len++;
       }
-    } // i end
+    } // i end (loop over species)
 
-    /* second pass matches any substring */
+    /* second pass matches substrings */
     for (int i = 0; i < ui->game->tree->num_species; i++) {
       /* stop if full */
       if (ui->hint_len == ui->hint_max_len) {
         break;
       }
 
+      /* add to the list if the interior matches */
       const char *com_name = ui->game->tree->species[i]->com_name;
-      int name_len = (int)strlen(com_name);
-
-      /* check of the interior matches */
-      int matches_mid = 0;
-      for (int k = 1; k < name_len-ui->guess_len+1; k++) {
-        int has_failed = 0;
-        for (int j = 0; j < ui->guess_len; j++) {
-          if (ui->guess[j] != com_name[k+j]) {
-            has_failed = 1;
-            break;
-          }
-        } // j end
-        if (!has_failed) {
-          matches_mid = 1;
-          break;
-        }
-      } // k end
-
-      /* add to list */
-      if (matches_mid) {
+      int match = matches_mid(com_name, (int)strlen(com_name), ui->guess, ui->guess_len);
+      if (match) {
         ui->hints[ui->hint_len] = com_name;
         ui->hint_len++;
       }
     } // i end
   }
+}
 
-  /* no hints for no input */
-  if (ui->guess_len == 0) {
-    ui->hint_len = 0;
-  }
+/**
+ * Updates the hints plane
+ */
+void pln_hint_update(GameUI *ui, Update update) {
+  /* update the list of completions */
+  populate_hints(ui, update);
 
   /* clear all */
   ncplane_erase(ui->pln_hint);
 
   /* draw border hugging list */
   if (ui->hint_len > 0) {
-    log("HINT LEN %d", ui->hint_len);
     ncplane_rounded_perimeter_sized(ui->pln_hint, ui->hint_len+2);
   }
 
@@ -406,23 +608,16 @@ void pln_hint_update(GameUI *ui, Update change_type) {
     } // j end
 
     /* then write name */
-    if (i == ui->hint_idx) {
-      ncplane_putstr_yx(ui->pln_hint, 1+i, 1, ui->hints[i]);
-    } else {
-      ncplane_putstr_yx(ui->pln_hint, 1+i, 1, ui->hints[i]);
-    }
+    ncplane_putstr_yx(ui->pln_hint, 1+i, 1, ui->hints[i]);
   } // i end
 
-  /* color dim */
-  uint64_t ch = 0;
-  ncchannels_set_fg_rgb8(&ch, 0x55, 0x55, 0x55);
-  ncchannels_set_bg_rgb8(&ch, 0x00, 0x00, 0x00);
+  /* make the list dim */
+  uint64_t ch = 0x4055555540000000u;
   ncplane_stain(ui->pln_hint, 0, 0, ui->hint_len+2, ncplane_dim_x(ui->pln_hint), ch, ch, ch, ch);
 
-  /* stain row at index */
+  /* highlight row at index */
   if (ui->hint_idx > -1) {
-    ncchannels_set_fg_rgb8(&ch, 0x00, 0x00, 0x00);
-    ncchannels_set_bg_rgb8(&ch, 0xFF, 0xFF, 0xFF);
+    ch = 0x4000000040FFFFFFu;
     ncplane_stain(ui->pln_hint, 1+ui->hint_idx, 1, 1, ncplane_dim_x(ui->pln_hint)-2, ch, ch, ch, ch);
   }
 }
@@ -441,7 +636,7 @@ void pln_hint_create(GameUI *ui) {
   y0 += rows - 1;
   rows = ui->rows - y0 - 1;
 
-  /* create the framing plane */
+  /* create the plane */
   ncplane_options opts = {
     .y = y0,
     .x = x0,
@@ -456,47 +651,16 @@ void pln_hint_create(GameUI *ui) {
   ncplane_move_below(ui->pln_hint, ui->pln_guess);
 
   /* reset hints */
-  for (int i = 0; i < MAX_HINTS; i++) {
+  for (int i = 0; i < NUM_SPECIES; i++) {
     ui->hints[i] = NULL;
   } // i end
 
   ui->hint_idx = -1;
   ui->hint_len = 0;
-  ui->hint_max_len = (rows - 2 < MAX_HINTS) ? rows - 2 : MAX_HINTS;
+  ui->hint_max_len = NUM_SPECIES;
+  ui->hint_max_len = (ui->hint_max_len < (int)ui->rows - 10) ? ui->hint_max_len : (int)ui->rows - 10;
 
   pln_hint_update(ui, UP_ALL);
-}
-
-/**
- * Pass input to the hint plane. Some inputs are handled outside of this
- * function (ENTER, DOWN to enter). Returns 1 if focus should return to
- * pln_guess and 0 otherwise.
- */
-int pln_hint_input(GameUI *ui, ncinput *input) {
-  /* unpack info from input */
-  uint32_t id = input->id;
-
-  /* left arrow key */
-  if (id == NCKEY_DOWN) {
-    /* only move down if there is space to do so */
-    if (ui->hint_idx < ui->hint_len-1) {
-      ui->hint_idx++;
-    }
-    pln_hint_update(ui, UP_NONE);
-  }
-
-  /* right arrow key */
-  else if (id == NCKEY_UP) {
-    ui->hint_idx--;
-    pln_hint_update(ui, UP_NONE);
-
-    /* might have left the list */
-    if (ui->hint_idx == -1) {
-      return 1;
-    }
-  }
-
-  return 0;
 }
 
 /**
@@ -509,8 +673,44 @@ void pln_hint_submit(GameUI *ui) {
     ui->guess[i] = name[i];
   } // i end
 
+  /* submit the guess */
   pln_guess_submit(ui);
 }
+
+/**
+ * Pass input to the hint plane.
+ */
+void pln_hint_input(GameUI *ui, ncinput *input) {
+  /* unpack info from input */
+  uint32_t id = input->id;
+
+  /* enter */
+  if (id == NCKEY_ENTER) {
+    /* submit the currently highlighted guess */
+    pln_hint_submit(ui);
+  }
+
+  /* down arrow key */
+  else if (id == NCKEY_DOWN) {
+    /* only move down if there is space to do so */
+    if (ui->hint_idx < ui->hint_len-1) {
+      ui->hint_idx++;
+    }
+    pln_hint_update(ui, UP_NONE);
+  }
+
+  /* up arrow key */
+  else if (id == NCKEY_UP) {
+    ui->hint_idx--;
+    pln_hint_update(ui, UP_NONE);
+
+    /* might have left the list */
+    if (ui->hint_idx == -1) {
+      ui->focus = FC_GUESS;
+    }
+  }
+}
+
 
 /* ======================== */
 /*   GUESS PLANE            */
@@ -520,9 +720,7 @@ void pln_hint_submit(GameUI *ui) {
  */
 void pln_guess_update(GameUI *ui) {
   /* cursor channels */
-  uint64_t channels = 0;
-  ncchannels_set_fg_rgb8(&channels, 0x00, 0x00, 0x00);
-  ncchannels_set_bg_rgb8(&channels, 0xFF, 0xFF, 0xFF);
+  uint64_t ch = 0x4000000040FFFFFFu;
 
   /* bold if in focus */
   if (ui->focus == FC_GUESS) {
@@ -538,8 +736,9 @@ void pln_guess_update(GameUI *ui) {
   for (int i = 0; i < ui->guess_len; i++) {
     if (i == ui->guess_idx) {
       /* fake cursor at correct location */
-      nccell ce = NCCELL_INITIALIZER(ui->guess[i], ncplane_styles(ui->pln_guess), channels);
+      nccell ce = NCCELL_INITIALIZER(ui->guess[i], ncplane_styles(ui->pln_guess), ch);
       ncplane_putc_yx(ui->pln_guess, 1, 1+i, &ce);
+      nccell_release(ui->pln_guess, &ce);
     } else {
       /* no cursor */
       ncplane_putchar_yx(ui->pln_guess, 1, 1+i, ui->guess[i]);
@@ -548,7 +747,8 @@ void pln_guess_update(GameUI *ui) {
 
   /* cursor might be off end */
   if (ui->guess_idx == ui->guess_len) {
-    nccell ce = NCCELL_INITIALIZER(' ', ncplane_styles(ui->pln_guess), channels);
+    nccell ce = NCCELL_INITIALIZER(' ', ncplane_styles(ui->pln_guess), ch);
+    nccell_release(ui->pln_guess, &ce);
     ncplane_putc_yx(ui->pln_guess, 1, 1+ui->guess_len, &ce);
   }
 }
@@ -562,7 +762,7 @@ void pln_guess_create(GameUI *ui) {
     .y = 5,
     .x = 1,
     .rows = 3,
-    .cols = MAX_GUESS + 2,
+    .cols = MAX_GUESS + 3,
     .name = "pln_guess",
     // TODO: add resizing callbacks
   };
@@ -596,97 +796,108 @@ void pln_guess_input(GameUI *ui, ncinput *input) {
     id += 'a' - 'A';
   }
 
-  /* left arrow key */
-  if (id == NCKEY_LEFT) {
-    /* only move left if not at leftmost edge */
-    if (ui->guess_idx > 0) {
-      ui->guess_idx--;
-    }
-  }
-
-  /* right arrow key */
-  else if (id == NCKEY_RIGHT) {
-    /* only move right if not past end of input */
-    if (ui->guess_idx < ui->guess_len) {
-      ui->guess_idx++;
-    }
-  }
-
-  /* backspace */
-  else if (id == NCKEY_BACKSPACE) {
-    /* only delete backwards if not at leftmost edge */
-    if (ui->guess_idx > 0) {
-      guess_update = UP_DEL_END;
-      ui->guess_idx--; // move one space back
-
-      /* copy subsequent chars backwards by one space */
-      int idx = ui->guess_idx + 1;
-      while (ui->guess[idx] != '\0') {
-        ui->guess[idx-1] = ui->guess[idx];
-        idx++;
+  switch (id) {
+    /* down can enter the hint list */
+    case NCKEY_DOWN:
+      if (ui->hint_len > 0) {
+        ui->focus = FC_HINT;
+        ui->hint_idx = 0;
       }
+      break;
 
-      ui->guess_len--;
+    /* enter to submit a guess */
+    case NCKEY_ENTER:
+      pln_guess_submit(ui);
+      break;
 
+    /* move left if not at leftmost edge */
+    case NCKEY_LEFT:
+      if (ui->guess_idx > 0) {
+        ui->guess_idx--;
+      }
+      break;
+
+    /* move right if not past end of input */
+    case NCKEY_RIGHT:
       if (ui->guess_idx < ui->guess_len) {
-        guess_update = UP_DEL_MID;
+        ui->guess_idx++;
       }
-    }
-  }
+      break;
 
-  /* forward-delete */
-  // TODO: test this
-  else if (id == NCKEY_DEL) {
-    /* only delete forwards if not at rightmost edge */
-    if (ui->guess_idx < ui->guess_len) {
-      /* copy subsequent chars backwards by one space */
-      int idx = ui->guess_idx + 1;
-      while (ui->guess[idx] != '\0') {
-        ui->guess[idx-1] = ui->guess[idx];
-        idx++;
-      }
+    /* backspace */
+    case NCKEY_BACKSPACE:
+      /* only delete backwards if not at leftmost edge */
+      if (ui->guess_idx > 0) {
+        guess_update = UP_DEL_END;
+        ui->guess_idx--; // move one space back
 
-      ui->guess_len--;
-      guess_update = UP_DEL_MID;
-    }
-  }
-
-  /* letter */
-  else if (('a' <= id && id <= 'z') || id == ' ') {
-    /* cant go over the edge of the guess plane */
-    if (ui->guess_len < ui->guess_max_len) {
-      /* add to end of guess */
-      if (ui->guess_idx == ui->guess_len) {
-        // TODO: duplicate code
-        ui->guess[ui->guess_idx] = (char)id;
-        guess_update = UP_ADD_END;
-      }
-
-      /* insert into middle of guess */
-      else {
-        /* move all characters forwards */
-        int idx = ui->guess_len;
-        while (idx > ui->guess_idx) {
-          ui->guess[idx] = ui->guess[idx-1];
-          idx--;
+        /* copy subsequent chars backwards by one space */
+        int idx = ui->guess_idx + 1;
+        while (ui->guess[idx] != '\0') {
+          ui->guess[idx-1] = ui->guess[idx];
+          idx++;
         }
 
-        /* insert character */
-        // TODO: duplicate code
-        ui->guess[ui->guess_idx] = (char)id;
-        guess_update = UP_ADD_MID;
+        ui->guess_len--;
+
+        if (ui->guess_idx < ui->guess_len) {
+          guess_update = UP_DEL_MID;
+        }
       }
+      break;
 
-      ui->guess_idx++;
-      ui->guess_len++;
-    }
+    /* forward-delete */
+    case NCKEY_DEL:
+      /* only delete forwards if not at rightmost edge */
+      if (ui->guess_idx < ui->guess_len) {
+        /* copy subsequent chars backwards by one space */
+        int idx = ui->guess_idx + 1;
+        while (ui->guess[idx] != '\0') {
+          ui->guess[idx-1] = ui->guess[idx];
+          idx++;
+        }
+
+        ui->guess_len--;
+        guess_update = UP_DEL_MID;
+      }
+      break;
+
+    /* other inputs might be letters */
+    default :
+      if (('a' <= id && id <= 'z') || id == ' ') {
+        /* cant go over the edge of the guess plane */
+        if (ui->guess_len < ui->guess_max_len) {
+          /* add to end of guess */
+          if (ui->guess_idx == ui->guess_len) {
+            // TODO: duplicate code
+            ui->guess[ui->guess_idx] = (char)id;
+            guess_update = UP_ADD_END;
+          }
+
+          /* insert into middle of guess */
+          else {
+            /* move all characters forwards */
+            int idx = ui->guess_len;
+            while (idx > ui->guess_idx) {
+              ui->guess[idx] = ui->guess[idx-1];
+              idx--;
+            }
+
+            /* insert character */
+            // TODO: duplicate code
+            ui->guess[ui->guess_idx] = (char)id;
+            guess_update = UP_ADD_MID;
+          }
+
+          ui->guess_idx++;
+          ui->guess_len++;
+        }
+      }
   }
 
+  /* almost always need to update the hint and the guess planes */
   pln_guess_update(ui);
-
-  if (guess_update != UP_NONE) {
-    pln_hint_update(ui, guess_update);
-  }
+  pln_hint_update(ui, guess_update);
 }
 
 /**
@@ -713,40 +924,28 @@ void pln_guess_clear(GameUI *ui) {
 void pln_guess_submit(GameUI *ui) {
   GameState state = game_turn(ui->game, ui->guess);
 
+  /* indicate invalid guess */
   if (state == INVALID_GUESS) {
     /* flash red */
-    uint64_t ch = 0;
-    ncchannels_set_fg_rgb8(&ch, 0xFF, 0x00, 0x00);
-    ncchannels_set_bg_rgb8(&ch, 0x00, 0x00, 0x00);
+    uint64_t ch = 0x40FF000040000000u;
     log("%x", ch);
     ncplane_stain(ui->pln_guess, 1, 1, 1, ncplane_dim_x(ui->pln_guess)-2, ch, ch, ch, ch);
     notcurses_render(ui->nc);
 
     /* pause */
     msleep(200);
-
-    /* clear and update everything */
-    pln_guess_clear(ui);
-    pln_guess_update(ui);
-    pln_hint_update(ui, UP_NONE);
-  } else if (state == VALID_GUESS) {
-    /* clear and update everything */
-    pln_guess_clear(ui);
-    pln_guess_update(ui);
-    pln_hint_update(ui, UP_NONE);
-  } else if (state == GAME_WON) {
-    // won!
-    pln_guess_clear(ui);
-  } else if (state == GAME_LOST) {
-    // lost
-    pln_guess_clear(ui);
   }
 
+  /* clear and update everything */
   ui->focus = FC_GUESS;
+  pln_guess_clear(ui);
+  pln_guess_update(ui);
+  pln_hint_update(ui, UP_ALL);
   pln_clade_update(ui);
   pln_stats_update(ui);
   notcurses_render(ui->nc);
 }
+
 
 /* ======================== */
 /*   CLADE PLANE            */
@@ -755,11 +954,13 @@ void pln_guess_submit(GameUI *ui) {
  * Updates the clade plane.
  */
 void pln_clade_update(GameUI *ui) {
+  return;
+
   /* clear interior */
   ncplane_erase(ui->pln_clade);
   ncplane_rounded_perimeter(ui->pln_clade);
   ncplane_erase(ui->pln_clade_text);
-  ncplane_erase(ui->pln_clade_img);
+  ncplane_erase(ui->pln_clade_img_frame);
 
   /* name at the top */
   if (ui->game->best_clade->com_name) {
@@ -786,7 +987,7 @@ void pln_clade_update(GameUI *ui) {
 
   /* get the geometry to decide placement */
   struct ncvisual_options vopts = {
-    .n = ui->pln_clade_img, // the plane to render on
+    .n = ui->pln_clade_img_frame, // the plane to render on
     .scaling = ui->scaling, // scaling?
     .y = 0, // y position in plane
     .x = 0, // x position in plane
@@ -803,32 +1004,32 @@ void pln_clade_update(GameUI *ui) {
   ncvisual_geom(ui->nc, img, &vopts, &geom);
 
   /* image at the bottom */
-  if (ui->pln_clade_img_child) {
-    ncplane_destroy(ui->pln_clade_img_child);
+  if (ui->pln_clade_img) {
+    ncplane_destroy(ui->pln_clade_img);
   }
-  ui->pln_clade_img_child = ncvisual_blit(ui->nc, img, &vopts); // display?
+  ui->pln_clade_img = ncvisual_blit(ui->nc, img, &vopts); // display?
 
   /* get parent and child plane geometry */
   unsigned p_rows, p_cols, c_rows, c_cols;
-  ncplane_dim_yx(ui->pln_clade_img, &p_rows, &p_cols);
-  ncplane_dim_yx(ui->pln_clade_img_child, &c_rows, &c_cols);
+  ncplane_dim_yx(ui->pln_clade_img_frame, &p_rows, &p_cols);
+  ncplane_dim_yx(ui->pln_clade_img, &c_rows, &c_cols);
 
   /* centre in frame by moving the plane containing the image */
   int y_shift = (p_rows - c_rows) / 2;
   int x_shift = (p_cols - c_cols) / 2;
   y_shift = (y_shift > 0) ? y_shift : 0;
   x_shift = (x_shift > 0) ? x_shift : 0;
-  ncplane_move_rel(ui->pln_clade_img_child, y_shift, x_shift);
+  ncplane_move_rel(ui->pln_clade_img, y_shift, x_shift);
   log("pr %d, pc %d", p_rows, p_cols);
   log("cr %d, cc %d", c_rows, c_cols);
   // log("cy %d, cx %d", geom.rcelly, geom.rcellx);
   log("ys %d, xs %d", y_shift, x_shift);
   // if (x_shift > 0) {
   //   /* size limited by height */
-  //   ncplane_move_rel(ui->pln_clade_img, 0, x_shift);
+  //   ncplane_move_rel(ui->pln_clade_img_frame, 0, x_shift);
   // } else if (y_shift > 0) {
   //   /* size limited by width */
-  //   ncplane_move_rel(ui->pln_clade_img, y_shift, 0);
+  //   ncplane_move_rel(ui->pln_clade_img_frame, y_shift, 0);
   // }
 }
 
@@ -836,20 +1037,22 @@ void pln_clade_update(GameUI *ui) {
  * Sets up the clade plane.
  */
 void pln_clade_create(GameUI *ui) {
-  /* find location and size of guess plane */
+  /* find location and size of stats plane */
   int y0, x0;
-  ncplane_yx(ui->pln_guess, &y0, &x0);
-  unsigned guess_rows, guess_cols;
-  ncplane_dim_yx(ui->pln_guess, &guess_rows, &guess_cols);
+  ncplane_yx(ui->pln_stats, &y0, &x0);
+  unsigned s_rows, s_cols;
+  ncplane_dim_yx(ui->pln_stats, &s_rows, &s_cols);
 
-  /* place this plane below the guess plane */
+  /* place this plane right of the stats plane */
+  x0 = x0 + s_cols;
   unsigned rows = ui->rows - 3;
-  unsigned cols = ui->cols - x0 - guess_cols - 1;
+  unsigned cols = ui->cols - x0 - 1;
+  cols = (cols > 45) ? 45 : cols; // max 45 wide
 
-  /* create the framing plane */
+  /* create the main clade plane */
   ncplane_options opts = {
     .y = 0,
-    .x = x0 + guess_cols,
+    .x = x0,
     .rows = rows,
     .cols = cols,
     .name = "pln_clade",
@@ -879,9 +1082,9 @@ void pln_clade_create(GameUI *ui) {
   opts.rows = (rows-4)/2,
   opts.cols = cols-2,
   opts.name = "pln_clade_frame";
-  ui->pln_clade_img = ncplane_create(ui->pln_clade, &opts);
+  ui->pln_clade_img_frame = ncplane_create(ui->pln_clade, &opts);
 
-  ui->pln_clade_img_child = NULL;
+  ui->pln_clade_img = NULL;
 
   pln_clade_update(ui);
 }
@@ -954,7 +1157,7 @@ void gameui_destroy(GameUI *ui) {
   ncplane_destroy(ui->pln_esc);
   ncplane_destroy(ui->pln_hint);
   ncplane_destroy(ui->pln_clade_text);
-  ncplane_destroy(ui->pln_clade_img);
+  ncplane_destroy(ui->pln_clade_img_frame);
   ncplane_destroy(ui->pln_clade);
 
   /* leave fullscreen */
@@ -1024,27 +1227,8 @@ void gameui_play(GameUI *ui) {
     /*   ESC-MODE KEYS          */
     /* ======================== */
     else if (ui->focus == FC_ESC) {
-      /* Q to quit */
-      if (id == 'q' || id == 'Q') {
+      if (pln_esc_input(ui, &input)) {
         break;
-      }
-
-      /* H for hint */
-      if (id == 'h' || id == 'H') {
-        game_hint(ui->game);
-        ui->focus = FC_GUESS;
-        pln_clade_update(ui);
-        pln_stats_update(ui);
-      }
-
-      /* R for restart */
-      if (id == 'r' || id == 'R') {
-        game_reset(ui->game);
-        ui->focus = FC_GUESS;
-        pln_clade_update(ui);
-        pln_guess_update(ui);
-        pln_hint_update(ui, UP_ALL);
-        pln_stats_update(ui);
       }
     }
 
@@ -1073,18 +1257,7 @@ void gameui_play(GameUI *ui) {
     /*   HINT KEYS              */
     /* ======================== */
     else if (ui->focus == FC_HINT) {
-      /* enter key to submit a guess */
-      if (input.id == NCKEY_ENTER) {
-        pln_hint_submit(ui);
-      }
-
-      /* read input and change focus if gone off the top */
-      else {
-        int has_left = pln_hint_input(ui, &input);
-        if (has_left) {
-          ui->focus = FC_GUESS;
-        }
-      }
+      pln_hint_input(ui, &input);
     }
 
     /* ======================== */
@@ -1124,68 +1297,3 @@ void gameui_play(GameUI *ui) {
     log("GAME STATE: [%d] %s (%s)", ui->game->turn, ui->game->best_clade->com_name, ui->game->best_clade->sci_name);
   }
 }
-
-
-/* notcurses reference */
-// This renders the entire screen and makes it appear.
-// int notcurses_render(struct notcurses* nc);
-
-// The first of these renders, the second makes it appear on the screen.
-// int ncpile_render(struct ncplane* n);
-// int ncpile_rasterize(struct ncplane* n);
-
-// This refreshes the screen without rendering any changes. Useful if the
-// screen size has changed.
-// int notcurses_refresh(struct notcurses* n, unsigned* restrict y, unsigned* restrict x);
-
-// Enables and moves the cursor y,x
-// int notcurses_cursor_enable(struct notcurses* nc, int y, int x);
-
-// Disables the cursor.
-// int notcurses_cursor_disable(struct notcurses* nc);
-
-// Move the cursor to a point relative to a plane
-// int ncplane_cursor_move_yx(struct ncplane* n, int y, int x);
-// int ncplane_cursor_move_rel(struct ncplane* n, int y, int x);
-
-// Checks how many colors are supported
-// unsigned notcurses_palette_size(const struct notcurses* nc);
-
-// Can we load images? This requires being built against FFmpeg/OIIO.
-// bool notcurses_canopen_images(const struct notcurses* nc);
-
-// Replace the cell at the specified coordinates with the provided cell 'c',
-// and advance the cursor by the width of the cell (but not past the end of the
-// plane). On success, returns the number of columns the cursor was advanced.
-// On failure, -1 is returned.
-// int ncplane_putc_yx(struct ncplane* n, int y, int x, const nccell* c);
-
-// Replace the nccell at the specified coordinates with the provided 7-bit char
-// 'c'. Advance the cursor by 1. On success, returns 1. On failure, returns -1.
-// This works whether the underlying char is signed or unsigned.
-// int ncplane_putchar_yx(struct ncplane* n, int y, int x, char c);
-// int ncplane_putchar(struct ncplane* n, char c)
-// int ncplane_putchar_stained(struct ncplane* n, char c);
-
-// Write a series of EGCs to the current location, using the current style.
-// They will be interpreted as a series of columns (according to the definition
-// of ncplane_putc()). Advances the cursor by some positive number of columns
-// (though not beyond the end of the plane); this number is returned on success.
-// On error, a non-positive number is returned, indicating the number of columns
-// which were written before the error.
-// int ncplane_putstr_yx(struct ncplane* n, int y, int x, const char* gclusters);
-
-// Write the specified text to the plane, breaking lines sensibly, beginning at
-// the specified line. Returns the number of columns written. When breaking a
-// line, the line will be cleared to the end of the plane (the last line will
-// *not* be so cleared). The number of bytes written from the input is written
-// to '*bytes' if it is not NULL. Cleared columns are included in the return
-// value, but *not* included in the number of bytes written. Leaves the cursor
-// at the end of output. A partial write will be accomplished as far as it can;
-// determine whether the write completed by inspecting '*bytes'.
-// int ncplane_puttext(struct ncplane* n, int y, ncalign_e align, const char* text, size_t* bytes);
-
-// Set the background/foreground alpha and coloring bits of the plane's current
-// channels from a single 32-bit value.
-// uint64_t ncplane_set_bchannel(struct ncplane* n, uint32_t channel);
-// uint64_t ncplane_set_fchannel(struct ncplane* n, uint32_t channel);

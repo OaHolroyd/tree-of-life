@@ -15,10 +15,10 @@ Game *game_init(void) {
 
   /* create tree */
   game->tree = malloc(sizeof(Tree));
-  tree_alloc(game->tree, CLADE_NUM);
+  tree_alloc(game->tree, NUM_CLADES);
 
   /* load clades into tree */
-  for (int i = 0; i < CLADE_NUM; i++) {
+  for (int i = 0; i < NUM_CLADES; i++) {
     tree_add_clade(game->tree, &CLADE_LIST[i]);
   } // i end
 
