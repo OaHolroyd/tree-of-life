@@ -152,6 +152,22 @@ void pln_hint_update(GameUI *ui, Update update);
 // #define CHANNEL(fg, bg) (bg + 0x40u + fg + 0x40u)
 // #define CHANNEL(fg, bg) (((((uint64_t)0x40u << 24) + (uint64_t)fg) << 8 + (uint64_t)0x40u) << 24 + fg)
 
+int _notcurses_getvec(struct notcurses* n, const struct timespec* absdl, ncinput* ni, int vcount){
+  for(int v = 0 ; v < vcount ; ++v){
+    // TODO: sometimes this hangs (probably in a while loop in internal_get)
+    uint32_t u = notcurses_get(n, absdl, &ni[v]);
+    if(u == (uint32_t)-1){
+      if(v == 0){
+        return -1;
+      }
+      return v;
+    }else if(u == 0){
+      return v;
+    }
+  }
+  return vcount;
+}
+
 /**
  * Gobbles up to 1000 inputs over 0.1 seconds. This is useful to prevent
  * garbage being written to the screen when the TUI is launched.
@@ -166,7 +182,9 @@ void gobble_inputs(struct notcurses *nc) {
   struct timespec ts;
   timespec_get(&ts, TIME_UTC);
   ts.tv_nsec += 100000000; // add a bit of 'gobble' time
-  notcurses_getvec(nc, &ts, gobble, GOBBLE_LEN);
+  log("");
+  _notcurses_getvec(nc, &ts, gobble, GOBBLE_LEN);
+  log("");
   for (int i = 0; i < GOBBLE_LEN; i++) {
     if (gobble[i].id == UINT32_MAX) {
       break;
