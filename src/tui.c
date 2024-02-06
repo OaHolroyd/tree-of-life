@@ -153,6 +153,34 @@ void pln_hint_update(GameUI *ui, Update update);
 // #define CHANNEL(fg, bg) (((((uint64_t)0x40u << 24) + (uint64_t)fg) << 8 + (uint64_t)0x40u) << 24 + fg)
 
 /**
+ * Gobbles up to 1000 inputs over 0.1 seconds. This is useful to prevent
+ * garbage being written to the screen when the TUI is launched.
+ */
+void gobble_inputs(struct notcurses *nc) {
+  /* gobble bad inputs in 0.1 seconds */
+  #define GOBBLE_LEN (1000)
+  ncinput gobble[GOBBLE_LEN];
+  for (int i = 0; i < GOBBLE_LEN; i++) {
+    gobble[i].id = UINT32_MAX;
+  } // i end
+  struct timespec ts;
+  timespec_get(&ts, TIME_UTC);
+  ts.tv_nsec += 100000000; // add a bit of 'gobble' time
+  notcurses_getvec(nc, &ts, gobble, GOBBLE_LEN);
+  for (int i = 0; i < GOBBLE_LEN; i++) {
+    if (gobble[i].id == UINT32_MAX) {
+      break;
+    }
+
+    if (isalpha(gobble[i].id) || isdigit(gobble[i].id)) {
+      log("GOBBLED: [%3d] %c", i, gobble[i].id);
+    } else {
+      log("GOBBLED: [%3d] (%d)", i, gobble[i].id);
+    }
+  } // i end
+}
+
+/**
  * Draws a perimeter round a ncplane.
  */
 void ncplane_rounded_perimeter(struct ncplane *n) {
@@ -500,7 +528,8 @@ void populate_hints(GameUI *ui, Update update) {
   }
 
   /* updating the hint list is quicker if a char has been added to the end */
-  if (update == UP_ADD_END && ui->guess_len > 1) {
+  // TODO: fix this
+  if (0 && update == UP_ADD_END && ui->guess_len > 1) {
     /* start with no hints in the list */
     int old_hints = ui->hint_len;
     ui->hint_len = 0;
@@ -954,7 +983,12 @@ void pln_guess_submit(GameUI *ui) {
  * Updates the clade plane.
  */
 void pln_clade_update(GameUI *ui) {
-  return;
+  /* display the current best clade */
+  Clade *clade = ui->game->best_clade;
+
+  /* get the size */
+  unsigned rows, cols;
+  ncplane_dim_yx(ui->pln_clade, &rows, &cols);
 
   /* clear interior */
   ncplane_erase(ui->pln_clade);
@@ -962,19 +996,34 @@ void pln_clade_update(GameUI *ui) {
   ncplane_erase(ui->pln_clade_text);
   ncplane_erase(ui->pln_clade_img_frame);
 
-  /* name at the top */
+
+  /* name(s) at the top */
   if (ui->game->best_clade->com_name) {
-    ncplane_putstr_yx(ui->pln_clade, 1, 1, ui->game->best_clade->com_name);
-    ncplane_putstr_yx(ui->pln_clade, 2, 1, ui->game->best_clade->sci_name);
+    ncplane_putstr_yx(ui->pln_clade, 1, 1, clade->com_name);
+    ncplane_putstr_yx(ui->pln_clade, 2, 1, clade->sci_name);
+    ncplane_format(ui->pln_clade, 2, 1, 1, cols-2, NCSTYLE_ITALIC);
   } else {
-    ncplane_putstr_yx(ui->pln_clade, 1, 1, ui->game->best_clade->sci_name);
+    ncplane_putstr_yx(ui->pln_clade, 1, 1, clade->sci_name);
+    ncplane_format(ui->pln_clade, 1, 1, 1, cols-2, NCSTYLE_ITALIC);
   }
 
 
-  /* text in the middle */
-  size_t bytes = 0;
-  ncplane_puttext(ui->pln_clade_text, 0, NCALIGN_LEFT, ui->game->best_clade->text, &bytes);
+  /* overwrite text with black */
+  char ecg = ' ';
+  uint64_t ch = 0x40C7C7C740000000u;
+  ncplane_set_base(ui->pln_clade_text, &ecg, NCSTYLE_BOLD, ch);
 
+  /* text under the name */
+  size_t bytes = 0;
+  ncplane_puttext(ui->pln_clade_text, 0, NCALIGN_LEFT, clade->text, &bytes);
+
+
+  /* get the next row after the end of the text */
+  int y0 = ncplane_cursor_y(ui->pln_clade_text) + 1 + 4;
+
+  /* resize and move the image frame sub-plane */
+  ncplane_resize(ui->pln_clade_img_frame, 0, 0, 0, 0, 0, 0, rows-y0-1, cols-2);
+  ncplane_move_yx(ui->pln_clade_img_frame, y0, 1);
 
   /* load the image */
   char img_file[32];
@@ -1003,11 +1052,18 @@ void pln_clade_update(GameUI *ui) {
   ncvgeom geom;
   ncvisual_geom(ui->nc, img, &vopts, &geom);
 
-  /* image at the bottom */
+  /* create image in new plane as child on img_frame */
   if (ui->pln_clade_img) {
+    /* if it already exists, expand it to the max size and wipe the contents */
+    ncplane_resize(ui->pln_clade_img, 0, 0, 0, 0, 0, 0, rows-y0, cols-2);
+    ncplane_move_yx(ui->pln_clade_img, 0, 0);
+
+    /* color with black, force a render, and then destroy */
+    ncplane_set_base(ui->pln_clade_img, &ecg, NCSTYLE_BOLD, ch);
+    notcurses_render(ui->nc);
     ncplane_destroy(ui->pln_clade_img);
   }
-  ui->pln_clade_img = ncvisual_blit(ui->nc, img, &vopts); // display?
+  ui->pln_clade_img = ncvisual_blit(ui->nc, img, &vopts); // display image
 
   /* get parent and child plane geometry */
   unsigned p_rows, p_cols, c_rows, c_cols;
@@ -1020,17 +1076,6 @@ void pln_clade_update(GameUI *ui) {
   y_shift = (y_shift > 0) ? y_shift : 0;
   x_shift = (x_shift > 0) ? x_shift : 0;
   ncplane_move_rel(ui->pln_clade_img, y_shift, x_shift);
-  log("pr %d, pc %d", p_rows, p_cols);
-  log("cr %d, cc %d", c_rows, c_cols);
-  // log("cy %d, cx %d", geom.rcelly, geom.rcellx);
-  log("ys %d, xs %d", y_shift, x_shift);
-  // if (x_shift > 0) {
-  //   /* size limited by height */
-  //   ncplane_move_rel(ui->pln_clade_img_frame, 0, x_shift);
-  // } else if (y_shift > 0) {
-  //   /* size limited by width */
-  //   ncplane_move_rel(ui->pln_clade_img_frame, y_shift, 0);
-  // }
 }
 
 /**
@@ -1060,31 +1105,33 @@ void pln_clade_create(GameUI *ui) {
   };
   ui->pln_clade = ncplane_create(ui->pln_std, &opts);
   ncplane_rounded_perimeter(ui->pln_clade);
-
-  /* place beneath hint plane */
   ncplane_move_below(ui->pln_clade, ui->pln_hint);
 
-  /* create clade text plane */
-  ncplane_dim_yx(ui->pln_clade, &rows, &cols);
-  opts.y = 4,
-  opts.x = 1,
-  opts.rows = (rows-4)/2,
-  opts.cols = cols-2,
-  opts.name = "pln_clade_text";
-  ui->pln_clade_text = ncplane_create(ui->pln_clade, &opts);
+
+  /* create the text sub-plane */
+  ncplane_options text_opts = {
+    .y = 4, // leave space for com_name, sci_name and a gap
+    .x = 1,
+    .rows = rows - 5,
+    .cols = cols-2,
+    .name = "pln_clade_text",
+    // TODO: add resizing callbacks
+  };
+  ui->pln_clade_text = ncplane_create(ui->pln_clade, &text_opts);
   ncplane_move_below(ui->pln_clade_text, ui->pln_hint);
 
-  /* create clade image plane */
-  ncplane_yx(ui->pln_clade, &y0, &x0);
-  ncplane_dim_yx(ui->pln_clade, &rows, &cols);
-  opts.y = 4 + (rows-4)/2,
-  opts.x = 1,
-  opts.rows = (rows-4)/2,
-  opts.cols = cols-2,
-  opts.name = "pln_clade_frame";
-  ui->pln_clade_img_frame = ncplane_create(ui->pln_clade, &opts);
 
-  ui->pln_clade_img = NULL;
+  /* create the image frame sub-plane */
+  ncplane_options img_opts = {
+    .y = 4, // leave space for com_name, sci_name and a gap
+    .x = 1,
+    .rows = rows - 5,
+    .cols = cols-2,
+    .name = "pln_clade_img_frame",
+    // TODO: add resizing callbacks
+  };
+  ui->pln_clade_img_frame = ncplane_create(ui->pln_clade, &img_opts);
+  ui->pln_clade_img = NULL; // empty plane for the image
 
   pln_clade_update(ui);
 }
@@ -1141,8 +1188,6 @@ GameUI *gameui_init(void) {
   pln_stats_create(ui);
   pln_hint_create(ui);
   pln_clade_create(ui);
-  ncplane_move_above(ui->pln_esc, ui->pln_hint);
-
 
   /* render the screen */
   notcurses_render(ui->nc);
@@ -1172,30 +1217,11 @@ void gameui_destroy(GameUI *ui) {
 }
 
 void gameui_play(GameUI *ui) {
+  /* for some reason garbage inputs are sent at the start */
+  gobble_inputs(ui->nc);
+
   /* input struct */
   ncinput input = {0};
-
-  /* gobble bad inputs in 0.1 seconds */
-  #define GOBBLE_LEN (1000)
-  ncinput gobble[GOBBLE_LEN];
-  for (int i = 0; i < GOBBLE_LEN; i++) {
-    gobble[i].id = UINT32_MAX;
-  } // i end
-  struct timespec ts;
-  timespec_get(&ts, TIME_UTC);
-  ts.tv_nsec += 100000000; // add a bit of 'gobble' time
-  notcurses_getvec(ui->nc, &ts, gobble, GOBBLE_LEN);
-  for (int i = 0; i < GOBBLE_LEN; i++) {
-    if (gobble[i].id == UINT32_MAX) {
-      break;
-    }
-
-    if (isalpha(gobble[i].id) || isdigit(gobble[i].id)) {
-      log("GOBBLED: [%3d] %c", i, gobble[i].id);
-    } else {
-      log("GOBBLED: [%3d] (%d)", i, gobble[i].id);
-    }
-  } // i end
 
   /* game loop */
   while (1) {
@@ -1236,21 +1262,7 @@ void gameui_play(GameUI *ui) {
     /*   GUESS KEYS             */
     /* ======================== */
     else if (ui->focus == FC_GUESS) {
-      /* down arrow can transfer to suggestions list */
-      if (input.id == NCKEY_DOWN && ui->hint_len > 0) {
-        ui->focus = FC_HINT;
-        ui->hint_idx = 0;
-      }
-
-      /* enter key to submit a guess */
-      else if (input.id == NCKEY_ENTER) {
-        pln_guess_submit(ui);
-      }
-
-      /* other inputs go direct to the guess plane */
-      else {
-        pln_guess_input(ui, &input);
-      }
+      pln_guess_input(ui, &input);
     }
 
     /* ======================== */
