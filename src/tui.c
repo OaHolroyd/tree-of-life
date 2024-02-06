@@ -1148,21 +1148,21 @@ void pln_clade_update(GameUI *ui) {
  * Sets up the clade plane.
  */
 void pln_clade_create(GameUI *ui) {
-  /* find location and size of stats plane */
+  /* find location and size of guess plane */
   int y0, x0;
-  ncplane_yx(ui->pln_stats, &y0, &x0);
-  unsigned s_rows, s_cols;
-  ncplane_dim_yx(ui->pln_stats, &s_rows, &s_cols);
+  ncplane_yx(ui->pln_guess, &y0, &x0);
+  unsigned g_rows, g_cols;
+  ncplane_dim_yx(ui->pln_guess, &g_rows, &g_cols);
 
-  /* place this plane right of the stats plane */
-  x0 = x0 + s_cols;
-  unsigned rows = ui->rows - 3;
-  unsigned cols = ui->cols - x0 - 1;
+  /* place this plane below the guess plane */
+  y0 += g_rows;
+  unsigned rows = ui->rows - y0 - 1;
+  unsigned cols = ui->cols - 2;
   cols = (cols > 45) ? 45 : cols; // max 45 wide
 
   /* create the main clade plane */
   ncplane_options opts = {
-    .y = 0,
+    .y = y0,
     .x = x0,
     .rows = rows,
     .cols = cols,
