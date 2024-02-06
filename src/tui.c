@@ -119,6 +119,8 @@ typedef struct GameUI {
   int hint_idx; // index of scroll position
   int hint_len; // number of hints
   int hint_max_len; // maximum number of hints to find
+  int hint_display; // maximum number of hints to display
+  int hint_scroll; // how far the list has scrolled down
 } GameUI;
 
 /**
@@ -647,25 +649,42 @@ void pln_hint_update(GameUI *ui, Update update) {
     ncplane_rounded_perimeter_sized(ui->pln_hint, ui->hint_len+2);
   }
 
+  /* compute display shifts */
+  int display_idx = ui->hint_idx - ui->hint_scroll;
+  int display_count = (ui->hint_display < ui->hint_len) ? ui->hint_display : ui->hint_len;
+
   /* write hints */
-  for (int i = 0; i < ui->hint_len; i++) {
+  for (int i = 0; i < display_count; i++) {
     /* fill line with spaces */
     for (unsigned j = 0; j < ncplane_dim_x(ui->pln_hint)-2; j++) {
       ncplane_putchar_yx(ui->pln_hint, 1+i, 1+j, ' ');
     } // j end
 
     /* then write name */
-    ncplane_putstr_yx(ui->pln_hint, 1+i, 1, ui->hints[i]);
+    ncplane_putstr_yx(ui->pln_hint, 1+i, 1, ui->hints[i+ui->hint_scroll]);
   } // i end
 
   /* make the list dim */
   uint64_t ch = 0x4055555540000000u;
-  ncplane_stain(ui->pln_hint, 0, 0, ui->hint_len+2, ncplane_dim_x(ui->pln_hint), ch, ch, ch, ch);
+  ncplane_stain(ui->pln_hint, 0, 0, ncplane_dim_y(ui->pln_hint), ncplane_dim_x(ui->pln_hint), ch, ch, ch, ch);
 
   /* highlight row at index */
   if (ui->hint_idx > -1) {
     ch = 0x4000000040FFFFFFu;
-    ncplane_stain(ui->pln_hint, 1+ui->hint_idx, 1, 1, ncplane_dim_x(ui->pln_hint)-2, ch, ch, ch, ch);
+    ncplane_stain(ui->pln_hint, 1+display_idx, 1, 1, ncplane_dim_x(ui->pln_hint)-2, ch, ch, ch, ch);
+  }
+
+  /* add arrows to indicate scrolling availability/progress */
+  if (ui->hint_len > ui->hint_display) {
+    /* can scroll down */
+    if (ui->hint_idx < ui->hint_len-1) {
+      ncplane_putwc_yx(ui->pln_hint, ui->hint_display, 0, L'\u2193');
+    }
+
+    /* can scroll up */
+    if (ui->hint_scroll > 0) {
+      ncplane_putwc_yx(ui->pln_hint, 1, 0, L'\u2191');
+    }
   }
 }
 
@@ -673,6 +692,14 @@ void pln_hint_update(GameUI *ui, Update update) {
  * Sets up the hints plane
  */
 void pln_hint_create(GameUI *ui) {
+  /* set up lengths/indexing */
+  ui->hint_idx = -1;
+  ui->hint_len = 0;
+  ui->hint_max_len = NUM_SPECIES;
+  ui->hint_max_len = (ui->hint_max_len < (int)ui->rows - 10) ? ui->hint_max_len : (int)ui->rows - 10;
+  ui->hint_display = 10;
+  ui->hint_scroll = 0;
+
   /* find location and size of guess plane */
   int y0, x0;
   ncplane_yx(ui->pln_guess, &y0, &x0);
@@ -681,7 +708,7 @@ void pln_hint_create(GameUI *ui) {
 
   /* place this plane below the guess plane */
   y0 += rows - 1;
-  rows = ui->rows - y0 - 1;
+  rows = ui->hint_display + 2;
 
   /* create the plane */
   ncplane_options opts = {
@@ -702,11 +729,6 @@ void pln_hint_create(GameUI *ui) {
     ui->hints[i] = NULL;
   } // i end
 
-  ui->hint_idx = -1;
-  ui->hint_len = 0;
-  ui->hint_max_len = NUM_SPECIES;
-  ui->hint_max_len = (ui->hint_max_len < (int)ui->rows - 10) ? ui->hint_max_len : (int)ui->rows - 10;
-
   pln_hint_update(ui, UP_ALL);
 }
 
@@ -715,7 +737,7 @@ void pln_hint_create(GameUI *ui) {
  */
 void pln_hint_submit(GameUI *ui) {
   /* copy selected name into guess */
-  const char *name = ui->hints[ui->hint_idx];
+  const char *name = ui->hints[ui->hint_idx + ui->hint_scroll];
   for (int i = 0; i <= (int)strlen(name); i++) {
     ui->guess[i] = name[i];
   } // i end
@@ -739,22 +761,48 @@ void pln_hint_input(GameUI *ui, ncinput *input) {
 
   /* down arrow key */
   else if (id == NCKEY_DOWN) {
-    /* only move down if there is space to do so */
-    if (ui->hint_idx < ui->hint_len-1) {
+    int display_idx = ui->hint_idx - ui->hint_scroll;
+
+    /* at the bottom of the list, can't go down */
+    if (ui->hint_idx == ui->hint_len-1) {
+      /* do nothing */
+    }
+
+    /* in middle of the display, go down normally */
+    else if (display_idx < ui->hint_display-1) {
       ui->hint_idx++;
     }
+
+    /* at bottom of the display, go down and scroll */
+    else {
+      ui->hint_idx++;
+      ui->hint_scroll++;
+    }
+
     pln_hint_update(ui, UP_NONE);
   }
 
   /* up arrow key */
   else if (id == NCKEY_UP) {
-    ui->hint_idx--;
-    pln_hint_update(ui, UP_NONE);
+    int display_idx = ui->hint_idx - ui->hint_scroll;
 
-    /* might have left the list */
-    if (ui->hint_idx == -1) {
+    /* at the top of the list, exit to guess plane */
+    if (ui->hint_idx == 0) {
       ui->focus = FC_GUESS;
     }
+
+    /* in middle of the display, go up normally */
+    else if (display_idx > 0) {
+      /* do nothing */
+    }
+
+    /* at top of the display, scroll up */
+    else if (display_idx == 0) {
+      ui->hint_scroll--;
+    }
+
+    ui->hint_idx--;
+    pln_hint_update(ui, UP_NONE);
   }
 }
 
