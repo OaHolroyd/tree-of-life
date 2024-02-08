@@ -1,6 +1,7 @@
 # Project-specific
 tol
 log.txt
+data/**
 out/**
 *.jpg
 
