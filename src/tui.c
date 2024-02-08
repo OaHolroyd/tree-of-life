@@ -1038,6 +1038,7 @@ void pln_guess_submit(GameUI *ui) {
   pln_hint_update(ui, UP_ALL);
   pln_clade_update(ui);
   pln_stats_update(ui);
+  pln_esc_update(ui);
   notcurses_render(ui->nc);
 }
 
