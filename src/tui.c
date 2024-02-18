@@ -52,6 +52,7 @@
 /*    clade plane                                                                           */
 /*  > Add the tree plane (and decide how it will be displayed)                              */
 /*  > Write some help/instruction text and allow it to be displayed                         */
+/*  > De-americanise the clade text                                                         */
 /*                                                                                          */
 /* ======================================================================================== */
 

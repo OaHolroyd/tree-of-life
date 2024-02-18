@@ -6,10 +6,10 @@
 
 
 /* the number of predefined clades in the list */
-#define NUM_CLADES (549)
+#define NUM_CLADES (548)
 
 /* the number of species in the list */
-#define NUM_SPECIES (325)
+#define NUM_SPECIES (324)
 
 /* the length of the longest species name */
 #define LEN_SPECIES (19)
