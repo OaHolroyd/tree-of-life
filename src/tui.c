@@ -738,7 +738,7 @@ void pln_hint_create(GameUI *ui) {
  */
 void pln_hint_submit(GameUI *ui) {
   /* copy selected name into guess */
-  const char *name = ui->hints[ui->hint_idx + ui->hint_scroll];
+  const char *name = ui->hints[ui->hint_idx];
   for (int i = 0; i <= (int)strlen(name); i++) {
     ui->guess[i] = name[i];
   } // i end
