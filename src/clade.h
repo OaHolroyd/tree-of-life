@@ -37,7 +37,10 @@ typedef struct Clade {
   struct Clade *parent; // pointer to parent clade
   int num_children; // number of children
   struct Clade **children; // array of pointers to children
+
+  /* Game Members (these are handled by the Game only) */
   int on_chain; // whether this is on the chain from answer species to the root
+  int subtree_state; // either not in the subtree, hidden, or visible
 } Clade;
 
 

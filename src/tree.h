@@ -8,7 +8,7 @@
 /*   TYPE DEFINITIONS                                                         */
 /* ========================================================================== */
 /**
- * A Tree is a list of clade which are linked up/down to their parent and
+ * A Tree is a list of clades which are linked up/down to their parent and
  * children, along with a number of allocated memory pools.
  */
 typedef struct {

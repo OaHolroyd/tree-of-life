@@ -48,11 +48,8 @@
 /*                                                                                          */
 /* ======================================================================================== */
 /*   TODO LIST                                                                              */
-/*  > Add scrolling to the hints so that they can overlap the text-only portion of the      */
-/*    clade plane                                                                           */
 /*  > Add the tree plane (and decide how it will be displayed)                              */
 /*  > Write some help/instruction text and allow it to be displayed                         */
-/*  > De-americanise the clade text                                                         */
 /*                                                                                          */
 /* ======================================================================================== */
 
@@ -100,7 +97,7 @@ typedef struct GameUI {
   struct ncplane *pln_stats; // plane containing game statistics/state
   struct ncplane *pln_guess; // plane for input guess
   struct ncplane *pln_esc; // plane for esc-mode controls
-
+  struct ncplane *pln_tree; // plane for displaying the sub-tree
   struct ncplane *pln_hint; // plane for guess hints (ie completions)
 
   /* clade plane group */
@@ -147,6 +144,7 @@ void pln_esc_update(GameUI *ui);
 void pln_guess_update(GameUI *ui);
 void pln_stats_update(GameUI *ui);
 void pln_hint_update(GameUI *ui, Update update);
+void pln_tree_update(GameUI *ui);
 
 
 /* ======================== */
@@ -315,6 +313,7 @@ void update_all(GameUI *ui) {
   pln_guess_update(ui);
   pln_stats_update(ui);
   pln_hint_update(ui, UP_ALL);
+  pln_tree_update(ui);
 }
 
 
@@ -1040,6 +1039,7 @@ void pln_guess_submit(GameUI *ui) {
   pln_clade_update(ui);
   pln_stats_update(ui);
   pln_esc_update(ui);
+  pln_tree_update(ui);
   notcurses_render(ui->nc);
 }
 
@@ -1205,6 +1205,59 @@ void pln_clade_create(GameUI *ui) {
 }
 
 
+/* ======================== */
+/*   TREE PLANE             */
+/* ======================== */
+/**
+ * Updates the tree plane.
+ */
+void pln_tree_update(GameUI *ui) {
+  /* clear all */
+  ncplane_erase(ui->pln_tree);
+
+  /* display tree */
+  int k = 0;
+  for (int i = 0; i < NUM_CLADES; i++) {
+    /* then write name */
+    if (ui->game->tree->clades[i].subtree_state == ST_VISIBLE) {
+      ncplane_putstr_yx(ui->pln_tree, 1+k, 1, ui->game->tree->clades[i].sci_name);
+      k++;
+    }
+  } // i end
+}
+
+/**
+ * Sets up the tree plane.
+ */
+void pln_tree_create(GameUI *ui) {
+  /* find location and size of clade plane */
+  int y0, x0;
+  ncplane_yx(ui->pln_clade, &y0, &x0);
+  unsigned c_rows, c_cols;
+  ncplane_dim_yx(ui->pln_clade, &c_rows, &c_cols);
+
+  /* place this plane right of the clade plane */
+  x0 += c_cols;
+  unsigned rows = ui->rows - 1;
+  unsigned cols = ui->cols - x0;
+
+  /* create the main tree plane */
+  ncplane_options opts = {
+    .y = 0,
+    .x = x0,
+    .rows = rows,
+    .cols = cols,
+    .name = "pln_tree",
+    // TODO: add resizing callbacks
+  };
+  ui->pln_tree = ncplane_create(ui->pln_std, &opts);
+  ncplane_rounded_perimeter(ui->pln_tree);
+
+
+  pln_tree_update(ui);
+}
+
+
 /* ========================================================================== */
 /*   FUNCTION DEFINITIONS                                                     */
 /* ========================================================================== */
@@ -1256,6 +1309,7 @@ GameUI *gameui_init(void) {
   pln_stats_create(ui);
   pln_hint_create(ui);
   pln_clade_create(ui);
+  pln_tree_create(ui);
 
   /* render the screen */
   notcurses_render(ui->nc);
@@ -1272,6 +1326,7 @@ void gameui_destroy(GameUI *ui) {
   ncplane_destroy(ui->pln_clade_text);
   ncplane_destroy(ui->pln_clade_img_frame);
   ncplane_destroy(ui->pln_clade);
+  ncplane_destroy(ui->pln_tree);
 
   /* leave fullscreen */
   notcurses_leave_alternate_screen(ui->nc);

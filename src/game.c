@@ -43,6 +43,7 @@ void game_reset(Game *game) {
   /* reset tree parameters */
   for (int i = 0; i < game->tree->size; i++) {
     game->tree->clades[i].on_chain = 0;
+    game->tree->clades[i].subtree_state = ST_OFF;
   } // i end
 
   /* pick answer and set chain */
@@ -50,9 +51,12 @@ void game_reset(Game *game) {
   Clade *clade = game->answer;
   while (clade != game->tree->root) {
     clade->on_chain = 1;
+    clade->subtree_state = ST_HIDDEN;
     clade = clade->parent;
   }
   game->tree->root->on_chain = 1;
+  game->tree->root->subtree_state = ST_VISIBLE;
+  game->answer->subtree_state = ST_VISIBLE;
 
   /* set to turn zero */
   game->turn = 0;
@@ -77,11 +81,22 @@ GameState game_turn(Game *game, const char *guess) {
     return game->state = GAME_WON;
   }
 
-  /* find the best linking clade */
+  /* find the best linking clade and update the subtree */
   Clade *clade = species;
+  int first_in_subtree = 1;
   while (clade->on_chain == 0) {
-    clade = clade->parent;
+    clade = clade->parent; // move to the parent
+
+    if (clade->subtree_state == ST_OFF) {
+      /* previously off clades in the species' chain are now hidden */
+      clade->subtree_state = ST_HIDDEN;
+    } else if (clade->subtree_state == ST_HIDDEN && first_in_subtree) {
+      /* turn the first clade already in the subtree on */
+      clade->subtree_state = ST_VISIBLE;
+      first_in_subtree = 0;
+    }
   }
+  species->subtree_state = ST_VISIBLE;
 
   /* check if it is the new best */
   if (clade->depth > game->best_clade->depth) {

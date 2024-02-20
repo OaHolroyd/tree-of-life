@@ -18,6 +18,12 @@ typedef enum {
   GAME_WON,
 } GameState;
 
+typedef enum {
+  ST_OFF,
+  ST_HIDDEN,
+  ST_VISIBLE
+} SubtreeState;
+
 /**
  * The game is composed of a Tree, which defines the game-space, and various
  * state variables, which define the current state of the game.
