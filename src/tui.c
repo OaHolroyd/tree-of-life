@@ -1,4 +1,6 @@
 #include "tui.h"
+#include "clade.h"
+#include "rank.h"
 
 /* include notcurses but ignore the warnings associated with it */
 #pragma GCC diagnostic push
@@ -58,7 +60,9 @@
 /* ========================================================================== */
 /*   TYPE DEFINITIONS                                                         */
 /* ========================================================================== */
-#define CHEAT_MODE (1)
+#ifndef CHEAT_MODE
+#define CHEAT_MODE (0)
+#endif
 #define MAX_GUESS (20) // TODO: get this from the clade-list
 
 /**
@@ -1215,15 +1219,111 @@ void pln_tree_update(GameUI *ui) {
   /* clear all */
   ncplane_erase(ui->pln_tree);
 
-  /* display tree */
-  int k = 0;
-  for (int i = 0; i < NUM_CLADES; i++) {
-    /* then write name */
-    if (ui->game->tree->clades[i].subtree_state == ST_VISIBLE) {
-      ncplane_putstr_yx(ui->pln_tree, 1+k, 1, ui->game->tree->clades[i].sci_name);
-      k++;
+  Tree *tree = ui->game->tree;
+
+  /* find location and size of tree plane */
+  int y0, x0;
+  ncplane_yx(ui->pln_tree, &y0, &x0);
+  unsigned rows, cols;
+  ncplane_dim_yx(ui->pln_tree, &rows, &cols);
+
+  /* work out what the highest up node we can display is */
+  int available_rows = rows - 2;
+  Clade *root = ui->game->answer;
+  while ((root != tree->root) && (available_rows > 1)) {
+    root = root->parent;
+    if (root->subtree_state == ST_VISIBLE) {
+      available_rows -= 2;
     }
-  } // i end
+  }
+  int start_y = rows - 1 - available_rows;
+
+  /* display tree */
+  root = ui->game->answer;
+  if ((ui->game->state == GAME_WON) || (ui->game->state == GAME_LOST)) {
+    ncplane_putstr_yx(ui->pln_tree, start_y, 1, root->com_name);
+  } else {
+    ncplane_putstr_yx(ui->pln_tree, start_y, 1, " ???");
+  }
+
+  do {
+    Clade *child = root;
+    root = root->parent;
+
+    if (root->subtree_state == ST_VISIBLE) {
+      // get the correct name
+      const char *name = root->sci_name;
+      if (root->com_name && (root->rank == SPECIES)) {
+        name = root->com_name;
+      }
+
+      ncplane_putstr_yx(ui->pln_tree, --start_y, 3, "│");
+      ncplane_putstr_yx(ui->pln_tree, --start_y, 1, name);
+
+      // if there are other visible children show one of them
+      for (int i = 0; i < root->num_children; i++) {
+        Clade *node = root->children[i];
+        if (node == child) {
+          continue;
+        }
+
+        if (node->subtree_state == ST_OFF) {
+          continue;
+        }
+
+        if (node->subtree_state == ST_HIDDEN) {
+          // travel down until we find a non-hidden one
+          while (node->subtree_state == ST_HIDDEN) {
+            int has_found = 0;
+            for (int j = 0; j < node->num_children; j++) {
+              if (node->children[j]->subtree_state == ST_VISIBLE) {
+                node = node->children[j];
+                has_found = 1;
+                break;
+              }
+            } // end for j
+
+            if (has_found) {
+              continue;
+            }
+
+            for (int j = 0; j < node->num_children; j++) {
+              if ((node->children[j]->subtree_state == ST_HIDDEN) && (node->children[j]->rank != SPECIES)) {
+                node = node->children[j];
+                has_found = 1;
+                break;
+              }
+            } // end for j
+
+            if (has_found) {
+              continue;
+            }
+
+            for (int j = 0; j < node->num_children; j++) {
+              if (node->children[j]->subtree_state == ST_HIDDEN) {
+                node = node->children[j];
+                has_found = 1;
+                break;
+              }
+            } // end for j
+          }
+        }
+
+        int start_x = 1+strlen(name);
+
+        // pick the right name and display it
+        name = node->sci_name;
+        if (node->com_name && (node->rank == SPECIES)) {
+          name = node->com_name;
+        }
+        ncplane_putstr_yx(ui->pln_tree, start_y, start_x, " ─ ");
+        ncplane_putstr_yx(ui->pln_tree, start_y, start_x+3, name);
+
+        break;
+      }
+
+    }
+  } while (root != tree->root);
 }
 
 /**
@@ -1337,6 +1437,7 @@ void gameui_destroy(GameUI *ui) {
   // this fixes a bug where notcurses fails to clean up after itself
   printf("\x1b[<u");
   printf("\x1b[>u");
+  printf("\33[2K\r");
   fflush(stdout);
 
   /* frees game and TUI resources */
