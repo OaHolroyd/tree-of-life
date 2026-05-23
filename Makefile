@@ -4,7 +4,7 @@
 # compiler/linker
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
-    CC=gcc-13
+    CC=gcc
 else
     CC=gcc
 endif

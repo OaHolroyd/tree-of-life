@@ -1334,6 +1334,11 @@ void gameui_destroy(GameUI *ui) {
   /* shut down notcurses */
   notcurses_stop(ui->nc);
 
+  // this fixes a bug where notcurses fails to clean up after itself
+  printf("\x1b[<u");
+  printf("\x1b[>u");
+  fflush(stdout);
+
   /* frees game and TUI resources */
   game_destroy(ui->game);
   free(ui);
@@ -1352,7 +1357,14 @@ void gameui_play(GameUI *ui) {
 
     /* get input */
     uint32_t id = notcurses_get_blocking(ui->nc, &input);
+
+    // we only care about key presses (to avoid) duplicate inputs
+    if (input.evtype != NCTYPE_PRESS) {
+      continue;
+    }
+
     log("KEY PRESSED: %d [%c]", id, id);
+
 
     /* ======================== */
     /*   GLOBAL KEYS            */
