@@ -72,6 +72,7 @@ typedef enum Focus {
   FC_GUESS,
   FC_ESC,
   FC_HINT,
+  FC_TREE,
 } Focus;
 
 /**
@@ -123,6 +124,13 @@ typedef struct GameUI {
   int hint_max_len; // maximum number of hints to find
   int hint_display; // maximum number of hints to display
   int hint_scroll; // how far the list has scrolled down
+
+  /* tree */
+  int tree_max_row; // how many rows there can be
+  int tree_num_rows; // how many rows there are currently
+  int tree_has_top_branch; // whether the top node has a branch
+  int tree_row; // row-index of highlight
+  int tree_col; // col-index of highlight (0 or 1)
 } GameUI;
 
 /**
@@ -808,6 +816,14 @@ void pln_hint_input(GameUI *ui, ncinput *input) {
     ui->hint_idx--;
     pln_hint_update(ui, UP_NONE);
   }
+
+  /* tab over to the tree */
+  else if (id == NCKEY_TAB) {
+    log("tab pressed, shift to tree");
+    ui->focus = FC_TREE;
+    ui->prev_focus = FC_HINT;
+    pln_tree_update(ui);
+  }
 }
 
 
@@ -896,6 +912,13 @@ void pln_guess_input(GameUI *ui, ncinput *input) {
   }
 
   switch (id) {
+    case NCKEY_TAB:
+      log("tab pressed, shift to tree");
+      ui->focus = FC_TREE;
+      ui->prev_focus = FC_GUESS;
+      pln_tree_update(ui);
+      break;
+
     /* down can enter the hint list */
     case NCKEY_DOWN:
       if (ui->hint_len > 0) {
@@ -1228,17 +1251,21 @@ void pln_tree_update(GameUI *ui) {
   ncplane_dim_yx(ui->pln_tree, &rows, &cols);
 
   /* work out what the highest up node we can display is */
+  // TODO: use ui->tree_max_row instead
   int available_rows = rows - 2;
+  ui->tree_num_rows = 1;
   Clade *root = ui->game->answer;
   while ((root != tree->root) && (available_rows > 1)) {
     root = root->parent;
     if (root->subtree_state == ST_VISIBLE) {
       available_rows -= 2;
+      ui->tree_num_rows++;
     }
   }
   int start_y = rows - 1 - available_rows;
 
   /* display tree */
+  // base (unknown species)
   root = ui->game->answer;
   if ((ui->game->state == GAME_WON) || (ui->game->state == GAME_LOST)) {
     ncplane_putstr_yx(ui->pln_tree, start_y, 1, root->com_name);
@@ -1246,6 +1273,10 @@ void pln_tree_update(GameUI *ui) {
     ncplane_putstr_yx(ui->pln_tree, start_y, 1, " ???");
   }
 
+  int highlight_idx = ui->tree_row;
+  int highlight_x = 0;
+  int highlight_y = 0;
+  int highlight_len = 0;
   do {
     Clade *child = root;
     root = root->parent;
@@ -1260,7 +1291,15 @@ void pln_tree_update(GameUI *ui) {
       ncplane_putstr_yx(ui->pln_tree, --start_y, 3, "│");
       ncplane_putstr_yx(ui->pln_tree, --start_y, 1, name);
 
+      highlight_idx--;
+      if ((highlight_idx == 0) && (ui->tree_col == 0)) {
+        highlight_x = 1;
+        highlight_y = start_y;
+        highlight_len = strlen(name);
+      }
+
       // if there are other visible children show one of them
+      ui->tree_has_top_branch = 0;
       for (int i = 0; i < root->num_children; i++) {
         Clade *node = root->children[i];
         if (node == child) {
@@ -1272,13 +1311,16 @@ void pln_tree_update(GameUI *ui) {
         }
 
         if (node->subtree_state == ST_HIDDEN) {
-          // travel down until we find a non-hidden one
+          /* travel down until we find a non-hidden one */
+          // ensure that we stop at the highest possible level, which will
+          // provide the most info to the player
           while (node->subtree_state == ST_HIDDEN) {
             int has_found = 0;
             for (int j = 0; j < node->num_children; j++) {
               if (node->children[j]->subtree_state == ST_VISIBLE) {
                 node = node->children[j];
                 has_found = 1;
+                ui->tree_has_top_branch = 1;
                 break;
               }
             } // end for j
@@ -1291,6 +1333,7 @@ void pln_tree_update(GameUI *ui) {
               if ((node->children[j]->subtree_state == ST_HIDDEN) && (node->children[j]->rank != SPECIES)) {
                 node = node->children[j];
                 has_found = 1;
+                ui->tree_has_top_branch = 1;
                 break;
               }
             } // end for j
@@ -1303,10 +1346,11 @@ void pln_tree_update(GameUI *ui) {
               if (node->children[j]->subtree_state == ST_HIDDEN) {
                 node = node->children[j];
                 has_found = 1;
+                ui->tree_has_top_branch = 1;
                 break;
               }
             } // end for j
-          }
+          } // end while
         }
 
         int start_x = 1+strlen(name);
@@ -1319,11 +1363,82 @@ void pln_tree_update(GameUI *ui) {
         ncplane_putstr_yx(ui->pln_tree, start_y, start_x, " ─ ");
         ncplane_putstr_yx(ui->pln_tree, start_y, start_x+3, name);
 
+        if ((highlight_idx == 0) && (ui->tree_col == 1)) {
+          highlight_x = start_x+3;
+          highlight_y = start_y;
+          highlight_len = strlen(name);
+        }
+
         break;
       }
 
+      if (start_y <= 1) {
+        break;
+      }
     }
   } while (root != tree->root);
+
+  /* highlight the selected row */
+  /* highlight row at index */
+  if (highlight_len > 0) {
+    log("highlight with len %d", highlight_len);
+    uint64_t ch = 0x4000000040FFFFFFu;
+    ncplane_stain(ui->pln_tree, highlight_y, highlight_x, 1, highlight_len, ch, ch, ch, ch);
+  }
+}
+
+/**
+ * Pass input to the tree plane.
+ */
+void pln_tree_input(GameUI *ui, ncinput *input) {
+  /* unpack info from input */
+  uint32_t id = input->id;
+
+  switch (id) {
+    case NCKEY_TAB:
+      log("tab pressed, shift back to guess/hint");
+      ui->focus = ui->prev_focus;
+      ui->prev_focus = FC_TREE;
+      break;
+
+    case NCKEY_UP:
+      if (ui->tree_row < (ui->tree_num_rows-1)) {
+        if ((ui->tree_col == 1) && (ui->tree_row == ui->tree_num_rows-2) && (!ui->tree_has_top_branch)) {
+          break;
+        }
+        ui->tree_row++;
+      }
+      break;
+
+    case NCKEY_DOWN:
+      if (ui->tree_row > 0) {
+        if ((ui->tree_row == 1) && (ui->tree_col == 1)) {
+          break;
+        }
+        if ((ui->tree_row == 1) && ((ui->game->state != GAME_WON) && (ui->game->state != GAME_LOST))) {
+          break;
+        }
+        ui->tree_row--;
+      }
+      break;
+
+    case NCKEY_LEFT:
+      if (ui->tree_col > 0) {
+        ui->tree_col--;
+      }
+      break;
+
+    case NCKEY_RIGHT:
+      if (ui->tree_col < 1) {
+        if ((ui->tree_row == ui->tree_num_rows-1) && (!ui->tree_has_top_branch)) {
+          break;
+        }
+        ui->tree_col++;
+      }
+      break;
+  }
+
+  pln_tree_update(ui);
 }
 
 /**
@@ -1353,6 +1468,9 @@ void pln_tree_create(GameUI *ui) {
   ui->pln_tree = ncplane_create(ui->pln_std, &opts);
   ncplane_rounded_perimeter(ui->pln_tree);
 
+  ui->tree_max_row = (rows - 3 / 2) + 1;
+  ui->tree_row = 1;
+  ui->tree_col = 0;
 
   pln_tree_update(ui);
 }
@@ -1506,6 +1624,13 @@ void gameui_play(GameUI *ui) {
     /* ======================== */
     else if (ui->focus == FC_HINT) {
       pln_hint_input(ui, &input);
+    }
+
+    /* ======================== */
+    /*   TREE KEYS              */
+    /* ======================== */
+    else if (ui->focus == FC_TREE) {
+      pln_tree_input(ui, &input);
     }
 
     /* ======================== */
