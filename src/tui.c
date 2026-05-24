@@ -1094,9 +1094,8 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
   ncplane_erase(ui->pln_clade_text);
   ncplane_erase(ui->pln_clade_img_frame);
 
-
   /* name(s) at the top */
-  if (ui->game->best_clade->com_name) {
+  if (clade->com_name) {
     ncplane_putstr_yx(ui->pln_clade, 1, 1, clade->com_name);
     ncplane_putstr_yx(ui->pln_clade, 2, 1, clade->sci_name);
     ncplane_format(ui->pln_clade, 2, 1, 1, cols-2, NCSTYLE_ITALIC);
@@ -1104,7 +1103,6 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
     ncplane_putstr_yx(ui->pln_clade, 1, 1, clade->sci_name);
     ncplane_format(ui->pln_clade, 1, 1, 1, cols-2, NCSTYLE_ITALIC);
   }
-
 
   /* overwrite text with black */
   char ecg = ' ';
@@ -1125,7 +1123,7 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
 
   /* load the image */
   char img_file[32];
-  sprintf(img_file, "data/img/%d.jpg", ui->game->best_clade->tid);
+  sprintf(img_file, "data/img/%d.jpg", clade->tid);
   struct ncvisual *img = ncvisual_from_file(img_file);
 
   if (!img) {
@@ -1254,6 +1252,15 @@ void pln_tree_update(GameUI *ui, int reset) {
   /* clear all */
   ncplane_erase(ui->pln_tree);
 
+  /* make dim/bright unless in focus */
+  if (ui->focus == FC_TREE) {
+    uint64_t ch = 0x40FFFFFF40000000u;
+    ncplane_stain(ui->pln_tree, 0, 0, ncplane_dim_y(ui->pln_tree), ncplane_dim_x(ui->pln_tree), ch, ch, ch, ch);
+  } else {
+    uint64_t ch = 0x4055555540000000u;
+    ncplane_stain(ui->pln_tree, 0, 0, ncplane_dim_y(ui->pln_tree), ncplane_dim_x(ui->pln_tree), ch, ch, ch, ch);
+  }
+
   Tree *tree = ui->game->tree;
 
   /* find location and size of tree plane */
@@ -1285,6 +1292,17 @@ void pln_tree_update(GameUI *ui, int reset) {
     ncplane_putstr_yx(ui->pln_tree, start_y, 1, " ???");
   }
 
+  // make dim/bright depending on focus
+  int l = strlen(root->com_name);
+  l = (l > 4) ? l : 4;
+  if (ui->focus == FC_TREE) {
+    uint64_t ch = 0x40FFFFFF40000000u;
+    ncplane_stain(ui->pln_tree, start_y, 1, 1, l, ch, ch, ch, ch);
+  } else {
+    uint64_t ch = 0x4055555540000000u;
+    ncplane_stain(ui->pln_tree, start_y, 1, 1, l, ch, ch, ch, ch);
+  }
+
   int highlight_idx = ui->tree_row;
   int highlight_x = 0;
   int highlight_y = 0;
@@ -1303,6 +1321,20 @@ void pln_tree_update(GameUI *ui, int reset) {
 
       ncplane_putstr_yx(ui->pln_tree, --start_y, 3, "│");
       ncplane_putstr_yx(ui->pln_tree, --start_y, 1, name);
+
+      // scientific names should be italicised
+      if (name == root->sci_name) {
+        ncplane_format(ui->pln_tree, start_y, 1, 1, strlen(name), NCSTYLE_ITALIC);
+      }
+
+      // make dim/bright depending on focus
+      if (ui->focus == FC_TREE) {
+        uint64_t ch = 0x40FFFFFF40000000u;
+        ncplane_stain(ui->pln_tree, start_y, 1, 2, strlen(name), ch, ch, ch, ch);
+      } else {
+        uint64_t ch = 0x4055555540000000u;
+        ncplane_stain(ui->pln_tree, start_y, 1, 2, strlen(name), ch, ch, ch, ch);
+      }
 
       highlight_idx--;
       if ((highlight_idx == 0) && (ui->tree_col == 0)) {
@@ -1377,6 +1409,15 @@ void pln_tree_update(GameUI *ui, int reset) {
         ncplane_putstr_yx(ui->pln_tree, start_y, start_x, " ─ ");
         ncplane_putstr_yx(ui->pln_tree, start_y, start_x+3, name);
 
+        // make dim/bright depending on focus
+        if (ui->focus == FC_TREE) {
+          uint64_t ch = 0x40FFFFFF40000000u;
+          ncplane_stain(ui->pln_tree, start_y, start_x, 1, strlen(name)+3, ch, ch, ch, ch);
+        } else {
+          uint64_t ch = 0x4055555540000000u;
+          ncplane_stain(ui->pln_tree, start_y, start_x, 1, strlen(name)+3, ch, ch, ch, ch);
+        }
+
         if ((highlight_idx == 0) && (ui->tree_col == 1)) {
           highlight_x = start_x+3;
           highlight_y = start_y;
@@ -1396,9 +1437,14 @@ void pln_tree_update(GameUI *ui, int reset) {
   /* highlight the selected row */
   if (highlight_len > 0) {
     log("highlight with len %d", highlight_len);
-    uint64_t ch = 0x4000000040FFFFFFu;
-    // TODO: make it flash if focussed
-    ncplane_stain(ui->pln_tree, highlight_y, highlight_x, 1, highlight_len, ch, ch, ch, ch);
+
+    if (ui->focus == FC_TREE) {
+      uint64_t ch = 0x4000000040FFFFFFu;
+      ncplane_stain(ui->pln_tree, highlight_y, highlight_x, 1, highlight_len, ch, ch, ch, ch);
+    } else {
+      uint64_t ch = 0x4000000040555555u;
+      ncplane_stain(ui->pln_tree, highlight_y, highlight_x, 1, highlight_len, ch, ch, ch, ch);
+    }
   }
 
   if (ui->focus == FC_TREE) {

@@ -32,7 +32,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = CLADE,
-    .text = "Toxicofera (Greek for \"those who bear toxins\") is a proposed clade of scaled reptiles (squamates) that includes the Serpentes (snakes), Anguimorpha (monitor lizards, gila monster, and alligator lizards) and Iguania (iguanas, agamas, and chameleons). Toxicofera contains about 4,600 species, (nearly 60%%) of extant Squamata.",
+    .text = "Toxicofera (Greek for \"those who bear toxins\") is a proposed clade of scaled reptiles (squamates) that includes the Serpentes (snakes), Anguimorpha (monitor lizards, gila monster, and alligator lizards) and Iguania (iguanas, agamas, and chameleons). Toxicofera contains about 4,600 species, (nearly 60%) of extant Squamata.",
     .image = NULL,
   },
   {
@@ -197,7 +197,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = CLADE,
-    .text = "Euteleostomi is a successful clade that includes more than 90%% of the living species of vertebrates. Both its major subgroups are successful today: Actinopterygii includes most extant bony fish species, and Sarcopterygii includes the tetrapods.",
+    .text = "Euteleostomi is a successful clade that includes more than 90% of the living species of vertebrates. Both its major subgroups are successful today: Actinopterygii includes most extant bony fish species, and Sarcopterygii includes the tetrapods.",
     .image = NULL,
   },
   {
@@ -263,7 +263,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = CLADE,
-    .text = "Gnathostomata (from Greek: γνάθος (gnathos) \"jaw\" + στόμα (stoma) \"mouth\") are the jawed vertebrates. Gnathostome diversity comprises roughly 60,000 species, which accounts for 99%% of all living vertebrates, including humans. Living gnathostomes have opposing jaws, true teeth, and paired appendages.",
+    .text = "Gnathostomata (from Greek: γνάθος (gnathos) \"jaw\" + στόμα (stoma) \"mouth\") are the jawed vertebrates. Gnathostome diversity comprises roughly 60,000 species, which accounts for 99% of all living vertebrates, including humans. Living gnathostomes have opposing jaws, true teeth, and paired appendages.",
     .image = NULL,
   },
   {
@@ -1121,7 +1121,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = INFRA_CLASS,
-    .text = "Teleostei (Greek teleios \"complete\" + osteon \"bone\"), members of which are known as teleosts, is by far the largest infraclass of ray-finned fishes, and contains 96%% of all fish species. The difference between teleosts and other bony fish lies mainly in their jaw bones; teleosts are able to protrude their jaws outwards from the mouth.",
+    .text = "Teleostei (Greek teleios \"complete\" + osteon \"bone\"), members of which are known as teleosts, is by far the largest infraclass of ray-finned fishes, and contains 96% of all fish species. The difference between teleosts and other bony fish lies mainly in their jaw bones; teleosts are able to protrude their jaws outwards from the mouth.",
     .image = NULL,
   },
   {
@@ -1660,7 +1660,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = PHYLUM,
-    .text = "Mollusca is the second-largest phylum of invertebrates, after Arthropoda; members are known as molluscs. Around 76,000 extant species of molluscs are recognised, but the proportion of undescribed species is very high and many taxa remain poorly studied. Molluscs are the largest marine phylum, comprising about 23%% of all the named marine organisms.",
+    .text = "Mollusca is the second-largest phylum of invertebrates, after Arthropoda; members are known as molluscs. Around 76,000 extant species of molluscs are recognised, but the proportion of undescribed species is very high and many taxa remain poorly studied. Molluscs are the largest marine phylum, comprising about 23% of all the named marine organisms.",
     .image = NULL,
   },
   {
@@ -2331,7 +2331,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = SPECIES,
-    .text = "Cattle (Bos taurus) are large, domesticated, bovid ungulates. Around 10,500 years ago, taurine cattle were domesticated from as few as 80 wild aurochs progenitors in central Anatolia, the Levant and Western Iran. As of 2018 there were an estimated 1.5 billion cattle worldwide, responsible for around 10%% of global greenhouse gas emissions.",
+    .text = "Cattle (Bos taurus) are large, domesticated, bovid ungulates. Around 10,500 years ago, taurine cattle were domesticated from as few as 80 wild aurochs progenitors in central Anatolia, the Levant and Western Iran. As of 2018 there were an estimated 1.5 billion cattle worldwide, responsible for around 10% of global greenhouse gas emissions.",
     .image = NULL,
   },
   {
@@ -2958,7 +2958,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = SPECIES,
-    .text = "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China. It is characterised by its bold black-and-white coat and rotund body. Though it belongs to the order Carnivora, the giant panda is a folivore, with bamboo shoots and leaves making up more than 99%% of its diet.",
+    .text = "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China. It is characterised by its bold black-and-white coat and rotund body. Though it belongs to the order Carnivora, the giant panda is a folivore, with bamboo shoots and leaves making up more than 99% of its diet.",
     .image = NULL,
   },
   {
@@ -4718,7 +4718,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = SPECIES,
-    .text = "The Eurasian sparrowhawk (Accipiter nisus), also known as the northern sparrowhawk or simply the sparrowhawk, is a small bird of prey in the family Accipitridae. The female is up to 25%% larger than the male - one of the greatest size differences between the sexes in any bird species.",
+    .text = "The Eurasian sparrowhawk (Accipiter nisus), also known as the northern sparrowhawk or simply the sparrowhawk, is a small bird of prey in the family Accipitridae. The female is up to 25% larger than the male - one of the greatest size differences between the sexes in any bird species.",
     .image = NULL,
   },
   {
@@ -5312,7 +5312,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = SUB_CLASS,
-    .text = "The Pterygota (Ancient Greek: πτερυγωτός) are a subclass of insects that includes all winged insects and the orders that are secondarily wingless (that is, insect groups whose ancestors once had wings but that have lost them as a result of subsequent evolution). The pterygotan group comprises 99.9%% of all insects.",
+    .text = "The Pterygota (Ancient Greek: πτερυγωτός) are a subclass of insects that includes all winged insects and the orders that are secondarily wingless (that is, insect groups whose ancestors once had wings but that have lost them as a result of subsequent evolution). The pterygotan group comprises 99.9% of all insects.",
     .image = NULL,
   },
   {
@@ -5576,7 +5576,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = SUB_ORDER,
-    .text = "Polyphaga is the largest and most diverse suborder of beetles. It comprises 144 families in 16 superfamilies, and displays an enormous variety of specialization and adaptation, with over 350,000 described species, or approximately 90%% of the beetle species discovered thus far.",
+    .text = "Polyphaga is the largest and most diverse suborder of beetles. It comprises 144 families in 16 superfamilies, and displays an enormous variety of specialization and adaptation, with over 350,000 described species, or approximately 90% of the beetle species discovered thus far.",
     .image = NULL,
   },
   {
@@ -5807,7 +5807,7 @@ const Clade CLADE_LIST[] = {
     .num_synonyms = 0,
     .synonyms = {NULL},
     .rank = SUPER_FAMILY,
-    .text = "Hyloidea is a superfamily of frogs. Hyloidea accounts for 54%% of all living anuran species. The superfamily Hyloidea branched off from its closest relative, the Australobatrachia, during the mid-Cretaceous.",
+    .text = "Hyloidea is a superfamily of frogs. Hyloidea accounts for 54% of all living anuran species. The superfamily Hyloidea branched off from its closest relative, the Australobatrachia, during the mid-Cretaceous.",
     .image = NULL,
   },
   {
