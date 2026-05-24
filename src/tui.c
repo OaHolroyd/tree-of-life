@@ -151,12 +151,12 @@ typedef enum Update {
 /* ========================================================================== */
 /* function declarations */
 void pln_guess_submit(GameUI *ui);
-void pln_clade_update(GameUI *ui);
+void pln_clade_update(GameUI *ui, Clade *override_clade);
 void pln_esc_update(GameUI *ui);
 void pln_guess_update(GameUI *ui);
 void pln_stats_update(GameUI *ui);
 void pln_hint_update(GameUI *ui, Update update);
-void pln_tree_update(GameUI *ui);
+void pln_tree_update(GameUI *ui, int reset);
 
 
 /* ======================== */
@@ -320,12 +320,12 @@ void set_blitter(GameUI *ui) {
  * Update all the planes.
  */
 void update_all(GameUI *ui) {
-  pln_clade_update(ui);
+  pln_clade_update(ui, NULL);
   pln_esc_update(ui);
   pln_guess_update(ui);
   pln_stats_update(ui);
   pln_hint_update(ui, UP_ALL);
-  pln_tree_update(ui);
+  pln_tree_update(ui, 0);
 }
 
 
@@ -822,7 +822,7 @@ void pln_hint_input(GameUI *ui, ncinput *input) {
     log("tab pressed, shift to tree");
     ui->focus = FC_TREE;
     ui->prev_focus = FC_HINT;
-    pln_tree_update(ui);
+    pln_tree_update(ui, 0);
   }
 }
 
@@ -916,7 +916,7 @@ void pln_guess_input(GameUI *ui, ncinput *input) {
       log("tab pressed, shift to tree");
       ui->focus = FC_TREE;
       ui->prev_focus = FC_GUESS;
-      pln_tree_update(ui);
+      pln_tree_update(ui, 0);
       break;
 
     /* down can enter the hint list */
@@ -1063,10 +1063,10 @@ void pln_guess_submit(GameUI *ui) {
   pln_guess_clear(ui);
   pln_guess_update(ui);
   pln_hint_update(ui, UP_ALL);
-  pln_clade_update(ui);
+  pln_clade_update(ui, NULL);
   pln_stats_update(ui);
   pln_esc_update(ui);
-  pln_tree_update(ui);
+  pln_tree_update(ui, 1);
   notcurses_render(ui->nc);
 }
 
@@ -1077,9 +1077,12 @@ void pln_guess_submit(GameUI *ui) {
 /**
  * Updates the clade plane.
  */
-void pln_clade_update(GameUI *ui) {
+void pln_clade_update(GameUI *ui, Clade *override_clade) {
   /* display the current best clade */
   Clade *clade = ui->game->best_clade;
+  if (override_clade) {
+    clade = override_clade;
+  }
 
   /* get the size */
   unsigned rows, cols;
@@ -1228,7 +1231,7 @@ void pln_clade_create(GameUI *ui) {
   ui->pln_clade_img_frame = ncplane_create(ui->pln_clade, &img_opts);
   ui->pln_clade_img = NULL; // empty plane for the image
 
-  pln_clade_update(ui);
+  pln_clade_update(ui, NULL);
 }
 
 
@@ -1238,7 +1241,16 @@ void pln_clade_create(GameUI *ui) {
 /**
  * Updates the tree plane.
  */
-void pln_tree_update(GameUI *ui) {
+void pln_tree_update(GameUI *ui, int reset) {
+  if (reset) {
+    if ((ui->game->state == GAME_WON) || (ui->game->state == GAME_LOST)) {
+      ui->tree_row = 0;
+    } else {
+      ui->tree_row = 1;
+    }
+    ui->tree_col = 0;
+  }
+
   /* clear all */
   ncplane_erase(ui->pln_tree);
 
@@ -1277,6 +1289,7 @@ void pln_tree_update(GameUI *ui) {
   int highlight_x = 0;
   int highlight_y = 0;
   int highlight_len = 0;
+  Clade *highlight_clade = NULL;
   do {
     Clade *child = root;
     root = root->parent;
@@ -1296,6 +1309,7 @@ void pln_tree_update(GameUI *ui) {
         highlight_x = 1;
         highlight_y = start_y;
         highlight_len = strlen(name);
+        highlight_clade = root;
       }
 
       // if there are other visible children show one of them
@@ -1367,6 +1381,7 @@ void pln_tree_update(GameUI *ui) {
           highlight_x = start_x+3;
           highlight_y = start_y;
           highlight_len = strlen(name);
+          highlight_clade = node;
         }
 
         break;
@@ -1379,11 +1394,15 @@ void pln_tree_update(GameUI *ui) {
   } while (root != tree->root);
 
   /* highlight the selected row */
-  /* highlight row at index */
   if (highlight_len > 0) {
     log("highlight with len %d", highlight_len);
     uint64_t ch = 0x4000000040FFFFFFu;
+    // TODO: make it flash if focussed
     ncplane_stain(ui->pln_tree, highlight_y, highlight_x, 1, highlight_len, ch, ch, ch, ch);
+  }
+
+  if (ui->focus == FC_TREE) {
+    pln_clade_update(ui, highlight_clade);
   }
 }
 
@@ -1438,7 +1457,7 @@ void pln_tree_input(GameUI *ui, ncinput *input) {
       break;
   }
 
-  pln_tree_update(ui);
+  pln_tree_update(ui, 0);
 }
 
 /**
@@ -1469,10 +1488,8 @@ void pln_tree_create(GameUI *ui) {
   ncplane_rounded_perimeter(ui->pln_tree);
 
   ui->tree_max_row = (rows - 3 / 2) + 1;
-  ui->tree_row = 1;
-  ui->tree_col = 0;
 
-  pln_tree_update(ui);
+  pln_tree_update(ui, 1);
 }
 
 
@@ -1639,7 +1656,7 @@ void gameui_play(GameUI *ui) {
     if (ui->game->state == GAME_WON || ui->game->state == GAME_LOST) {
       ui->prev_focus = FC_GUESS;
       ui->focus = FC_ESC;
-      pln_clade_update(ui);
+      pln_clade_update(ui, NULL);
       pln_guess_update(ui);
       pln_hint_update(ui, UP_ALL);
       pln_stats_update(ui);
