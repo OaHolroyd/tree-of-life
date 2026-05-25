@@ -4,6 +4,8 @@ log.txt
 data/**
 out/**
 *.jpg
+compile_commands.json
+.cache
 
 # Junk
 .DS_Store

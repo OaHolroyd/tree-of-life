@@ -34,6 +34,7 @@ PROFILE=-O0 -g3 -fno-math-errno -ffast-math
 CFLAGS=-Ofast -flto -fno-math-errno -ffast-math -march=native -mtune=native -DDEBUG
 
 CFLAGS+=$(shell $(PKGCONFIG) --cflags $(PACKAGES))
+CFLAGS := $(patsubst -I%,-isystem %,$(CFLAGS))
 LDFLAGS=$(CFLAGS)
 LDLIBS=$(shell $(PKGCONFIG) --libs $(PACKAGES))
 
