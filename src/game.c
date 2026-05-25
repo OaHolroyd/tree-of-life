@@ -144,6 +144,23 @@ int game_hint(Game *game) {
     }
   } // i end
 
+  /* update the subtree */
+  Clade *clade = hint;
+  int first_in_subtree = 1;
+  while (clade->on_chain == 0) {
+    clade = clade->parent; // move to the parent
+
+    if (clade->subtree_state == ST_OFF) {
+      /* previously off clades in the species' chain are now hidden */
+      clade->subtree_state = ST_HIDDEN;
+    } else if (clade->subtree_state == ST_HIDDEN && first_in_subtree) {
+      /* turn the first clade already in the subtree on */
+      clade->subtree_state = ST_VISIBLE;
+      first_in_subtree = 0;
+    }
+  }
+  hint->subtree_state = ST_VISIBLE;
+
   /* update with guess */
   game->turn += 3;
   game->best_clade = hint;
