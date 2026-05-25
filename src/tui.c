@@ -1,6 +1,12 @@
 #include "tui.h"
+
+#include <time.h>
+
 #include "clade.h"
 #include "rank.h"
+#include "utils.h"
+#include "game.h"
+#include "clade-list.h"
 
 /* include notcurses but ignore the warnings associated with it */
 #pragma GCC diagnostic push
@@ -9,9 +15,6 @@
 #include <notcurses/notcurses.h>
 #pragma GCC diagnostic pop
 
-#include "utils.h"
-#include "game.h"
-#include "clade-list.h"
 
 
 /* ======================================================================================== */
@@ -131,6 +134,9 @@ typedef struct GameUI {
   int tree_has_top_branch; // whether the top node has a branch
   int tree_row; // row-index of highlight
   int tree_col; // col-index of highlight (0 or 1)
+
+  /* clade */
+  Clade *current_clade;
 } GameUI;
 
 /**
@@ -1084,6 +1090,12 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
     clade = override_clade;
   }
 
+  // don't need to do anything if the clade has not changed
+  if (clade == ui->current_clade) {
+    return;
+  }
+  ui->current_clade = clade;
+
   /* get the size */
   unsigned rows, cols;
   ncplane_dim_yx(ui->pln_clade, &rows, &cols);
@@ -1121,10 +1133,12 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
   ncplane_resize(ui->pln_clade_img_frame, 0, 0, 0, 0, 0, 0, rows-y0-1, cols-2);
   ncplane_move_yx(ui->pln_clade_img_frame, y0, 1);
 
+  clock_t t0 = clock();
   /* load the image */
   char img_file[32];
   sprintf(img_file, "data/img/%d.jpg", clade->tid);
   struct ncvisual *img = ncvisual_from_file(img_file);
+  clock_t t1 = clock();
 
   if (!img) {
     return;
@@ -1172,6 +1186,10 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
   y_shift = (y_shift > 0) ? y_shift : 0;
   x_shift = (x_shift > 0) ? x_shift : 0;
   ncplane_move_rel(ui->pln_clade_img, y_shift, x_shift);
+  clock_t t2 = clock();
+
+  log("  load image: %lf", (double)(t1 - t0) / CLOCKS_PER_SEC);
+  log("render image: %lf", (double)(t2 - t1) / CLOCKS_PER_SEC);
 }
 
 /**
@@ -1228,6 +1246,9 @@ void pln_clade_create(GameUI *ui) {
   };
   ui->pln_clade_img_frame = ncplane_create(ui->pln_clade, &img_opts);
   ui->pln_clade_img = NULL; // empty plane for the image
+
+  // set current clade to NULL
+  ui->current_clade = NULL;
 
   pln_clade_update(ui, NULL);
 }
