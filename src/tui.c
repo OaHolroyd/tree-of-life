@@ -1,7 +1,5 @@
 #include "tui.h"
 
-#include <time.h>
-
 #include "clade.h"
 #include "rank.h"
 #include "utils.h"
@@ -1133,12 +1131,10 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
   ncplane_resize(ui->pln_clade_img_frame, 0, 0, 0, 0, 0, 0, rows-y0-1, cols-2);
   ncplane_move_yx(ui->pln_clade_img_frame, y0, 1);
 
-  clock_t t0 = clock();
   /* load the image */
   char img_file[32];
   sprintf(img_file, "data/img/%d.jpg", clade->tid);
   struct ncvisual *img = ncvisual_from_file(img_file);
-  clock_t t1 = clock();
 
   if (!img) {
     return;
@@ -1186,10 +1182,6 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
   y_shift = (y_shift > 0) ? y_shift : 0;
   x_shift = (x_shift > 0) ? x_shift : 0;
   ncplane_move_rel(ui->pln_clade_img, y_shift, x_shift);
-  clock_t t2 = clock();
-
-  log("  load image: %lf", (double)(t1 - t0) / CLOCKS_PER_SEC);
-  log("render image: %lf", (double)(t2 - t1) / CLOCKS_PER_SEC);
 }
 
 /**
