@@ -4,7 +4,9 @@
 # compiler/linker
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
-    CC=gcc
+  	CC=gcc
+    # CC=gcc-15
+    # CC=/opt/homebrew/opt/llvm/bin/clang
 else
     CC=gcc
 endif
@@ -28,10 +30,9 @@ WARNINGS=-Wall -Wextra -pedantic -Wno-unused-parameter -Wshadow \
          -Wpointer-arith -Wconversion -Wno-sign-conversion -Wredundant-decls \
          -Wsequence-point -Wstrict-prototypes -Wswitch -Wvla -Wundef \
          -Wunused-but-set-parameter -Wwrite-strings # -Waggregate-return
-DEBUG=-O0 -g3 -DDEBUG -fbounds-check \
-      -fsanitize=address -fsanitize=bounds -fsanitize=bounds-strict
+DEBUG=-O0 -g3 -DDEBUG -fsanitize=address -fsanitize=bounds # -fsanitize=bounds-strict
 PROFILE=-O0 -g3 -fno-math-errno -ffast-math
-CFLAGS=-Ofast -flto -fno-math-errno -ffast-math -march=native -mtune=native -DDEBUG
+CFLAGS=-Ofast -flto -fno-math-errno -ffast-math # -march=native -mtune=native
 
 CFLAGS+=$(shell $(PKGCONFIG) --cflags $(PACKAGES))
 CFLAGS := $(patsubst -I%,-isystem %,$(CFLAGS))
@@ -66,8 +67,8 @@ all: clean $(EXE)
 
 # forces a debug build
 .PHONY: debug
-debug: CFLAGS=$(DEBUG)
-debug: LDFLAGS=$(DEBUG)
+debug: CFLAGS+=$(DEBUG)
+debug: LDFLAGS+=$(DEBUG)
 debug: all
 
 # forces a profile build

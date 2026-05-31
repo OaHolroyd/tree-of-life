@@ -1,0 +1,804 @@
+[
+  {
+    "sci_name": "Porifera",
+    "text": "Sponges or sea sponges are primarily marine invertebrates of the animal phylum Porifera (meaning 'pore bearer'). They are sessile filter feeders that are bound to the seabed, and are one of the most ancient members of macrobenthos, with many historical species being important reef-building organisms. Sponges are multicellular organisms consisting of jelly-like mesohyl sandwiched between two thin layers of cells, and usually have tube-like bodies full of pores and channels that allow water to circulate through them."
+  },
+  {
+    "sci_name": "Eumetazoa",
+    "text": "Eumetazoa, also known as Epitheliozoa or Histozoa, is a proposed basal animal subkingdom as a sister group of Porifera (sponges). The basal eumetazoan clades are the Ctenophora and the ParaHoxozoa. Placozoa is now also seen as an eumetazoan clade in the ParaHoxozoa, based on genetic data. The subkingdom Parazoa comprises the sister taxa, which includes primarily Porifera."
+  },
+  {
+    "sci_name": "Cnidaria",
+    "text": "Cnidaria is a phylum of animals containing over 11,000 species of aquatic invertebrates found both in freshwater and marine environments (predominantly the latter), including jellyfish, hydroids, sea anemones, corals and some of the smallest marine parasites. Their distinguishing features are an uncentralized nervous system distributed throughout a gelatinous body and the presence of cnidocytes or cnidoblasts, specialized cells with ejectable organelles used mainly for envenomation and capturing prey."
+  },
+  {
+    "sci_name": "Hexacorallia",
+    "text": "Hexacorallia is a class of Anthozoa. Hexacorals are aquatic organisms formed of polyps, generally with 6-fold symmetry. The number of hexacoral species is approximately 4,300 (as estimated in 1987). Extant hexacorals are composed of 6 orders: the tube anemones (Ceriantharia), zoanthids (Zoanthiniaria), sea anemones (Actiniaria), corallimorpharians (Corallimorpharia), the black corals (Antipatharia) and the stony corals (Scleractinia)."
+  },
+  {
+    "sci_name": "Spirurina",
+    "text": "Spirurina is a suborder of nematode worms in the order Rhabditida. Spirurina contains a diverse group of worms that inhabit soil, water, and the bodies of other organisms."
+  },
+  {
+    "sci_name": "Annelida",
+    "text": "Annelids, also known as segmented worms, are animals that comprise the phylum Annelida (from the Latin anellus 'little ring'). The phylum contains over 22,000 extant species, including ragworms, earthworms, and leeches. The species exist in and have adapted to various ecologies – some in marine environments as distinct as tidal zones and hydrothermal vents, others in fresh water, and yet others in moist terrestrial environments. Annelids are bilaterally symmetrical, triploblastic, coelomate, invertebrate organisms. They also have parapodia for locomotion."
+  },
+  {
+    "sci_name": "Gastropoda",
+    "text": "Gastropods are a vast and diverse group of invertebrates within the phylum Mollusca, comprising the animals commonly known as snails and slugs. With an estimated 65,000 to 80,000 living species, they form the second-largest animal class after the insects. The fossil record of gastropods extends back to the Late Cambrian. As of 2017, 721 families are recognized—476 extant (some with fossil representatives) and 245 extinct known only from fossils."
+  },
+  {
+    "sci_name": "Coleoidea",
+    "text": "Coleoidea or Dibranchiata is one of the two subclasses of cephalopod molluscs containing all the various taxa popularly thought of as \"soft-bodied\" or \"shell-less\" (i.e. octopus, squid and cuttlefish). Unlike its sister groups, the shelled Ammonoidea and Nautiloidea, the coleoids have at most an internal shell called cuttlebone or gladius that is used for buoyancy or as muscle attachment."
+  },
+  {
+    "sci_name": "Arthropoda",
+    "text": "Arthropods are invertebrates in the phylum Arthropoda. They possess an exoskeleton with a cuticle made of chitin, often mineralised with calcium carbonate, a body with differentiated (metameric) segments, and paired jointed appendages. In order to keep growing, they must go through stages of moulting, a process by which they shed their exoskeleton to reveal a new one. They form an extremely diverse group of up to ten million species. Haemolymph is the analogue of blood for most arthropods."
+  },
+  {
+    "sci_name": "Peracarida",
+    "text": "The superorder Peracarida is a large group of malacostracan crustaceans, having members in marine, freshwater, and terrestrial habitats. They are chiefly defined by the presence of a marsupium (the \"brood pouch\"), formed from thin flattened plates (oostegites) borne on the basalmost segments of the legs. Peracarida is one of the largest crustacean taxa and includes about 12,000 species. Most members are less than 2 cm long."
+  },
+  {
+    "sci_name": "Leiurus quinquestriatus",
+    "text": "The deathstalker (Leiurus quinquestriatus) is a species of scorpion, a member of the family Buthidae. It is also known as the Palestine yellow scorpion, Omdurman scorpion, and Naqab desert scorpion, as well as by many other colloquial names, which generally originate from the commercial captive trade of the animal. To eliminate confusion, especially important with potentially dangerous species, the scientific name is normally used to refer to them. The name Leiurus quinquestriatus roughly translates into English as \"five-striped smooth-tail\"."
+  },
+  {
+    "sci_name": "Scarabaeidae",
+    "text": "The family Scarabaeidae, as currently defined, consists of over 35,000 species of beetles worldwide; they are often called scarabs or scarab beetles. The classification of this family has undergone significant change. Several groups formerly treated as subfamilies have been elevated to family rank (e.g., Bolboceratidae, Geotrupidae, Glaresidae, Glaphyridae, Hybosoridae, Ochodaeidae, and Pleocomidae), and some reduced to lower ranks."
+  },
+  {
+    "sci_name": "Aedes aegypti",
+    "text": "Aedes aegypti (Ancient Greek αηδής (aēdḗs) 'unpleasant' and Latin aegyptī 'Egyptian') – sometimes called the Egyptian mosquito, dengue mosquito, or yellow fever mosquito – is a mosquito that spreads diseases such as dengue fever, yellow fever, and chikungunya. The mosquito can be recognized by black and white markings on its legs and a marking in the form of a lyre on the upper surface of its thorax. The mosquito is native to north Africa, but is now a common invasive species that has spread to tropical, subtropical, and temperate regions throughout the world."
+  },
+  {
+    "sci_name": "Drosophila melanogaster",
+    "text": "Drosophila melanogaster is a species of fly (an insect of the order Diptera) in the family Drosophilidae. The species is often referred to as the fruit fly or lesser fruit fly. D. melanogaster is attracted to rotting fruit and fermenting beverages and is often found in orchards, kitchens, and pubs. D. melanogaster continues to be widely used for biological research in genetics, physiology, microbial pathogenesis, and life history evolution. It was the first animal to be launched into space."
+  },
+  {
+    "sci_name": "Vespa mandarinia",
+    "text": "The Asian giant hornet (Vespa mandarinia), also known as the northern giant hornet, and the Japanese giant hornet, is the world's largest hornet. It is native to temperate and tropical East Asia, South Asia, mainland Southeast Asia, and parts of the Russian Far East. It was also briefly found in the Pacific Northwest of North America from late 2019 but was eradicated by December 2024. Asian giant hornets prefer to live in low mountains and forests, while almost completely avoiding plains and high-altitude climates."
+  },
+  {
+    "sci_name": "Hemiptera",
+    "text": "Hemiptera (from Ancient Greek hemipterus 'half-winged') is an order of insects, commonly called true bugs, comprising more than 80,000 species within groups such as the cicadas, aphids, planthoppers, leafhoppers, assassin bugs, bed bugs, and shield bugs. They range in size from 1 mm (0.04 in) to around 15 cm (6 in), and share a common arrangement of piercing-sucking mouthparts. The name \"true bugs\" is sometimes limited to the suborder Heteroptera. Most hemipterans feed on plants, using their sucking and piercing mouthparts to extract plant sap."
+  },
+  {
+    "sci_name": "Chordata",
+    "text": "A chordate is a bilaterian animal belonging to the phylum Chordata. All chordates possess, at some point during their larval or adult stages, five distinctive physical characteristics (synapomorphies) that distinguish them from other taxa: a notochord, a hollow dorsal nerve cord, an endostyle or thyroid, pharyngeal slits, and a post-anal tail."
+  },
+  {
+    "sci_name": "Vertebrata",
+    "text": "Vertebrates, also called craniates, are animals with a vertebral column and a cranium. The vertebral column surrounds and protects the spinal cord, while the cranium protects the brain. The vertebrates make up the subphylum Vertebrata with some 65,000 species, by far the largest ranked grouping in the phylum Chordata. The vertebrates include mammals, birds, amphibians, and various classes of fish and reptiles. The fish include the jawless Agnatha, and the jawed Gnathostomata. The jawed fish include both the cartilaginous fish and the bony fish."
+  },
+  {
+    "sci_name": "Petromyzon marinus",
+    "text": "The sea lamprey (Petromyzon marinus) is a parasitic lamprey native to the Northern Hemisphere. It is sometimes referred to as the \"vampire fish\". The lamprey uses its suction cup-like mouth to attach itself to the skin of a fish and rasps away tissue with its sharp, probing tongue and keratinized teeth. A fluid produced in the lamprey's mouth, called lamphredin, prevents the victim's blood from clotting. Victims typically die from excessive blood loss or infection. Lampreys are considered a delicacy in some parts of Europe."
+  },
+  {
+    "sci_name": "Gnathostomata",
+    "text": "Gnathostomata (from Ancient Greek: γνάθος (gnathos) 'jaw' + στόμα (stoma) 'mouth') are jawed vertebrates. Gnathostome diversity comprises roughly 60,000 species, which accounts for 99% of all extant vertebrates, including all living bony fishes (both ray-finned and lobe-finned, including the terrestrial tetrapods) and cartilaginous fishes, as well as extinct prehistoric fish such as placoderms and acanthodians. Most gnathostomes have retained ancestral traits like true teeth, a stomach, and paired appendages (pectoral and pelvic fins, limbs, wings, etc.)."
+  },
+  {
+    "sci_name": "Chondrichthyes",
+    "text": "Chondrichthyes (from Ancient Greek χόνδρος (khóndros) 'cartilage' and ἰχθύς (ikhthús) 'fish') is a class of jawed fish that contains the cartilaginous fish or chondrichthyans, which all have skeletons primarily composed of cartilage. They can be contrasted with the Osteichthyes or bony fish, which have skeletons primarily composed of bone tissue. Chondrichthyes are aquatic vertebrates with paired fins, paired nares, placoid scales, and conus arteriosus in the heart. Within the infraphylum Gnathostomata, cartilaginous fishes are distinct from all other jawed vertebrates."
+  },
+  {
+    "sci_name": "Carcharhinidae",
+    "text": "Requiem sharks are members in the family Carcharhinidae. They are migratory, live-bearing sharks of warm seas (sometimes of Brackish water or fresh water) and include such species as the blacktip shark, bull shark, lemon shark, nervous shark, and whitetip reef shark. Family members have the usual carcharhiniform characteristics. Their eyes are round, and one or two gill slits fall over the pectoral fin base. All species are viviparous, the young being born fully developed."
+  },
+  {
+    "sci_name": "Latimeria chalumnae",
+    "text": "The West Indian Ocean coelacanth (Latimeria chalumnae), sometimes known as the gombessa, African coelacanth, and simply coelacanth, is a crossopterygian, one of two extant species of coelacanth, a rare order of vertebrates more closely related to lungfish and tetrapods than to the common ray-finned fishes. Well-represented in freshwater and marine deposits from as early as the Devonian period (more than 410 million years ago), they were thought to have become extinct in the Late Cretaceous, around 66 million years ago."
+  },
+  {
+    "sci_name": "Cyprinus",
+    "text": "Cyprinus is the genus of typical carps in family Cyprinidae. Most species in the genus are of East Asia origin with only the common carp (C. carpio) in Western Asia and Europe; this invasive species has also been introduced to many other regions around the world. Cyprinus are closely related to some more barb-like genera, such as Cyclocheilichthys and Barbonymus (tinfoils). The crucian carps (Carassius) of western Eurasia, which include the goldfish (C. auratus), are apparently not as closely related."
+  },
+  {
+    "sci_name": "Gobiidae",
+    "text": "Gobiidae or gobies is a family of bony fish in the order Gobiiformes, one of the largest fish families comprising over 2,000 species in more than 200 genera. Most of gobiid fish are relatively small, typically less than 10 cm (3.9 in) in length, and the family includes some of the smallest vertebrates in the world, such as Trimmatom nanus and Pandaka pygmaea. Trimmatom nanus are under 1 cm (3/8 in) long when fully grown, whereas some larger species can in exceptional circumstances reach over 30 cm in length."
+  },
+  {
+    "sci_name": "Sarcopterygii",
+    "text": "Sarcopterygii (from Ancient Greek σάρξ (sárx) 'flesh' and πτέρυξ (ptérux) 'wing, fin') is a clade (traditionally a class or subclass) of vertebrate animals which includes a group of bony fishes and all four legged land animals, including humans. The common name for this clade is lobe-finned fish. Lobe-finned fish have muscular limb buds (lobes) within their fins, which are supported by appendicular skeletons. This is in contrast to the other clade of bony fishes, the Actinopterygii, which have only skin-covered bony spines supporting the fins."
+  },
+  {
+    "sci_name": "Ambystoma mexicanum",
+    "text": "The axolotl (from Classical Nahuatl: āxōlōtl; Ambystoma mexicanum) is a species of mole salamander. It is neotenic, reaching sexual maturity without undergoing metamorphosis, and the adults remain fully aquatic with obvious external gills. Axolotls may be difficult to distinguish from the larval stage of other neotenic adult mole salamanders, in particular the tiger salamander, or other species such as mudpuppies. Axolotls originally inhabited a system of interconnected wetlands and lakes in the highlands of Mexico."
+  },
+  {
+    "sci_name": "Alligator mississippiensis",
+    "text": "The American alligator (Alligator mississippiensis), sometimes referred to as a common alligator or just gator, is a large crocodilian reptile native to the Southeastern United States. It is one of the two extant species in the genus Alligator, and is larger than the only other living alligator species, the Chinese alligator. Adult male American alligators measure 3.4 to 4.8 m (11.2 to 15.7 ft) in length, and can weigh up to 900 kg (2,000 lb)."
+  },
+  {
+    "sci_name": "Lepidosauria",
+    "text": "The Lepidosauria (from Greek meaning scaled lizards) is a superorder of reptiles, containing the orders Squamata and Rhynchocephalia. Squamata, comprising lizards and snakes, contains over 9,000 species, making it by far the most species-rich and diverse order of non-avian reptiles in the present day. Rhynchocephalia was a formerly widespread and diverse group of reptiles in the Mesozoic Era. However, it is represented by only one living species: the tuatara (Sphenodon punctatus), a superficially lizard-like reptile native to New Zealand."
+  },
+  {
+    "sci_name": "Sphenodon punctatus",
+    "text": "The tuatara (Sphenodon punctatus) is a species of reptile endemic to New Zealand. Despite its close resemblance to lizards, it is the only extant member of a distinct lineage, the previously highly diverse order Rhynchocephalia. The name tuatara is derived from the Māori language and means \"peaks on the back\". The single extant species of tuatara is the only surviving member of its order, Rhynchocephalia, which was highly diverse during the Mesozoic era. During the Jurassic, Rhynchocephalians represented the world's dominant group of small reptiles."
+  },
+  {
+    "sci_name": "Iguana iguana",
+    "text": "The green iguana (Iguana iguana), also known as the American iguana or the common green iguana, is a large, arboreal, mostly herbivorous species of lizard of the genus Iguana. Usually, this animal is simply called the iguana. The green iguana ranges over a large geographic area; it is native from southern Brazil and Paraguay as far north as Mexico. It is highly invasive in many subtropical and tropical environments throughout the world. A herbivore, it has adapted significantly with regard to locomotion and osmoregulation as a result of its diet."
+  },
+  {
+    "sci_name": "Elapidae",
+    "text": "Elapidae (commonly known as elapids, from Ancient Greek: ἔλαψ élaps, variant of ἔλλοψ éllops \"sea-fish\") is a family of snakes characterized by their permanently erect fangs at the front of the mouth. Most elapids are venomous, with the exception of the genus Emydocephalus. Many members of this family exhibit a threat display of rearing upwards while spreading out a neck flap. Elapids are endemic to tropical and subtropical regions around the world, with terrestrial forms in Asia, Australia, Africa, and the Americas and marine forms in the Pacific and Indian Oceans."
+  },
+  {
+    "sci_name": "Hemachatus haemachatus",
+    "text": "The rinkhals (Hemachatus haemachatus), also known as the ringhals or ring-necked spitting cobra, is a species of venomous snake in the family Elapidae. The species is found in parts of southern Africa. It is not a true cobra in that it does not belong to the genus Naja, but instead belongs to the monotypic genus Hemachatus. While rinkhals bear a great resemblance to true cobras, they also possess some remarkable differences from these, resulting in their placement outside the genus Naja. In 2023, the Zimbabwe population was described as a new species, H. nyangensis."
+  },
+  {
+    "sci_name": "Micrurus fulvius",
+    "text": "Micrurus fulvius, commonly known as the eastern coral snake, common coral snake, American cobra, and more, is a species of highly venomous coral snake in the family Elapidae that is endemic to the southeastern United States. The family also contains the cobras and sea snakes. Its appearance is sometimes confused with that of the scarlet snake (Cemophora coccinea) or scarlet kingsnake (Lampropeltis elapsoides), which are nonvenomous mimics"
+  },
+  {
+    "sci_name": "Palaeognathae",
+    "text": "Palaeognathae (from Ancient Greek παλαιός (palaiós) 'old' and γνάθος (gnáthos) 'jaw') is an infraclass of birds, called paleognaths or palaeognaths, It is one of the two infraclasses of birds, the other being Neognathae, both of which form Neornithes (equivalent to the class Aves in a narrow sense). Palaeognathae contains five extant orders consisting of four flightless lineages (plus two that are extinct), termed ratites, and one flying lineage, the Neotropic tinamous."
+  },
+  {
+    "sci_name": "Dromaius novaehollandiae",
+    "text": "The emu (Dromaius novaehollandiae) is a species of flightless bird endemic to Australia, where it is the tallest native bird. It is the only extant member of the genus Dromaius and the third-tallest living bird after its African ratite relatives, the common ostrich and Somali ostrich. The emu's native ranges cover most of the Australian mainland. The Tasmanian, Kangaroo Island and King Island subspecies became extinct after the European settlement of Australia in 1788. The emu has soft, brown feathers, a long neck, and long legs. It can grow up to 1.9 m (6 ft 3 in) in height."
+  },
+  {
+    "sci_name": "Neognathae",
+    "text": "Neognathae (from Ancient Greek νέος (néos) 'new, young' and γνάθος (gnáthos) 'jaw') is an infraclass of birds, called neognaths, within the class Aves of the clade Archosauria. Neognathae includes the majority of living birds; the exceptions being the tinamous and the flightless ratites, which belong instead to the sister taxon Palaeognathae. There are nearly 10,000 living species of neognaths. The earliest fossils are known from the very end of the Cretaceous period, specifically during the Maastrichtian stage."
+  },
+  {
+    "sci_name": "Charadriiformes",
+    "text": "Charadriiformes (from Charadrius, the type genus of family Charadriidae) is a diverse order of small to medium-large birds. It includes about 390 species and has members in all parts of the world. Most charadriiform birds live near water and eat invertebrates or other small animals; however, some are pelagic (seabirds), others frequent deserts, and a few are found in dense forest. Members of this group can also collectively be referred to as shorebirds."
+  },
+  {
+    "sci_name": "Columba",
+    "text": "The bird genus Columba comprises a genus of medium to large pigeons. The terms \"dove\" and \"pigeon\" are used indiscriminately for smaller and larger Columbidae, respectively. Columba species are mostly termed \"pigeons\", and in many cases \"wood pigeons\", but some (including the type species of the genus), are termed \"doves\". The rock dove (C. livia) has given rise to the majority of domesticated pigeon breeds, such as the racing pigeon and the fantail pigeon, some of which have become feral."
+  },
+  {
+    "sci_name": "Cuculiformes",
+    "text": "Cuckoos are birds in the Cuculidae family, the sole taxon in the order Cuculiformes. The cuckoo family includes the common or European cuckoo, roadrunners, koels, malkohas, couas, coucals, and anis. The coucals and anis are sometimes separated as distinct families, the Centropodidae and Crotophagidae, respectively. The cuckoo order Cuculiformes is one of three that make up the Otidimorphae, the other two being the turacos and the bustards. The family Cuculidae contains 150 species, which are divided into 33 genera."
+  },
+  {
+    "sci_name": "Astur gentilis",
+    "text": "The Eurasian goshawk (Astur gentilis) is a species of medium-large bird of prey in the family Accipitridae, a family which also includes other extant diurnal raptors, such as eagles, buzzards and harriers. It was formerly placed in the genus Accipiter. It is a widespread species that inhabits many of the temperate parts of Eurasia. Except in a small portion of southern Asia, it is the only species of \"goshawk\" in its range and it is thus often referred to, both officially and unofficially, as simply goshawk. It is mainly resident, but birds from colder regions migrate south for the winter."
+  },
+  {
+    "sci_name": "Xenarthra",
+    "text": "Xenarthra (from Ancient Greek ξένος (xénos), meaning \"strange, foreign\", and ἄρθρον (árthron), meaning \"joint\") is a superorder and major clade of placental mammals native to the Americas. There are 31 living species: the anteaters, tree sloths, and armadillos. Extinct xenarthrans include the glyptodonts, pampatheres and ground sloths, with some glyptodonts and ground sloths reaching sizes of several tonnes, much larger than any living xenarthran. Xenarthrans originated in South America during the late Paleocene about 60 million years ago."
+  },
+  {
+    "sci_name": "Eulipotyphla",
+    "text": "Eulipotyphla (from eu- \"true\" + Lipotyphla \"lacking blind gut\"; sometimes called true insectivores) is an order of mammals comprising the families Erinaceidae (hedgehogs and gymnures), Solenodontidae (solenodons), Talpidae (moles, shrew-like moles and desmans), and Soricidae (true shrews)."
+  },
+  {
+    "sci_name": "Lemur catta",
+    "text": "The ring-tailed lemur (Lemur catta) is a medium- to larger-sized strepsirrhine (wet-nosed) primate and the most internationally recognized lemur species, owing to its long, black-and-white, ringed tail. It belongs to Lemuridae, one of five lemur families, and is the only member of the Lemur genus. Like all lemurs, it is endemic to the island of Madagascar, where it is endangered. Known locally in Malagasy as maky (spelled maki in French) or hira, it ranges from gallery forests to spiny scrub in the southern regions of the island."
+  },
+  {
+    "sci_name": "Saguinus imperator",
+    "text": "The emperor tamarin (Saguinus imperator) is a species of tamarin monkey allegedly named for its beard's resemblance to that of the German emperor Wilhelm II. It lives in the north Brazilian states of Acre and Amazonas and the southwest Amazon Basin. The fur of the emperor tamarin is predominantly grey colored, with yellowish speckles on its chest. The hands and feet are black and the tail is brown. Outstanding is its long, white beard, which extends to both sides beyond the shoulders. The animal reaches a length of 23–26 centimetres (9–10 in), plus a 35–41.cm long tail."
+  },
+  {
+    "sci_name": "Saimiri sciureus",
+    "text": "The Guianan squirrel monkey (Saimiri sciureus) is a species of squirrel monkey from Guiana, Venezuela and Brazil. The Guianan squirrel monkey often feeds and moves in mixed species groups with capuchin monkeys. It also associates with the red-backed bearded saki. Hybrids with the bare-eared squirrel monkey are known to occur along the boundaries of their ranges. The Guianan squirrel monkey's diet includes insects, seeds, fruit, young leaves, flowers, gum, shoots, nectar, spiders, lizards and bird eggs."
+  },
+  {
+    "sci_name": "Gorilla",
+    "text": "Gorillas are large, primarily herbivorous, great apes that live in the tropical forests of equatorial Africa. The genus Gorilla is divided into two species: the eastern gorilla and the western gorilla, and either four or five subspecies. The DNA of gorillas is highly similar to that of humans, from 96 to 99% depending on what is included, and they are the next closest living relatives to humans after the bonobos and chimpanzees. Gorillas are the largest living primates, reaching heights of up to 1.8 m and weights of 227 kg."
+  },
+  {
+    "sci_name": "Pan paniscus",
+    "text": "The bonobo (Pan paniscus), also historically called the pygmy chimpanzee (less often the dwarf chimpanzee or gracile chimpanzee), is an endangered great ape and one of the two species making up the genus Pan (the other being the common chimpanzee, Pan troglodytes). While bonobos are today recognized as a distinct species, they were initially thought to be a subspecies of Pan troglodytes, because of the physical similarities between the two species. Taxonomically, members of the chimpanzee/bonobo subtribe Panina—composed entirely by the genus Pan—are collectively termed panins."
+  },
+  {
+    "sci_name": "Pan troglodytes",
+    "text": "The chimpanzee (Pan troglodytes), also simply known as the chimp, is an endangered species of great ape native to the forests and savannahs of tropical Africa. It has four confirmed subspecies and a fifth proposed one. When its close relative, the bonobo, was more commonly known as the pygmy chimpanzee, this species was often called the common chimpanzee or the robust chimpanzee. The chimpanzee and the bonobo are the only species in the genus Pan. Evidence from fossils and DNA sequencing shows that Pan is a sister taxon to the human lineage and is thus humans' closest living relative."
+  },
+  {
+    "sci_name": "Hominidae",
+    "text": "The Hominidae (hominids), whose members are known as the great apes, are a taxonomic family of primates that includes eight extant species in four genera: Pongo (the Bornean, Sumatran and Tapanuli orangutan); Gorilla (the eastern and western gorilla); Pan (the chimpanzee and the bonobo); and Homo, of which only modern humans (Homo sapiens) remain. Numerous revisions in classifying the great apes have caused the use of the term hominid to change over time. The original meaning of \"hominid\" referred only to humans (Homo) and their closest extinct relatives.",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/4\/41\/Hominidae_%28extant_species%29.jpg\/500px-Hominidae_%28extant_species%29.jpg"
+  },
+  {
+    "sci_name": "Canidae",
+    "text": "Canidae (from Latin, canis, \"dog\") is a biological family of caniform carnivorans, constituting a clade. A member of this family is a canid, colloquially referred to as dogs. The family includes three subfamilies: the Caninae, and the extinct Borophaginae and Hesperocyoninae. The Caninae are the canines, and include domestic dogs, wolves, coyotes, raccoon dogs, foxes, jackals, and other species. Canids are found on all continents except Antarctica, having arrived independently or accompanied by human beings over extended periods of time."
+  },
+  {
+    "sci_name": "Canis latrans",
+    "text": "The coyote (Canis latrans) is a species of canine also known as the American jackal, prairie wolf, and brush wolf. It is native to North America, and it is smaller than its close relative, the gray wolf, and slightly smaller than the closely related eastern wolf and red wolf. It fills much of the same ecological niche as the golden jackal does in Eurasia but the coyote is generally larger. The coyote is listed as least concern by the International Union for Conservation of Nature, due to its wide distribution and abundance throughout North America."
+  },
+  {
+    "sci_name": "Procyon lotor",
+    "text": "The raccoon (Procyon lotor), sometimes called the North American, northern or common raccoon (also spelled racoon) to distinguish it from other species of raccoon, is a mammal native to North America. It is the largest of the procyonid family, having a body length of 40 to 70 cm (16 to 28 in), and a body weight of 5 to 26 kg (11 to 57 lb). Its grayish coat mostly consists of dense underfur, which insulates it against cold weather."
+  },
+  {
+    "sci_name": "Mustelidae",
+    "text": "The Mustelidae (from Latin mustela, weasel) are a diverse family of carnivoran mammals, including weasels, badgers, otters, sea otters, polecats, martens, grisons and wolverines. Otherwise known as mustelids, they form the largest family in the suborder Caniformia of the order Carnivora with about 66 to 70 species in nine subfamilies."
+  },
+  {
+    "sci_name": "Felidae",
+    "text": "Felidae is the family of mammals in the order Carnivora colloquially referred to as cats. A member of this family is also called a felid. The 41 extant Felidae species exhibit the greatest diversity in fur patterns of all terrestrial carnivores. Cats have retractile claws, slender muscular bodies and strong flexible forelimbs. Their teeth and facial muscles allow for a powerful bite. They are all obligate carnivores, and most are solitary predators ambushing or stalking their prey. Wild cats occur in Africa, Europe, Asia, and the Americas."
+  },
+  {
+    "sci_name": "Felis",
+    "text": "Felis is a genus of small and medium-sized cat species native to most of Africa and south of 60° latitude in Europe and Asia to Indochina. The genus includes the domestic cat. The smallest of the seven Felis species is the black-footed cat with a head and body length from 38 to 42 cm. The largest is the jungle cat with a head and body length from 62 to 76 cm. Genetic studies indicate that the Felinae genera Felis, Otocolobus and Prionailurus diverged from a Eurasian progenitor of the Felidae about 6.2 million years ago, and that Felis species split off 3.04 to 0.99 million years ago."
+  },
+  {
+    "sci_name": "Puma concolor",
+    "text": "The cougar (Puma concolor), also called puma, mountain lion, catamount, and panther, is a large feline native to the Americas. It inhabits North, Central and South America, making it the most widely distributed wild, terrestrial mammal in the Western Hemisphere, and one of the most widespread in the world. Its range spans Yukon, British Columbia and Alberta in Canada, the Rocky Mountains and areas in the western United States. Further south, its range extends through Mexico to the Amazon rainforest and the southern Andes Mountains in Patagonia."
+  },
+  {
+    "sci_name": "Odontoceti",
+    "text": "The toothed whales (also called odontocetes, systematic name Odontoceti) are a parvorder of cetaceans that includes dolphins, porpoises, and all other whales with teeth, such as beaked whales and the sperm whales. 73 species of toothed whales are described. They are one of two living groups of cetaceans, with the other being the baleen whales (Mysticeti), which have baleen instead of teeth. The two groups are thought to have diverged around 34 million years ago."
+  },
+  {
+    "sci_name": "Inia geoffrensis",
+    "text": "The Amazon river dolphin (Inia geoffrensis), also known as the boto, bufeo or pink river dolphin, is a species of toothed whale endemic to South America. The Amazon river dolphin is the largest species of river dolphin, with many adult males reaching 185 kilograms (408 lb) in weight, and 2.5 metres (8.2 ft) in length. Adults acquire a pink color, more prominent in males, giving it its nickname \"pink river dolphin\". Sexual dimorphism is very evident, with males measuring 16% longer and weighing 55% more than females. Like other toothed whales, they have a melon, an organ that is used for bio sonar."
+  },
+  {
+    "sci_name": "Phocoena phocoena",
+    "text": "The harbour porpoise (Phocoena phocoena) is one of eight extant species of porpoise. It is one of the smallest species of cetacean. As its name implies, it stays close to coastal areas or river estuaries, and as such, is the most familiar porpoise to whale watchers. This porpoise often ventures up rivers, and has been seen hundreds of kilometres from the sea. The harbour porpoise species is widespread in cooler coastal waters of the North Atlantic, North Pacific and the Black Sea."
+  },
+  {
+    "sci_name": "Delphinapterus leucas",
+    "text": "The beluga whale (Delphinapterus leucas), is an Arctic and sub-Arctic cetacean. It is one of two living members of the family Monodontidae, along with the narwhal, and the only member of the genus Delphinapterus. It is also known as the white whale, as it is the only cetacean to regularly occur with this colour; the sea canary, due to its high-pitched calls; and the melonhead, though that more commonly refers to the melon-headed whale, which is an oceanic dolphin."
+  },
+  {
+    "sci_name": "Balaenoptera musculus",
+    "text": "The blue whale (Balaenoptera musculus) is a species of baleen whale and the largest marine mammal in the rorqual family Balaenopteridae. Reaching a maximum confirmed length of 29.9–30.5 m (98–100 ft) and weighing up to 190–200 t (190–200 long tons; 210–220 short tons), it is the largest animal known to have ever existed. The blue whale's long and slender body can be of various shades of greyish-blue on its upper surface and somewhat lighter underneath."
+  },
+  {
+    "sci_name": "Sirenia",
+    "text": "The Sirenia, commonly referred to as sea cows or sirenians, are an order of fully aquatic, herbivorous mammals that inhabit swamps, rivers, estuaries, marine wetlands, and coastal marine waters. The extant Sirenia comprise two distinct families: Dugongidae (the dugong and the now extinct Steller's sea cow) and Trichechidae (manatees, namely the Amazonian manatee, West Indian manatee, and West African manatee) with a total of three species. The Protosirenidae (Eocene sirenians) and Prorastomidae (terrestrial sirenians) families are extinct."
+  },
+  {
+    "sci_name": "Loxodonta africana",
+    "text": "The African bush elephant (Loxodonta africana), also known as the African savanna elephant, is a species of elephant native to sub-Saharan Africa. It is one of three extant elephant species and, along with the African forest elephant, one of two extant species of African elephant. It is the largest living terrestrial animal, with fully grown bulls reaching an average shoulder height of 3.04–3.36 metres (10–11 ft) and a body mass of 5.2–6.9 tonnes (5.7–7.6 short tons); the largest recorded specimen had a shoulder height of 3.96 metres (13 ft) and an estimated body mass of 10.4 tonnes."
+  },
+  {
+    "sci_name": "Perissodactyla",
+    "text": "Perissodactyla (from Ancient Greek περισσός, perissós 'odd' and δάκτυλος, dáktylos 'finger, toe'), or odd-toed ungulates, is an order of ungulates. The order includes about 17 living species divided into three families: Equidae (horses, asses, and zebras), Rhinocerotidae (rhinoceroses), and Tapiridae (tapirs). They typically have reduced the weight-bearing toes to three or one of the five original toes, though tapirs retain four toes on their front feet. The nonweight-bearing toes are either present, absent, vestigial, or positioned posteriorly."
+  },
+  {
+    "sci_name": "Equus hemionus",
+    "text": "The onager (Equus hemionus), also known as hemione or Asiatic wild ass, is a species of the family Equidae native to Asia. A member of the subgenus Asinus, the onager was described and given its binomial name by German zoologist Peter Simon Pallas in 1775. Six subspecies are accepted. The onager is reddish-brown or yellowish-brown and has a broad dorsal stripe on the middle of the back. It weighs about 200–260 kg (440–570 lb) and reaches about 2.1 m (6 ft 11 in) head-body length. It is among the fastest mammals, capable of running 64–70 km/h (40–43 mph)."
+  },
+  {
+    "sci_name": "Tapiridae",
+    "text": "Tapirs are large herbivorous mammals belonging to the family Tapiridae. They are similar in shape to a pig, with a short, prehensile nose trunk (proboscis). Tapirs inhabit jungle and forest regions of South and Central America and Southeast Asia. They are one of three extant branches of Perissodactyla (odd-toed ungulates), alongside equines and rhinoceroses. Only a single genus, Tapirus, is extant. Tapirs migrated into South America during the Pleistocene epoch from North America after the formation of the Isthmus of Panama as part of the Great American Interchange."
+  },
+  {
+    "sci_name": "Rhinocerotidae",
+    "text": "A rhinoceros (from Ancient Greek ῥινόκερως (rhinókerōs) 'nose-horned'; from ῥίς (rhis) 'nose' and κέρας (kéras) 'horn'; pl.: rhinoceros or rhinoceroses), commonly abbreviated to rhino, is a member of any of the five extant species (or numerous extinct species) of odd-toed ungulates (perissodactyls) in the family Rhinocerotidae. It is the only living family in the superfamily Rhinocerotoidea (whose members are also sometimes called rhinoceroses). Two of the extant species are native to Africa, and three to South and Southeast Asia."
+  },
+  {
+    "sci_name": "Procavia capensis",
+    "text": "The rock hyrax (Procavia capensis), also called dassie, Rickaz, Cape hyrax, rock rabbit, or coney (in early English Bible translations), is a medium-sized terrestrial mammal native to Africa and the Middle East. Commonly called the dassie in South Africa (; Afrikaans: klipdassie), it is one of the five living species of the order Hyracoidea, and the only one in the genus Procavia. Rock hyraxes weigh 4–5 kg (8.8–11.0 lb) and have short ears. Rock hyraxes are found at elevations up to 4,200 m (13,800 ft) above sea level in habitats with rock crevices, allowing them to escape from predators."
+  },
+  {
+    "sci_name": "Orycteropus afer",
+    "text": "The aardvark (Orycteropus afer) is a medium-sized, burrowing, nocturnal mammal native to Africa. The aardvark is the only living member of the genus Orycteropus, the family Orycteropodidae and the order Tubulidentata. The aardvark is an afrotherian, a clade that also includes elephants, manatees, and hyraxes. It is found over much of the southern two-thirds of the African continent, avoiding areas that are mainly rocky."
+  },
+  {
+    "sci_name": "Hippopotamus amphibius",
+    "text": "The hippopotamus (Hippopotamus amphibius), often shortened to hippo, is a large semiaquatic mammal native to sub-Saharan Africa. Its name comes from the Ancient Greek for \"river horse\" (ἱπποπόταμος). After elephants and rhinoceroses, the hippopotamus is the next largest land mammal. Despite their physical resemblance to pigs and other terrestrial even-toed ungulates, the closest living relatives of the hippopotamids are cetaceans (whales, dolphins, porpoises, etc.), from which they diverged about 55 million years ago."
+  },
+  {
+    "sci_name": "Lama guanicoe",
+    "text": "The guanaco (Lama guanicoe) is a camelid native to South America, closely related to the domesticated llama. Guanacos are one of two wild South American camelids; the other species is the vicuña, which lives at higher elevations. Guanacos have thick skin on their necks, a trait also found in their domestic counterparts, the llama, and their relatives, the wild vicuña and domesticated alpaca. This protects their necks from predator attacks. Bolivians use the neck skin of these animals to make shoes, flattening and pounding the skin to be used for the soles."
+  },
+  {
+    "sci_name": "Lama glama",
+    "text": "The llama (Lama glama) is a domesticated South American camelid, widely used as a meat and pack animal by Andean cultures since the pre-Columbian era. Llamas are social animals and live with others as a herd. Their wool is soft and contains only a small amount of lanolin. Llamas can learn simple tasks after a few repetitions. When using a pack, they can carry about 25 to 30% of their body weight for 8 to 13 km (5–8 miles). The name llama (also historically spelled \"lama\" or \"glama\") was adopted by European settlers from native Peruvian Quechua."
+  },
+  {
+    "sci_name": "Antilocapra americana",
+    "text": "The pronghorn (Antilocapra americana) is a species of artiodactyl (even-toed, hoofed) mammal indigenous to interior western and central North America. Though not an antelope, it is known colloquially in North America as the American antelope, prong buck, pronghorn antelope, and prairie antelope, because it closely resembles the antelopes of the Old World and fills a similar ecological niche due to parallel evolution. It is the only surviving member of the family Antilocapridae."
+  },
+  {
+    "sci_name": "Ammotragus lervia",
+    "text": "The Barbary sheep (Ammotragus lervia), also known as aoudad, is a species of caprine native to rocky mountains in North Africa and parts of West Africa. While this is the only species in genus Ammotragus, six subspecies have been described. Although it is rare in its native North Africa, it has been introduced to North America, southern Europe, and elsewhere. It is also known in Berber languages as waddan or arwi, and in former French territories as the mouflon."
+  },
+  {
+    "sci_name": "Bos gaurus",
+    "text": "The gaur (Bos gaurus), also known as the Indian bison, is a large bovine native to the Indian subcontinent and Southeast Asia, and has been listed as Vulnerable on the IUCN Red List since 1986. The global population was estimated at a maximum of 21,000 mature individuals in 2016, with the majority of those existing in India. It is the largest species among the wild cattle and the Bovidae. The domesticated gayal or mithun originated partly from the wild gaur and is most common in the border regions of Northeast India (Assam, Manipur, Nagaland) and Bangladesh with Myanmar and Yunnan, China."
+  },
+  {
+    "sci_name": "Lagomorpha",
+    "text": "The lagomorphs (from Ancient Greek λαγώς lagós 'hare' and μορφή morphḗ 'form') are the members of the taxonomic order Lagomorpha, of which there are two living families: the Leporidae (rabbits and hares) and the Ochotonidae (pikas). There are 110 recent species of lagomorph, of which 109 species in twelve genera are extant, including ten genera of rabbits (42 species), one genus of hare (33 species), and one genus of pika (34 species); and in which one monospecific genus is recently extinct, that of the Sardinian pika."
+  },
+  {
+    "sci_name": "Ondatra zibethicus",
+    "text": "The muskrat or common muskrat (Ondatra zibethicus) is a medium-sized semiaquatic rodent. Adult muskrats weigh 0.6–2 kg (1.25–4.5 lb), with a body length (excluding the tail) of 20–35 cm (8–14 in). They are covered with short, thick fur of medium to dark brown color. Their long tails, covered with scales rather than hair, are laterally compressed and generate a small amount of thrust, with their webbed hind feet being the main means of propulsion and the unique tail mainly important in directional stability."
+  },
+  {
+    "sci_name": "Cavia porcellus",
+    "text": "The guinea pig or domestic guinea pig (Cavia porcellus), also known as the cavy or domestic cavy, is a species of rodent belonging to the genus Cavia, family Caviidae. Breeders tend to use the name \"cavy\" for the animal, but \"guinea pig\" is more commonly used in scientific and laboratory contexts. Despite their name, guinea pigs are not native to Guinea, nor are they closely related to pigs. Instead, they originated in the Andes region of South America, where wild guinea pigs can still be found."
+  },
+  {
+    "sci_name": "Lynx",
+    "text": "A lynx is any of the four extant species (the Canada lynx, Iberian lynx, Eurasian lynx and the bobcat) within the medium-sized wild cat genus Lynx. The lynx is usually solitary, although a small group of lynx may travel and hunt together occasionally. Mating takes place in the late winter and once a year the female gives birth to between one and four kittens."
+  },
+  {
+    "sci_name": "Melopsittacus undulatus",
+    "text": "The budgerigar (Melopsittacus undulatus), also known as the common parakeet, shell parakeet or budgie, is a small, long-tailed, seed-eating parrot native to Australia. Naturally, the species is green and yellow with black, scalloped markings on the nape, back, and wings. Budgies are bred in captivity with colouring of blues, whites, yellows, greys, and even with small crests. Juveniles and chicks are monomorphic (the sexes are visually indistinguishable), while adults are told apart by their cere colouring and their behaviour."
+  },
+  {
+    "sci_name": "Anolis carolinensis",
+    "text": "Anolis carolinensis or green anole is a tree-dwelling species of anole lizard native to the southeastern United States and introduced to islands in the Pacific and Caribbean. A small to medium-sized lizard, the green anole is a trunk-crown ecomorph and can change its color to several shades from brown to green. Other names include the Carolina anole, Carolina green anole, American anole, American green anole, North American green anole and red-throated anole."
+  },
+  {
+    "sci_name": "Dugong dugon",
+    "text": "The dugong (Dugong dugon) is a marine mammal. It is one of four living species of the order Sirenia, which also includes three species of manatees. It is the only living representative of the once-diverse family Dugongidae; its closest modern relative, Steller's sea cow (Hydrodamalis gigas), was hunted to extinction in the 18th century. The dugong is the only sirenian in its range, which spans the waters of some 40 countries and territories throughout the Indo-West Pacific."
+  },
+  {
+    "sci_name": "Ancylostoma caninum",
+    "text": "Ancylostoma caninum is a species of nematode known as a hookworm, which principally infects the small intestine of dogs. The result of A. caninum infection ranges from asymptomatic cases to death of the dog; better nourishment, increasing age, prior A. caninum exposure, or vaccination are all linked to improved survival. Other hosts include carnivores such as wolves, foxes, and cats, with a small number of cases having been reported in humans."
+  },
+  {
+    "sci_name": "Opisthocomus hoazin",
+    "text": "The hoatzin or hoactzin is a species of tropical bird found in swamps, riparian forests, and mangroves of the Amazon and Orinoco Basins in South America. It is the only extant species in the genus Opisthocomus which is the only extant genus in the Opisthocomidae family under the order of Opisthocomiformes. Despite being the subject of intense debate by specialists, the taxonomic position of this family is still far from clear. The hoatzin is notable for its chicks having primitive claws on two of their wing digits."
+  },
+  {
+    "sci_name": "Procellariidae",
+    "text": "The family Procellariidae is a group of seabirds that comprises the fulmarine petrels, the gadfly petrels, the diving petrels, the prions, and the shearwaters. This family is part of the bird order Procellariiformes (or tubenoses), which also includes the albatrosses and the storm petrels. The procellariids are the most numerous family of tubenoses, and the most diverse. The plumage colour is generally dull, with blacks, whites, browns and greys. The birds feed on fish, squid and crustacea, with many also taking fisheries discards and carrion."
+  },
+  {
+    "sci_name": "Lamniformes",
+    "text": "The Lamniformes (from Greek lamna \"fish of prey\") are an order of sharks commonly known as mackerel sharks (which may also refer specifically to the family Lamnidae). It includes some of the most familiar species of sharks, such as the great white and mako sharks as well as less familiar ones, such as the goblin shark and megamouth shark. Members of the order are distinguished by possessing two dorsal fins, an anal fin, five gill slits, eyes without nictitating membranes, and a mouth extending behind the eyes."
+  },
+  {
+    "sci_name": "Axis axis",
+    "text": "The chital (Axis axis), also called spotted deer and axis deer, is a deer species native to the Indian subcontinent. It was first described by Johann Christian Polycarp Erxleben in 1777. A moderate-sized deer, male chital reach 90 cm (35 in) and females 70 cm (28 in) at the shoulder. While males weigh 70–90 kg (150–200 lb), females weigh around 40–60 kg (88–132 lb). It is sexually dimorphic; males are larger than females, and antlers are present only on males. The upper parts are golden to rufous, completely covered in white spots."
+  },
+  {
+    "sci_name": "Setonix brachyurus",
+    "text": "The quokka (Setonix brachyurus) is a small macropod about the size of a domestic cat. It is the only member of the genus Setonix. Like other marsupials in the macropod family (such as kangaroos and wallabies), the quokka is herbivorous and mainly nocturnal. The quokka's range is a small area of southwestern Australia. They inhabit some smaller islands off the coast of Western Australia, particularly Rottnest Island just off Perth and Bald Island near Albany. Isolated, scattered populations also exist in forest and coastal heath between Perth and Albany."
+  },
+  {
+    "sci_name": "Zeidae",
+    "text": "The Zeidae (named after the fish zaeus from Pliny the Elder) are a family of large, showy, deep-bodied zeiform marine fish—the \"true dories\". Found in the Atlantic, Indian, and Pacific Oceans, the family contains just six species in two genera. All species are important and highly regarded food fish supporting commercial fisheries, and some—such as the John Dory (Zeus faber)—are enjoyed in large public aquaria. These fish are caught primarily by deep-sea trawling."
+  },
+  {
+    "sci_name": "Daubentonia madagascariensis",
+    "text": "The aye-aye (Daubentonia madagascariensis) is a long-fingered lemur, a strepsirrhine primate native to Madagascar with rodent-like teeth that perpetually grow and a special thin middle finger that they can use to catch grubs and larvae out of tree trunks. It is the world's largest nocturnal primate."
+  },
+  {
+    "sci_name": "Teleostei",
+    "text": "Teleostei (from Ancient Greek τέλειος (téleios) 'complete' and ὀστέον(ostéon) 'bone'), members of which are known as teleosts, is, by far, the largest group of ray-finned fishes (class Actinopterygii), with 96% of all extant species of fish. The Teleostei, which is variously considered a division or an infraclass in different taxonomic systems, include over 26,000 species that are arranged in about 40 orders and 448 families."
+  },
+  {
+    "sci_name": "Tetrapoda",
+    "text": "A tetrapod (from Ancient Greek τετρα (tetra) 'four' and πούς (poús) 'foot') is any vertebrate animal of the clade Tetrapoda. Tetrapods include all extant and extinct amphibians and amniotes, with the latter in turn evolving into two major clades, the sauropsids (reptiles, including dinosaurs and therefore birds) and synapsids (extinct \"pelycosaurs\", therapsids and all extant mammals, including humans)."
+  },
+  {
+    "sci_name": "Theria",
+    "text": "Theria (from Ancient Greek θηρίον (thēríon) 'wild beast') is a subclass of mammals amongst the Theriiformes. Theria contains the eutherians (which includes placental mammals) and the metatherians (which includes marsupials) but excludes the egg-laying monotremes and various extinct mammals evolving prior to the common ancestor of placentals and marsupials."
+  },
+  {
+    "sci_name": "Acinonyx jubatus",
+    "text": "The cheetah (Acinonyx jubatus) is a species of large feline and the only living member of the genus Acinonyx. The cheetah is a pursuit predator and the fastest land animal, capable of running at 93–104 km/h (58–65 mph); it has evolved for speed, having powerful hindlimb muscles, long limbs and a flexible spine. The cheetah has a tawny to creamy white or pale buff fur that is marked with evenly spaced, solid black spots. The head is small and rounded, with a short snout and black tear-like facial streaks."
+  },
+  {
+    "sci_name": "Metazoa",
+    "text": "Animals are multicellular, eukaryotic organisms belonging to the biological kingdom Animalia. With few exceptions, animals consume organic material, breathe oxygen, have myocytes and are able to move, can reproduce sexually, and grow from a hollow sphere of cells, the blastula, during embryonic development. Animals form a clade, meaning that they arose from a single common ancestor. Over 1.5 million living animal species have been described, of which around 1.05 million are insects, over 85,000 are molluscs, and around 65,000 are vertebrates."
+  },
+  {
+    "sci_name": "Carnivora",
+    "text": "Carnivora is an order of placental mammals specialised primarily in eating flesh, whose members are formally referred to as carnivorans. The order Carnivora is the sixth largest order of mammals, comprising at least 279 species. Carnivorans are found on every major landmass and in a variety of habitats, ranging from the cold polar regions of Earth to the hyper-arid region of the Sahara Desert and the open seas. Carnivorans exhibit a wide array of body plans, varying greatly in size and shape.",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/0\/09\/Carnivora.jpg\/500px-Carnivora.jpg"
+  },
+  {
+    "sci_name": "Rupicapra rupicapra",
+    "text": "The chamois (Rupicapra rupicapra), or Alpine chamois, is a species of goat-antelope native to mountainous parts of Europe and Western Asia, from the Pyrenees, the Alps, the Apennines, the Dinarides, the Tatra to the Carpathian Mountains, the Balkan Mountains, the Rila–Rhodope massif, Pindus, the northeastern mountains of Turkey, and the Caucasus. It has also been introduced to the South Island of New Zealand. Some subspecies of chamois are strictly protected in the EU under the European Habitats Directive."
+  },
+  {
+    "sci_name": "Gnathostomata",
+    "text": "Gnathostomata (from Ancient Greek: γνάθος (gnathos) 'jaw' + στόμα (stoma) 'mouth') are jawed vertebrates. Gnathostome diversity comprises roughly 60,000 species, which accounts for 99% of all extant vertebrates, including all living bony fishes (both ray-finned and lobe-finned, including the terrestrial tetrapods) and cartilaginous fishes, as well as extinct prehistoric fish such as placoderms and acanthodians. Most gnathostomes have retained ancestral traits like true teeth, a stomach, and paired appendages (pectoral and pelvic fins, limbs, wings, etc.)."
+  },
+  {
+    "sci_name": "Naja naja",
+    "text": "The Indian cobra (Naja naja), also known commonly as the spectacled cobra, Asian cobra, or binocellate cobra, is a species of cobra, a venomous snake in the family Elapidae. The species is native to the Indian subcontinent, and is a member of the \"Big Four\" species that are responsible for the most snakebite cases in Sri Lanka and India. The Indian cobra is revered in Hindu mythology and culture, and is often seen with snake charmers. It is a protected species under the Indian Wildlife Protection Act (1972)."
+  },
+  {
+    "sci_name": "Sula nebouxii",
+    "text": "The blue-footed booby (Sula nebouxii) is a species of marine bird in the family Sulidae. The species is native to subtropical and tropical regions of the eastern Pacific Ocean. It is one of six species of the genus Sula, commonly known as boobies. It is easily recognizable by its distinctive bright blue feet, which is a sexually selected trait and a product of its diet. The male displays its feet in an elaborate mating ritual by lifting them up and down while strutting before the female."
+  },
+  {
+    "sci_name": "Alcelaphinae",
+    "text": "The subfamily Alcelaphinae (or tribe Alcelaphini), of the family Bovidae, contains the wildebeest, tsessebe, topi, hartebeest, blesbok and bontebok, and several other related species. Depending on the classification, there are 6–10 species placed in four genera, although Beatragus is sometimes considered a subgenus of Damaliscus, while Sigmoceros is sometimes considered for the Lichtenstein's hartebeest."
+  },
+  {
+    "sci_name": "Morus bassanus",
+    "text": "The Northern gannet (Morus bassanus) is a seabird, the largest species of the gannet family, Sulidae. It is native to the coasts of the North Atlantic Ocean, breeding in Western Europe and Northeastern North America. It is the largest seabird in the northern Atlantic. The sexes are similar in appearance. The adult northern gannet has a mainly white streamlined body with a long neck, and long and slender wings. It is 87–100 cm (34.5–39.5 in) long with a 170–180 cm (67–71 in) wingspan."
+  },
+  {
+    "sci_name": "Phascolarctos cinereus",
+    "text": "The koala (Phascolarctos cinereus), sometimes inaccurately called the koala bear, is an arboreal herbivorous marsupial native to Australia. It is the only extant representative of the family Phascolarctidae. Its closest living relatives are the wombats. The koala is found in coastal areas of the continent's eastern and southern regions, inhabiting Queensland, New South Wales, Victoria, and South Australia. It is easily recognisable by its stout, tailless body and large head with round, fluffy ears and large, dark nose. The koala has a body length of 60–85 cm and weighs 4–15 kg."
+  },
+  {
+    "sci_name": "Coccinella septempunctata",
+    "text": "Coccinella septempunctata, commonly known as the seven-spot ladybird (in North America, seven-spotted ladybug, seven-spotted lady beetle), often abbreviated C-7, is a carnivorous beetle native to Europe, most of Asia, and North Africa. It inhabits many regions with a temperate climate. The beetle has been introduced to several other areas, including North America as a biological pest control agent to combat aphid infestations. It is one of approximately 5,000 species of ladybird worldwide."
+  },
+  {
+    "sci_name": "Elapinae",
+    "text": "Elapidae (from Ancient Greek: ἔλαψ élaps, variant of ἔλλοψ éllops \"sea-fish\"), commonly known as elapids, is a family of snakes characterized by their permanently erect fangs at the front of the mouth. Most elapids are venomous, with the exception of the genus Emydocephalus. Many members of this family exhibit a threat display of rearing upwards while spreading out a neck flap. Elapids are endemic to tropical and subtropical regions around the world, with terrestrial forms in Asia, Australia, Africa, and the Americas and marine forms in the Pacific and Indian Oceans."
+  },
+  {
+    "sci_name": "Hirundo rustica",
+    "text": "The barn swallow (Hirundo rustica) is the most widespread species of swallow in the world, occurring on all continents, with vagrants reported even in Antarctica. It is a distinctive passerine bird with blue upperparts and a long, deeply forked tail. In Anglophone Europe, it is just called the swallow; in northern Europe, it is the only member of family Hirundinidae called a \"swallow\" rather than a \"martin\". There are eight subspecies of barn swallow, which breed across the Northern Hemisphere."
+  },
+  {
+    "sci_name": "Chironex fleckeri",
+    "text": "Chironex fleckeri, commonly known as the Australian box jelly and nicknamed the sea wasp, is a species of extremely venomous box jellyfish found in coastal waters from northern Australia and Papua New Guinea to Indonesia, East Timor, Cambodia, Malaysia, Singapore, the Philippines and Vietnam. It has been described as \"the most lethal jellyfish in the world\", with at least 64 known deaths in Australia from 1884 to 2021."
+  },
+  {
+    "sci_name": "Cynomys ludovicianus",
+    "text": "The black-tailed prairie dog (Cynomys ludovicianus) is a rodent of the family Sciuridae (the squirrels) found in the Great Plains of North America from about the United States–Canada border to the United States–Mexico border. Unlike some other prairie dogs, these animals do not truly hibernate. The black-tailed prairie dog can be seen above ground in midwinter. A black-tailed prairie dog town in Texas was reported to cover 64,000 km² (25,000 mi²) and included 400,000,000 individuals. Prior to habitat destruction, the species may have been the most abundant prairie dog in central North America."
+  },
+  {
+    "sci_name": "Dispholidus typus",
+    "text": "The boomslang (Dispholidus typus) is a highly venomous snake in the family Colubridae. The species is native to Sub-Saharan Africa. The boomslang snake possess a highly potent and toxic venom. The boomslang is able to open its jaws up to 170° when biting, facilitating envenomation. The venom of the boomslang is primarily a hemotoxin; it works via a process in which many small clots form in the blood, causing the victim's circulatory system to improperly coagulate, resulting in excessive bleeding and death."
+  },
+  {
+    "sci_name": "Milnesium tardigradum",
+    "text": ""
+  },
+  {
+    "sci_name": "Gulo gulo",
+    "text": "The wolverine (Gulo gulo), also called the carcajou or quickhatch (from East Cree, kwiihkwahaacheew), is the largest land-dwelling member of the family Mustelidae. It is a muscular carnivore and a solitary animal. The wolverine has a reputation for ferocity and strength out of proportion to its size, with the documented ability to kill prey many times larger than itself."
+  },
+  {
+    "sci_name": "Panorpa communis",
+    "text": "Panorpa communis, the common scorpionfly, is a species of scorpionfly. This species is native to Europe (except Iceland and Ireland) and Northern Asia (except China) and can be usually found in hedgerows and patches of nettle. They eat dead insects (although they sometimes eat live aphids), sometimes taking them from spider webs, and plant sap."
+  },
+  {
+    "sci_name": "Scophthalmus maximus",
+    "text": "The turbot, Scophthalmus maximus, is a relatively large species of flatfish in the family Scophthalmidae. It is a demersal fish native to marine or brackish waters of the Northeast Atlantic, Baltic Sea and the Mediterranean Sea. It is an important food fish. Turbot in the Black Sea were often included in this species, but are now generally regarded as separate: the Black Sea turbot or kalkan (S. maeoticus)."
+  },
+  {
+    "sci_name": "Sciuridae",
+    "text": "Squirrels are members of the family Sciuridae, a family that includes small or medium-sized rodents. The squirrel family includes tree squirrels, ground squirrels (including chipmunks and prairie dogs, among others), and flying squirrels. Squirrels are indigenous to the Americas, Eurasia, and Africa, and were introduced by humans to Australia. The earliest known fossilized squirrels date from the Eocene epoch, and among other living rodent families, the squirrels are most closely related to the mountain beaver and dormice."
+  },
+  {
+    "sci_name": "Cardiidae",
+    "text": "A cockle is a marine bivalve mollusc. Although many small edible bivalves are loosely called cockles, true cockles are species in the family Cardiidae. True cockles live in sandy, sheltered beaches throughout the world. The distinctive rounded shells are bilaterally symmetrical, and are heart-shaped when viewed from the end. Numerous radial, evenly spaced ribs are a feature of the shell in most but not all genera (for an exception, see the genus Laevicardium, the egg cockles, which have very smooth shells)."
+  },
+  {
+    "sci_name": "Anhinga anhinga",
+    "text": "The anhinga (Anhinga anhinga), sometimes called darter, American darter, snakebird, or water turkey, is a water bird of the warmer parts of the Americas. The word anhinga comes from a'ñinga in the Brazilian Tupi language and means \"devil bird\" or \"snake bird\". The origin of the name is apparent when swimming: only the neck appears above water, so the bird looks like a snake ready to strike. They do not have external nares (nostrils) and breathe solely through their epiglottis, via small opercula at the corners of the beak."
+  },
+  {
+    "sci_name": "Pandion haliaetus",
+    "text": "The osprey (Pandion haliaetus), historically known as sea hawk, river hawk, and fish hawk, is a diurnal, fish-eating bird of prey with a cosmopolitan range. It is a large raptor, reaching more than 60 cm (24 in) in length and a wingspan of 180 cm (71 in). It is brown on the upperparts and predominantly greyish on the head and underparts. The osprey is distributed on all continents except Antarctica, but in South America, it occurs only as a nonbreeding migrant. It lives in a wide variety of habitats and nests in locations near a body of water providing an adequate food supply."
+  },
+  {
+    "sci_name": "Corvus corax",
+    "text": "The common raven or northern raven (Corvus corax) is a large all-black passerine bird. It is the most widely distributed of all corvids, found across the Northern Hemisphere. There are 11 accepted subspecies with little variation in appearance, although recent research has demonstrated significant genetic differences among populations from various regions. It is one of the two largest corvids, alongside the thick-billed raven, and is the heaviest passerine bird; at maturity, the common raven averages 63 centimetres (25 inches) in length and 1.47 kilograms (3.2 pounds) in weight."
+  },
+  {
+    "sci_name": "Pyrrhocorax graculus",
+    "text": "The Alpine chough (pronounced 'chuf') or yellow-billed chough (Pyrrhocorax graculus) is a bird in the crow family, one of only two species in the genus Pyrrhocorax. Its two subspecies breed in high mountains from Spain eastwards through southern Europe and North Africa to Central Asia and Nepal, and it may nest at a higher altitude than any other bird. Its eggs have adaptations to the thin atmosphere that improve oxygen take-up and reduce water loss. This bird has glossy black plumage, a yellow beak, red legs, and distinctive calls. It has a buoyant acrobatic flight with widely spread flight feathers."
+  },
+  {
+    "sci_name": "Isurus oxyrinchus",
+    "text": "The shortfin mako shark (Isurus oxyrinchus), also known as the shortfin mako, blue pointer, or bonito shark, is a species of large mackerel shark. It is commonly referred to as the mako shark, as is the longfin mako shark (Isurus paucus). The fastest known shark species, able to reach speeds of 74 km/h (46 mph) in bursts, the shortfin mako can attain sizes of more than 4 m (13 ft) in length and weigh over 570 kg (1,260 lb). The species is classified as Endangered by the IUCN."
+  },
+  {
+    "sci_name": "Alcelaphus buselaphus",
+    "text": "The hartebeest (Alcelaphus buselaphus), also known as kongoni or kaama, is an African antelope. It is the only member of the genus Alcelaphus. Eight subspecies have been described, including two sometimes considered to be independent species. A large antelope, the hartebeest stands just over 1 m (3 ft 3 in) at the shoulder, and has a typical head-and-body length of 2 to 2.50 m (6 ft 7 in to 8 ft 2 in). The weight ranges from 100 to 200 kg (220 to 440 lb). It has a particularly elongated forehead and oddly-shaped horns, a short neck, and pointed ears."
+  },
+  {
+    "sci_name": "Rhinopithecus roxellana",
+    "text": "The golden snub-nosed monkey (Rhinopithecus roxellana) is an Old World monkey in the subfamily Colobinae. It is endemic to a small area in temperate, mountainous forests of central and Southwest China. They inhabit these mountainous forests of Southwestern China at elevations of 1,500–3,400 m (4,900–11,200 ft) above sea level. The Chinese name is Sichuan golden hair monkey. It is also widely referred to as the Sichuan snub-nosed monkey. Of the three species of snub-nosed monkeys in China, the golden snub-nosed monkey is the most widely distributed throughout China."
+  },
+  {
+    "sci_name": "Lagopus muta",
+    "text": "The rock ptarmigan (Lagopus muta) is a medium-sized game bird in the grouse tribe. It is known simply as the ptarmigan in Europe. It is the official bird for the Canadian territory of Nunavut, where it is known as the aqiggiq, and the official game bird for the province of Newfoundland and Labrador. In Japan, it is known as the raichō, which means \"thunder bird\"; it is the official bird of Gifu, Nagano, and Toyama Prefectures and is a protected species nationwide."
+  },
+  {
+    "sci_name": "Chrysocyon brachyurus",
+    "text": "The maned wolf (Chrysocyon brachyurus) is a large canine of South America. It is found in Argentina, Brazil, Bolivia, Peru, and Paraguay, and is almost extinct in Uruguay. Its markings resemble those of a red fox but it is neither a fox nor a wolf. It is the only species in the genus Chrysocyon (from Greek χρῡσο-κύων, \"golden dog\"). The maned wolf's young pups appear to have darker fur than the bronze, grown ones. It is the largest canine in South America, weighing 20–30 kg (44–66 lb) and up to 110 cm (43 in) at the withers."
+  },
+  {
+    "sci_name": "Bos mutus",
+    "text": "The wild mountain yak (Bos mutus) is a large, wild bovine native to the Himalayas. It is the ancestor of the domestic yak (Bos grunniens). Both sexes have long shaggy hair, with a dense woolly undercoat over the chest, flanks, and thighs for insulation against the cold. In males especially, this undercoat may form a long \"skirt\" that can reach the ground."
+  },
+  {
+    "sci_name": "Anas crecca",
+    "text": "The Eurasian teal (Anas crecca), common teal, or Eurasian green-winged teal is a common and widespread duck that breeds in temperate Eurosiberia and migrates south in winter. The Eurasian teal is often called simply the teal due to being the only one of these small dabbling ducks in much of its range. The bird gives its name to the blue-green colour teal. It is a highly gregarious duck outside the breeding season and can form large flocks. It is commonly found in sheltered wetlands and feeds on seeds and aquatic invertebrates."
+  },
+  {
+    "sci_name": "Amphiprion ocellaris",
+    "text": "The ocellaris clownfish (Amphiprion ocellaris), also known as the false percula clownfish or common clownfish, is a marine fish belonging to the family Pomacentridae, which includes clownfishes and damselfishes. A. ocellaris are found in different colors, depending on where they are located. For example, black A. ocellaris with white bands can be found near northern Hawaii, USA, North America, Australia, Southeast Asia, and Japan. Orange or red-brown A. ocellaris also exist with three similar white bands on the body and head."
+  },
+  {
+    "sci_name": "Okapia johnstoni",
+    "text": "The okapi (Okapia johnstoni), also known as the forest giraffe, zebra giraffe, and Congolese giraffe, is an artiodactyl mammal that is endemic to the northeast Democratic Republic of the Congo in central Africa. However, non-invasive genetic identification has suggested that a population has occurred south-west of the Congo River as well. It is the only species in the genus Okapia. Although the okapi has striped markings reminiscent of zebras, it is most closely related to the giraffe. The okapi and the giraffe are the only living members of the family Giraffidae."
+  },
+  {
+    "sci_name": "Artiodactyla",
+    "text": "Artiodactyla (from Ancient Greek ἄρτιος ártios 'even' and δάκτυλος dáktylos 'finger, toe') is an order of placental mammals. Typically, they are ungulates which bear weight equally on two (an even number) of their five toes (the third and fourth, often in the form of a hoof). The other three toes are either present, absent, vestigial, or pointing posteriorly. By contrast, most perissodactyls bear weight on an odd number of the five toes."
+  },
+  {
+    "sci_name": "Dionycha",
+    "text": "The Dionycha are a clade of spiders, characterized by the possession of two tarsal claws with tufts of hairs (setae) beside them, which produce strong adhesion, enabling some species to climb glass. The circumscription of the group has varied widely; a 2021 analysis resulted in about 20 families, including Salticidae (jumping spiders), Gnaphosidae (ground spiders), and Clubionidae. The Dionycha are considered to be a subgroup of the larger RTA clade. Most species hunt their prey instead of building webs. There are no cribellate members in the Dionycha."
+  },
+  {
+    "sci_name": "Cryptoprocta ferox",
+    "text": "The fossa (Cryptoprocta ferox) is a slender, long-tailed, cat-like mammal that is endemic to Madagascar. It is a member of the carnivoran family Eupleridae. The fossa is the largest mammalian carnivore on Madagascar and has been compared to a small cougar, as it has convergently evolved many cat-like features. Adults have a head-body length of 70–80 cm (28–31 in) and weigh between 5.5 and 8.6 kg (12 and 19 lb), with the males larger than the females."
+  },
+  {
+    "sci_name": "Silurus glanis",
+    "text": "The wels catfish (Silurus glanis), also called sheatfish or just wels, is a large species of catfish native to wide areas of central, southern, and eastern Europe, in the basins of the Baltic, Black and Caspian Seas. It has been introduced to several countries in Western Europe, Mediterranean and Asia as a prized sport fish. Its modern day range spans from the United Kingdom in the west to western China in the east."
+  },
+  {
+    "sci_name": "Oniscus asellus",
+    "text": "Oniscus asellus, the common woodlouse, is one of the largest and most common species of woodlouse native to the British Isles and Western and Northern Europe, growing to 16 millimetres (0.63 in) long and 6 millimetres (0.24 in) wide. Oniscus asellus was first described by Swedish biologist Carl Linnaeus in his Systema Naturae, and is a very common species, representing in Britain \"the archetypal 'woodlouse' familiar to the general public\". It lives in a great variety of habitats, but favours damp conditions, especially under rotting wood."
+  },
+  {
+    "sci_name": "Harmonia",
+    "text": "In Greek mythology, Harmonia (Ancient Greek: Ἁρμονία, \"harmony\", \"agreement\") is the goddess of harmony and concord. Her Greek opposite is Eris and her Roman counterpart is Concordia. Harmonia is most well-known for her marriage to Cadmus and the many misfortunes that haunted her descendants, particularly those related to the fabled Necklace of Harmonia."
+  },
+  {
+    "sci_name": "Euteleostomi",
+    "text": "Osteichthyes (from Ancient Greek ὀστέον (ostéon) 'bone' and ἰχθύς (ikhthús) 'fish'), also known as osteichthyans or commonly referred to as the bony fish, is a diverse clade of vertebrate animals that have endoskeletons primarily composed of bone tissue, encompassing both the conventional bony fishes and, in a cladistic sense, all tetrapods. They can be contrasted with the Chondrichthyes (cartilaginous fish) and the extinct placoderms and acanthodians, which have endoskeletons primarily composed of cartilage."
+  },
+  {
+    "sci_name": "Platanista gangetica",
+    "text": "The Ganges river dolphin (Platanista gangetica) is a freshwater dolphin in the family Platanistidae. It lives in the Ganges and related rivers of South Asia, namely in the countries of India, Nepal, and Bangladesh. It is also known by the names susu and shihu in Assam shushuk in West Bengal and Bangladesh and Uttum in Chittagong region. The Ganges river dolphin has been recognized by the Government of India as its National Aquatic Animal and is the official animal of the Indian city of Guwahati."
+  },
+  {
+    "sci_name": "Galeoidea",
+    "text": "Galeoidea is a clade of galean sharks containing the Orectolobiformes (carpet sharks), Lamniformes (mackerel sharks), and Carcharhiniformes (ground sharks).",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/a\/a5\/Two_Caribbean_reef_sharks_at_Tiger_Beach_Bahamas.jpg\/500px-Two_Caribbean_reef_sharks_at_Tiger_Beach_Bahamas.jpg"
+  },
+  {
+    "sci_name": "Pthirus pubis",
+    "text": "The crab louse or pubic louse (Pthirus pubis) is an insect that is an obligate ectoparasite of humans, feeding exclusively on blood. The crab louse usually is found in the person's pubic hair. Although the louse cannot jump, it can also live in other areas of the body that are covered with coarse hair, such as the perianal area, the general body hair, and the eyelashes (in children). Humans are the only known hosts, although a closely related species, Pthirus gorillae, infects gorillas. The human parasite is thought to have diverged from Pthirus gorillae approximately 3.3 million years ago."
+  },
+  {
+    "sci_name": "Euacanthomorphacea",
+    "text": "Euacanthomorphacea is a major taxonomic division of spiny-rayed bony fishes within the clade Acanthomorpha. It contains the vast majority of modern marine and freshwater fish species, including the incredibly diverse subdivisions of Berycimorphaceae (e.g., fangtooths), Holocentrimorphaceae (e.g., squirrelfishes), and Percomorphaceae (e.g., perches, tunas, and seahorses).",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/1\/10\/Actinopterygii.jpg\/500px-Actinopterygii.jpg"
+  },
+  {
+    "sci_name": "Frankliniella occidentalis",
+    "text": "The western flower thrips (Frankliniella occidentalis) is an invasive pest insect in agriculture. This species of thrips is native to the Southwestern United States but has spread to other continents, including Europe, Australia (where it was identified in May 1993), and South America via transport of infested plant material."
+  },
+  {
+    "sci_name": "Nestor notabilis",
+    "text": "The kea (Nestor notabilis) is a species of large parrot in the family Strigopidae that is endemic to the forested and alpine regions of the South Island of New Zealand. About 48 cm (19 in) long, it is mostly olive-green, with brilliant orange under its wings, and has a large, narrow, curved, grey-brown upper beak. Its omnivorous diet consists mainly of roots, leaves, berries, nectar, and insects, but also includes carrion. It was once killed for bounty due to concern by sheep farmers that it attacked livestock, especially sheep."
+  },
+  {
+    "sci_name": "Epinephelus marginatus",
+    "text": "Epinephelus marginatus, the dusky grouper, yellowbelly rock cod, or yellowbelly grouper, is a species of fish in the grouper family, Epinephelidae. It is found in coastal waters, primarily at the edges of the Atlantic Ocean – off western Africa and eastern South America – and also in the Indian Ocean around South Africa, Madagascar and Réunion, and throughout the Mediterranean."
+  },
+  {
+    "sci_name": "Pterois volitans",
+    "text": "The red lionfish (Pterois volitans) is a venomous coral reef fish in the family Scorpaenidae, order Scorpaeniformes. It is mainly native to the Indo-Pacific region, but has become an invasive species in the Caribbean Sea, as well as along the East Coast of the United States and East Mediterranean and also found in Brazil at Fernando de Noronha. P. volitans and a similar relative, Pterois miles, have both been deemed invasive species. Red lionfish are clad in white stripes alternated with red, maroon or brown stripes."
+  },
+  {
+    "sci_name": "Clupeocephala",
+    "text": "Clupeocephala is a massive, highly diverse group (or clade) of ray-finned fishes. It contains the vast majority of all living teleost (bony) fishes, encompassing two primary subgroups: Otocephala (including herrings, anchovies, as well as carps, catfishes, and electric fishes), and Euteleostei (including the majority of familiar modern fish such as salmon, trout, pike, perches, and cichlids).",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/3\/3d\/Cichlidae_%2810.3897-zse.96.55837%29_Figure_9_Sarotherodon_galilaeus_1.jpg\/500px-Cichlidae_%2810.3897-zse.96.55837%29_Figure_9_Sarotherodon_galilaeus_1.jpg"
+  },
+  {
+    "sci_name": "Characiphysae",
+    "text": "Characiphysae is a superorder of bony fish encompassing the Characiformes (e.g. piranhas and tetras), Siluriformes (catfish), and Gymnotiformes (the South American knifefish).",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/e\/ed\/Fish_fauna_of_the_Uberaba_River_%283486594%29.jpg\/500px-Fish_fauna_of_the_Uberaba_River_%283486594%29.jpg"
+  },
+  {
+    "sci_name": "Paragordius tricuspidatus",
+    "text": "Paragordius tricuspidatus is a species of parasitic Gordian worm that infects the cricket Nemobius sylvestris. In its larval stage, the worm is microscopic, but grows into a large worm (10–15 cm or 3.9–5.9 in) inside its host after accidental ingestion. The worm induces a peculiar behavior in its cricket host which causes the cricket to leap into water whereby the parasitic worm can slither out and find its mate, while the cricket often perishes."
+  },
+  {
+    "sci_name": "Athene cunicularia",
+    "text": "The burrowing owl (Athene cunicularia) is a small, long-legged, primarily terrestrial—though not flightless—species of owl native to the open landscapes of North and South America. They are typically found in grasslands, rangelands, agricultural areas, deserts, or any other open, dry area with low vegetation. They nest and roost in burrows, and, despite their common name, do not often construct these dwellings themselves, rather repurposing disused burrows or tunnels previously excavated and inhabited by other species."
+  },
+  {
+    "sci_name": "Homininae",
+    "text": "The Homininae (hominines) is a subfamily of the family Hominidae (hominids). The Homininae encompass humans, and are also called \"African hominids\" or \"African apes\". This subfamily includes two tribes, Hominini and Gorillini, both having extant (or living) species as well as extinct species. Tribe Hominini includes: the extant genus Homo, which comprises only one extant species — modern human (Homo sapiens), and numerous extinct human species; and the extant genus Pan, which includes two extant species, chimpanzees and bonobos."
+  },
+  {
+    "sci_name": "Argonauta argo",
+    "text": "Argonauta argo, also known as the greater argonaut, is a species of pelagic octopus belonging to the genus Argonauta. They are also called paper nautili, referring to the paper-thin eggcase that females secrete; however, as octopuses, they are only distant relatives of true nautili. Their structure lacks the gas-filled chambers present in chambered nautilus shells and is not a true cephalopod shell, but rather an evolutionary innovation unique to the genus. It is used as a brood chamber, and to trap surface air to maintain buoyancy.",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/c\/c4\/Papierboot_Argonauta_200705181139.jpg\/500px-Papierboot_Argonauta_200705181139.jpg"
+  },
+  {
+    "sci_name": "Hydrocynus goliath",
+    "text": "Hydrocynus goliath, commonly known as the goliath tigerfish, giant tigerfish, or mbenga, is a large species of African predatory freshwater fish in the family Alestidae. It is native to the Congo River Basin and Lake Tanganyika in Africa. In addition to being the largest in body size of their genus, they also have incredibly large conical teeth. Due to their predatory nature, they possess well-developed pharyngeal teeth similar to those of sharks and piranhas. A number of incidents have been reported in the Congo of this fish attacking humans."
+  },
+  {
+    "sci_name": "Afrotheria",
+    "text": "Afrotheria (from Latin Afro- \"of Africa\" + theria \"wild beast\") is a superorder of placental mammals, the living members of which belong to groups that are either currently living in Africa or of African origin: golden moles, elephant shrews (also known as sengis), otter shrews, tenrecs, aardvarks, hyraxes, elephants, sea cows, and several extinct clades. Most groups of afrotheres share little or no superficial resemblance, and their similarities have only become known in recent times due to genetics and molecular studies."
+  },
+  {
+    "sci_name": "Laurasiatheria",
+    "text": "Laurasiatheria (\"Laurasian beasts\") is a superorder of placental mammals that groups together true insectivores (eulipotyphlans), bats (chiropterans), carnivorans, pangolins (pholidotes), even-toed ungulates (artiodactyls), odd-toed ungulates (perissodactyls), and all their extinct relatives (pan-euungulates). From systematics and phylogenetic perspectives, it is subdivided into order Eulipotyphla and clade Scrotifera. It is a sister group to Euarchontoglires with which it forms the magnorder Boreoeutheria."
+  },
+  {
+    "sci_name": "Glires",
+    "text": "Glires (from Latin glīrēs 'dormice') is a clade (sometimes ranked as a grandorder) consisting of rodents and lagomorphs (rabbits, hares, and pikas). The hypothesis that these form a monophyletic group has been long debated based on morphological evidence."
+  },
+  {
+    "sci_name": "Hominoidea",
+    "text": "Apes, collectively Hominoidea (hominoids), are a superfamily of Old World simians native to sub-Saharan Africa and Southeast Asia. They were more widespread in Africa, Asia, and Europe in prehistory, and, including humans, are found globally. Apes are more closely related to Old World monkeys (family Cercopithecidae) than to the New World monkeys (Platyrrhini), with both Old World monkeys and apes placed in the clade Catarrhini. Apes do not have tails due to a mutation of the TBXT gene."
+  },
+  {
+    "sci_name": "Macrotermes natalensis",
+    "text": "Macrotermes natalensis is a fungus-growing termite species of South Africa that belongs to the genus Macrotermes. Like other genera in the Macrotermitinae, they consume dead plant material indirectly by cultivating a basidiomycete fungus of the genus Termitomyces on galleries inside – often very large – termite mounds. Frequently at the beginning of the rainy season, enormous swarms of winged flying adults disperse to establish new colonies.",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/c\/cc\/Macrotermes_genus_Selous_Game_Reserve_2011.jpg\/500px-Macrotermes_genus_Selous_Game_Reserve_2011.jpg"
+  },
+  {
+    "sci_name": "Dracunculus medinensis",
+    "text": "Dracunculus medinensis (Guinea worm, dragon worm, fiery serpent) is a nematode that causes dracunculiasis, also known as Guinea worm disease. The disease is caused by the female which, at around 80 centimetres (31 inches) in length, is among the longest nematodes infecting humans. The length of specimens exhibits extreme sexual dimorphism, as the longest recorded male Guinea worm is only 4 cm (1.5 in). Guinea worm disease is on target to be the second infectious disease of humans to be eradicated, after smallpox, and the D. medinensis species would be made extinct to accomplish it."
+  },
+  {
+    "sci_name": "Siphonops annulatus",
+    "text": "Siphonops annulatus, the ringed caecilian, is a species of caecilian in the family Siphonopidae endemic to South America. It may have the broadest known distribution of any terrestrial caecilian species. Caecilians are some of the least studied amphibians. Not much is known about their behavior and life history. This species uses a highly ossified skull to help burrow into the ground."
+  },
+  {
+    "sci_name": "Strepsirrhini",
+    "text": "Strepsirrhini or Strepsirhini is a suborder of primates that includes the lemuriform primates, which consist of the lemurs of Madagascar, galagos (\"bushbabies\") and pottos from Africa, and the lorises from India and Southeast Asia. Collectively they are referred to as strepsirrhines. Also belonging to the suborder are the extinct adapiform primates, which thrived during the Eocene in Europe, North America, and Asia, but disappeared from most of the Northern Hemisphere as the climate cooled."
+  },
+  {
+    "sci_name": "Rhipidura fuliginosa",
+    "text": "The New Zealand fantail (Rhipidura fuliginosa) is a small insectivorous bird, the only species of fantail in New Zealand. It grows to 16 cm (6.3 in) in length, of which half is the tail, which, as the name implies, is often displayed fanned out. This reveals that the outer tail feathers are light and the centre ones are dark."
+  },
+  {
+    "sci_name": "Emberizini",
+    "text": "The buntings are a group of Old World passerine birds forming the genus Emberiza, the only genus in the family Emberizidae. The family contains 44 species. They are seed-eating birds with stubby, conical bills.",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/6\/62\/Goldammer_Emberiza_citrinella.jpg\/500px-Goldammer_Emberiza_citrinella.jpg"
+  },
+  {
+    "sci_name": "Salmoninae",
+    "text": "Salmonidae ('salmon-like') is a family of ray-finned fish, the only extant member of the suborder Salmonoidei, consisting of 11 extant genera and over 200 species collectively known as \"salmonids\" or \"salmonoids\". The family includes salmon (both Atlantic and Pacific species), trout (both ocean-going and landlocked), char, graylings, freshwater whitefishes, taimens and lenoks, all coldwater mid-level predatory fish that inhabit the subarctic and cool temperate waters of the Northern Hemisphere."
+  },
+  {
+    "sci_name": "Leiobunum rotundum",
+    "text": "Leiobunum rotundum is a species of harvestman that is found within the western portion of the Old World. The harvestman's legs can be self-amputated if it is in danger of predation, but they do not regenerate. Although the harvestman has no fangs, poison glands, or silk glands, it can protect itself with the scent glands on the front of its body. The scent glands produce a secretion that repels predators. The species can be found among vegetation such as long grass, herbaceous plants, shrubs, and trees."
+  },
+  {
+    "sci_name": "Vermilingua",
+    "text": "Anteaters are the four extant mammal species in the suborder Vermilingua (meaning 'worm tongue'), commonly known for eating ants and termites. The individual species have other names in English and other languages. Together with sloths, they are within the order Pilosa. The name \"anteater\" is also commonly applied to the aardvark, numbat, echidnas, and pangolins, although they are not closely related to true anteaters."
+  },
+  {
+    "sci_name": "Macrocheira kaempferi",
+    "text": "The Japanese giant spider crab (Macrocheira kaempferi) is a species of marine crab and is the largest crab found in the waters around Japan. At around 3.75 metres (12.3 ft), it has the largest leg-span of any arthropod. The Japanese name for this species is taka-ashi-gani, literally translating to \"tall-legged crab\". It goes through three main larval stages along with a prezoeal stage to grow to its full size. The Japanese giant spider crab is the sole living member of the genus Macrocheira."
+  },
+  {
+    "sci_name": "Glaucus atlanticus",
+    "text": "Glaucus atlanticus (common names include the blue sea dragon, sea swallow, blue angel, blue glaucus, dragon slug, blue dragon, blue sea slug, and blue ocean slug) is a species of sea slug in the family Glaucidae. These sea slugs live in the pelagic zone (open ocean), where they float upside-down by using the surface tension of the water to stay afloat. In addition, they have a gas bubble in their stomach that makes it easier for them to float. They are carried along by the winds and ocean currents."
+  },
+  {
+    "sci_name": "Lophotrochozoa",
+    "text": "Lophotrochozoa (\"crest/wheel animals\") is a clade of protostome animals within the Spiralia. The taxon was established as a monophyletic group based on molecular evidence. The clade includes animals like annelids, molluscs, bryozoans, and brachiopods."
+  },
+  {
+    "sci_name": "Goliathus goliatus",
+    "text": "Goliathus goliatus is a very large species of beetle of the family Scarabaeidae, native to tropical Africa. Goliathus goliatus is one of the largest species in the genus Goliathus and one of the largest insects in general, males having a body length of 50–110 millimetres (2.0–4.3 in) and females having a body length of 54–80 millimetres (2.1–3.1 in)."
+  },
+  {
+    "sci_name": "Cyclostomata",
+    "text": "Cyclostomi, often referred to as Cyclostomata (from Ancient Greek κύκλος (kúklos), meaning \"circle\", and στόμα (stóma), meaning \"mouth\", and thus, \"circular mouth\") is a superclass of vertebrates that comprises the living jawless fish classes: the lampreys and hagfishes. Both groups have jawless mouths with horny epidermal structures that function as teeth called ceratodontes, and branchial arches that are internally positioned instead of external as in the related jawed fishes."
+  },
+  {
+    "sci_name": "Osteoglossocephalai",
+    "text": "Osteoglossocephalai is a clade containing all teleosts apart from the Elopiformes, Albulidae (bonefishes), Notacanthiformes, and Anguilliformes (eels).",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/f\/f2\/Male_desert_goby_%28Chlamydogobius_eremius%29_courting_a_female_1471-2148-11-233-1.jpeg\/500px-Male_desert_goby_%28Chlamydogobius_eremius%29_courting_a_female_1471-2148-11-233-1.jpeg"
+  },
+  {
+    "sci_name": "Paracanthopterygii",
+    "text": "Paracanthopterygii is a superorder of fishes. Members of this group are called paracanthopterygians. The oldest members are known as fossils from the Cenomanian. It includes three extant orders: Percopsiformes (trout-perches & allies)m Zeiformes (dories), and Gadiformes (cods & allies, including Stylephoriformes)."
+  },
+  {
+    "sci_name": "Brachinus fumans",
+    "text": "Brachinus fumans, the American bombardier beetle, is a species of ground beetle in the family Carabidae. When disturbed, they eject a hot, noxious chemical spray from their pygidial glands with a popping sound. The spray is produced from a catalyzed reaction between hydroquinone and hydrogen peroxide, an aqueous solution of which is stored in the pygidial glands in the beetle's abdomen. Heat from the reaction brings the mixture to near the boiling point of water and produces gas that drives the ejection.",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/a\/a3\/Brachinus_spPCCA20060328-2821B.jpg\/500px-Brachinus_spPCCA20060328-2821B.jpg"
+  },
+  {
+    "sci_name": "Pseudophyllus titan",
+    "text": "Pseudophyllus titan, the giant false leaf katydid (a name also used for a few other species), is a species of leaf-mimic bush-cricket of the subfamily Pseudophyllinae found in the canopy of tropical forests in Mainland Southeast Asia, Sindh, Pakistan, Bangladesh (the species' type locality is Sylhet), northeastern India (Assam and Nagaland), and southernmost China (Yunnan). It is among the largest species in the genus Pseudophyllus, which also makes it one of the world's largest Orthoptera, with a typical length of 13 cm from head to tip of the folded wings and a wingspan of 23 cm."
+  },
+  {
+    "sci_name": "Tettigoniidea",
+    "text": "Tettigoniidea is an infraorder of the order Orthoptera, with six extant families: Prophalangopsidae (grigs), Anostostomatidae (king crickets or wētā), Cooloola (Cooloola monsters), Gryllacrididae (leaf-rolling or raspy crickets), Stenopelmatidae, and Tettigoniidae (katydids)."
+  },
+  {
+    "sci_name": "Accipitriformes",
+    "text": "The Accipitriformes (from Latin accipiter 'hawk' and formes 'having the form of') are an order of birds that includes most of the diurnal birds of prey, including hawks, eagles, vultures, kites, ospreys and secretary birds, but not falcons or seriemas. The generally nocturnal owls, also considered birds of prey, are a separate order from the accipitriformes. For a long time, the majority view was to include them with the falcons in the Falconiformes, but many authorities now recognize a separate order Accipitriformes."
+  },
+  {
+    "sci_name": "Strisores",
+    "text": "Strisores, sometimes called nightbirds, is a clade of birds that includes the living families and orders Caprimulgidae (nightjars, nighthawks and allies), Nyctibiidae (potoos), Steatornithidae (oilbirds), Podargidae (frogmouths), Apodiformes (swifts and hummingbirds), as well as the Aegotheliformes (owlet-nightjars) whose distinctness was only recently realized. The Apodiformes (which include the \"Trochiliformes\" of the Sibley–Ahlquist taxonomy) and the Aegotheliformes form the Daedalornithes."
+  },
+  {
+    "sci_name": "Bathytoshia brevicaudata",
+    "text": "The short-tail stingray or smooth stingray (Bathytoshia brevicaudata) is a common species of stingray in the family Dasyatidae. It occurs off southern Africa, typically offshore at a depth of 180–480 m (590–1,570 ft), and off southern Australia and New Zealand, from the intertidal zone to a depth of 156 m (512 ft). It is mostly bottom-dwelling in nature and can be found across a range of habitats from estuaries to reefs, but also frequently will swim into open water. One of the largest stingrays in the world, this heavy-bodied species can grow upwards of 2.1 m long."
+  },
+  {
+    "sci_name": "Imparidentia",
+    "text": "Imparidentia is a major clade of bivalves named by Bieler, Mikkelsen, and Giribet in 2014; this clade, commonly recovered in phylogenetic analyses, consists of all euheterodonts other than the anomalodesmatans. The name comes from Latin impar \"unequal\" and dens \"tooth\", in reference to the unequal hinge teeth seen in members of the clade. The relationships among members of Imparidentia are uncertain."
+  },
+  {
+    "sci_name": "Pinnipedia",
+    "text": "Pinnipeds, commonly known as seals, are a widely distributed and diverse clade of carnivorous, fin-footed, semiaquatic, mostly marine mammals. They comprise the extant families Odobenidae (whose only living member is the walrus), Otariidae (the eared seals: sea lions and fur seals), and Phocidae (the earless seals, or true seals), with 34 extant species and more than 50 extinct species described from fossils. While seals were historically thought to have descended from two ancestral lines, molecular evidence supports them as a monophyletic group (descended from one ancestor)."
+  },
+  {
+    "sci_name": "Aequornithes",
+    "text": "Aequornithes (from Latin aequor, expanse of water + Greek ornithes, birds), or core water birds, are defined in the PhyloCode as \"the least inclusive crown clade containing Pelecanus onocrotalus and Gavia immer\", that is, the last common ancestor of the great white pelican and the common loon, as well as its descendants, extinct and extant. Aequornithes, as currently understood, includes the clades Gaviiformes (loons), Sphenisciformes (penguins), Procellariiformes (petrels and albatrosses), Ciconiiformes (storks), Suliformes (gannets and cormorants) and Pelecaniformes (pelicans and herons)."
+  },
+  {
+    "sci_name": "Suliformes",
+    "text": "The order Suliformes is an order of birds that includes gannets, boobies, frigatebirds, cormorants and darters. The order is recognised by the International Ornithologist's Union. Regarding the recent evidence that the traditional Pelecaniformes is polyphyletic, it has been suggested that the group be divided to reflect the true evolutionary relationships; a 2017 study indicated that they are most closely related to Otidiformes (bustards) and Ciconiiformes (storks)."
+  },
+  {
+    "sci_name": "Tliltocatl vagans",
+    "text": "Tliltocatl vagans (synonym Brachypelma vagans) is a species of tarantula known commonly as the Mexican red rump. It ranges predominantly in Mexico (including the Yucatán Peninsula), but is also found in Central America. They are terrestrial, burrowing spiders. The reason for the name red rump is because of its distinctive red hairs on its abdomen. Like most tarantulas, they will eat anything they can overpower, which is usually insects, but small lizards and rodents may also be consumed. They can grow to a span of 16.5 cm (6.5 in)."
+  },
+  {
+    "sci_name": "Afrosoricida",
+    "text": "The clade Afrosoricida (a Latin-Greek compound name which means \"looking like African shrews\") contains the golden moles of Southern Africa, the otter shrews of equatorial Africa, and the tenrecs of Madagascar. These three groups of small mammals were for most of the 19th and 20th centuries regarded as a part of the Insectivora or Lipotyphla, but both of those groups, as traditionally used, are polyphyletic."
+  },
+  {
+    "sci_name": "Communostraca",
+    "text": "The clade Multicrustacea constitutes the largest superclass of crustaceans, containing approximately four-fifths of all described non-hexapod crustacean species, including crabs, lobsters, crayfish, shrimp, krill, prawns, woodlice, barnacles, copepods, amphipods, mantis shrimp and others. The largest branch of Multicrustacea is the class Malacostraca."
+  },
+  {
+    "sci_name": "Neuropteroidea",
+    "text": "Neuropteroidea is a clade containing the Neuropterida (snakeflies, alderflies and allies, and lacewings and allies) and Coleopterida (beetles and twisted-wing parasites)."
+  },
+  {
+    "sci_name": "Eupercaria",
+    "text": "Eupercaria is a subseries of Percomorpha. It contains seven orders: Perciformes (perch-like fish), Centrarchiformes, Labriformes (wrasses, parrotfish, and cales), Acropomatiformes, Acanthuriformes (sturgeonfishes and tangs), Lophiiformes (anglerfish), and Tetraodontiformes (pufferfish and relatives).",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/a\/a8\/Longnose_hawkfish_%28Oxycirrhites_typus%29_%2842638604215%29.jpg\/500px-Longnose_hawkfish_%28Oxycirrhites_typus%29_%2842638604215%29.jpg"
+  },
+  {
+    "sci_name": "Pterophyllum scalare",
+    "text": "Pterophyllum scalare, most commonly referred to as angelfish or freshwater angelfish, is the most common species of Pterophyllum kept in captivity. It is native to the Amazon Basin in Peru, Colombia, and Brazil. Particularly to the Ucayali river in Peru, the Oyapock River in French Guiana, the Essequibo River in Guyana, the Solim\u00f5es, the Amap\u00e1, and the Amazon rivers in Brazil. It is found in swamps or flooded grounds where vegetation is dense and the water is either clear or silty. Its native waters range from a neutral pH of 7.0 down to near 6.0."
+  },
+  {
+    "sci_name": "Varanus",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/6\/6d\/The_Genus_Varanus.png\/500px-The_Genus_Varanus.png"
+  },
+  {
+    "sci_name": "Delphinidae",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/4\/4d\/Eilat_Dolphin_Reef_%283%29.jpg\/500px-Eilat_Dolphin_Reef_%283%29.jpg"
+  },
+  {
+    "sci_name": "Mitsukurina owstoni",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/5\/5d\/Mitsu.JPG\/500px-Mitsu.JPG"
+  },
+  {
+    "sci_name": "Unidentata",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/5\/58\/DesertIguana031611.jpg\/500px-DesertIguana031611.jpg"
+  },
+  {
+    "sci_name": "Sylvioidea",
+    "image": "https:\/\/upload.wikimedia.org\/wikipedia\/commons\/thumb\/8\/87\/Brown-eared_Bulbul_1.jpg\/500px-Brown-eared_Bulbul_1.jpg"
+  },
+  {
+    "sci_name": "Mustela putorius furo",
+    "rank": "species"
+  },
+  {
+    "sci_name": "Ovis aries musimon",
+    "rank": "species"
+  },
+  {
+    "sci_name": "Lampropeltis getula nigrita",
+    "rank": "species"
+  },
+  {
+    "sci_name": "Equus asinus africanus",
+    "rank": "species",
+    "com_name": ["wild ass", "donkey"]
+  },
+  {
+    "sci_name": "Geospiza septentrionalis",
+    "rank": "species",
+    "com_name": "vampire finch"
+  }
+]

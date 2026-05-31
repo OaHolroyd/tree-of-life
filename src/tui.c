@@ -1133,7 +1133,7 @@ void pln_clade_update(GameUI *ui, Clade *override_clade) {
 
   /* load the image */
   char img_file[32];
-  sprintf(img_file, "data/img/%d.jpg", clade->tid);
+  sprintf(img_file, "data/img/%d.png", clade->tid);
   struct ncvisual *img = ncvisual_from_file(img_file);
 
   if (!img) {
