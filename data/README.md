@@ -23,8 +23,8 @@ The file should be formatted as follows,
     ...
   ]
 }
-with each entry consisting of a scientific name and a list of common names. The scientific name should correspond to the one used in the NCBI taxonomy database.
 ```
+with each entry consisting of a scientific name and a list of common names. The scientific name should correspond to the one used in the NCBI taxonomy database.
 
 ### `wiki-names.json`
 Sometimes the scientific name of a clade in the NCBI taxonomy database does not match the wikipedia entry, or matches more than one page (eg "puma", which is an animal, a brand, a language, etc.). This file should consist of pairs of taxonomy IDs (TIDs) and Wikipedia article names:
