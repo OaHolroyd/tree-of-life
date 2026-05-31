@@ -1,11 +1,17 @@
 # Project-specific
 tol
+taxdump
+tmp-*
+.env
 log.txt
-data/**
 out/**
 *.jpg
+*.png
 compile_commands.json
 .cache
+
+# Python
+__pycache__
 
 # Junk
 .DS_Store
