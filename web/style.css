@@ -1,0 +1,337 @@
+/* --- Core Layout Configuration --- */
+body {
+  margin: 0;
+  background: #20232a; /* Dark background behind the game canvas bounds */
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #f5f5f5;
+}
+
+.fullscreen {
+  height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  background: #282c34;
+}
+
+.top {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* --- Left Panel UI Layout --- */
+.left-panel {
+  width: 350px;
+  min-width: 350px; /* Prevents shrinking */
+  background: #1c2025;
+  border-right: 1px solid #323842;
+  display: flex;
+  flex-direction: column; /* Stacks controls neatly above the info card */
+  box-sizing: border-box;
+}
+
+/* Controls Header Container */
+.controls-section {
+  padding: 20px;
+  background: #21262d;
+  border-bottom: 1px solid #323842;
+}
+
+/* Add this to style the new wrapper and button layout */
+.input-group {
+  display: flex;
+  gap: 8px; /* Space between input box and button */
+  width: 100%;
+}
+
+/* relative context ensures absolute child aligns to it */
+.input-wrapper {
+  position: relative;
+  flex: 1; /* Inherits the behavior to push the guess button right */
+}
+
+/* Force the input box to stretch to 100% of its wrapper's width */
+.guess-input {
+  width: 100%; /* CRITICAL: This makes the input fill the wide wrapper completely */
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #444c56;
+  background: #0d1117;
+  color: #f5f5f5;
+  font-size: 1rem;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.guess-input:focus {
+  border-color: #58a6ff;
+}
+
+/* The floating suggestion panel */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%; /* Sits exactly below the input field */
+  left: 0;
+  width: 100%;
+  max-height: 200px; /* Limits size to force scrollbars if many matches */
+  overflow-y: auto; /* Vertical scroll enabled */
+  overflow-x: hidden;
+  background: #1c2025;
+  border: 1px solid #444c56;
+  border-radius: 6px;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10; /* Keeps it layered above images and text */
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar styling specifically for the suggestions dropdown */
+.suggestions-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-track {
+  background: #1c2025; /* Matches the input background for a dark profile */
+  border-radius: 0 6px 6px 0; /* Smoothly rounds the corners matching the container */
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb {
+  background-color: #323842; /* The same dark grey color used on your clade info panel */
+  border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+  background-color: #444c56; /* Slightly brightens up the thumb when hovered over */
+}
+
+/* State utility class to hide the dropdown when empty */
+.suggestions-dropdown.hidden {
+  display: none;
+}
+
+/* Individual list entries */
+.suggestion-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: #c9d1d9;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover state for mouse navigation */
+.suggestion-item:hover {
+  background: #21262d;
+  color: #58a6ff;
+}
+
+/* Keyboard active state tracked via JavaScript */
+.suggestion-item.active {
+  background: #313d4f;
+  color: #ffffff;
+  outline: none;
+}
+
+/* New Button Styling */
+.submit-btn {
+  padding: 0 16px;
+  background-color: #238636; /* Clean green button */
+  color: #ffffff;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.submit-btn:hover {
+  background-color: #2ea44f; /* Lighter green on hover */
+}
+
+.submit-btn:active {
+  background-color: #227e3b; /* Darker green when clicked */
+}
+
+.guesses-left-box {
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #8b949e;
+}
+
+.count-highlight {
+  color: #ff7b72; /* Subtle warning tone for remaining turns */
+  font-size: 1.1rem;
+}
+
+/* --- Clade Info Card Component --- */
+.clade-card {
+  flex: 1;
+  min-height: 0; /* CRITICAL: Allows flex items to shrink below content size in Firefox/Chrome */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sci-name {
+  margin: 0;
+  font-size: 1.8rem;
+  font-style: italic;
+  color: #58a6ff;
+}
+
+.com-name {
+  margin: 4px 0 0 0;
+  font-size: 1.1rem;
+  color: #8b949e;
+  font-weight: 500;
+}
+
+/* Ensure the header text doesn't overflow horizontally if the name is massive */
+.card-header {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Add this brand new class to drive the vertical scroll layout */
+.clade-scroll-content {
+  flex: 1;
+  overflow-y: auto; /* Enables smooth vertical scrolling */
+  overflow-x: hidden; /* Hard blocks horizontal scrolling */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 4px; /* Tiny buffer so the scrollbar doesn't hug the text tightly */
+}
+
+/* Optional: Clean look for Webkit browsers (Chrome/Safari/Edge) to make the scrollbar minimal */
+.clade-scroll-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.clade-scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.clade-scroll-content::-webkit-scrollbar-thumb {
+  background-color: #323842;
+  border-radius: 3px;
+}
+
+/* 1. Modify the wrapper to let it expand naturally */
+.card-image-wrapper {
+  width: 100%;
+  background: #0d1117;
+  border-radius: 8px;
+  border: 1px solid #323842;
+  overflow: hidden;
+  display: block; /* Changed from flex to block for standard document flow */
+  flex-shrink: 0;
+}
+
+/* 2. Update the image rules to prevent vertical clipping */
+.clade-img {
+  width: 100%; /* Forces it to match the left panel's width */
+  height: auto; /* Automatically calculates correct proportional height */
+  max-height: none; /* REMOVE or override the previous 220px restriction */
+  object-fit: contain; /* Ensures the entire image canvas displays without truncation */
+  display: block; /* Eliminates unwanted inline bottom margins */
+}
+
+.card-body-text {
+  line-height: 1.6;
+  font-size: 0.95rem;
+  color: #c9d1d9;
+}
+
+/* --- Right Panel UI Layout --- */
+.right-panel {
+  flex: 1;
+  background: #0d1117;
+  overflow-y: auto; /* Allow vertical scrolling if the tree gets deep */
+  overflow-x: hidden; /* Lock the horizontal plane to your screen width */
+  position: relative;
+}
+
+.right-panel::-webkit-scrollbar {
+  width: 8px; /* Slightly wider track for easy clicking */
+}
+
+.right-panel::-webkit-scrollbar-track {
+  background: #0d1117; /* Matches the view background exactly so it blends in */
+}
+
+.right-panel::-webkit-scrollbar-thumb {
+  background-color: #21262d; /* Subtle dark-grey slider thumb */
+  border-radius: 4px;
+}
+
+.right-panel::-webkit-scrollbar-thumb:hover {
+  background-color: #30363d; /* Highlights slightly when hovered over */
+}
+
+.tree-container {
+  position: relative;
+  width: 100%; /* Snaps perfectly to the remaining game panel space */
+  height: 900px; /* Set a comfortable vertical canvas height */
+}
+
+.tree-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.node-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* --- Optimized Small Node Component --- */
+.tree-node {
+  position: absolute;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 6px 10px;
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Keeps node centered on its physics particle */
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tree-node:hover {
+  border-color: #58a6ff;
+  background: #262c36;
+}
+
+.tree-node.selected {
+  border-color: #58a6ff;
+  background: #1f293d;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+
+.node-sci {
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-style: italic;
+  color: #f5f5f5;
+  white-space: nowrap;
+}

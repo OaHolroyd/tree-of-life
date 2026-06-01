@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>TEMPLATE</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="web/style.css" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="images/hello-icon-152.png" />
@@ -17,10 +17,75 @@
   </head>
 
   <body class="fullscreen">
-    <div class="container">
-      <h1 class="title">PAGE UNDER CONSTRUCTION</h1>
+    <div class="top">
+      <div class="left-panel">
+        <div class="controls-section">
+          <div class="input-group">
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="guess-input"
+                class="guess-input"
+                placeholder="Enter an animal..."
+                autocomplete="off"
+              />
+              <div
+                id="suggestions-dropdown"
+                class="suggestions-dropdown hidden"
+              ></div>
+            </div>
+            <button id="submit-guess-btn" class="submit-btn">Guess</button>
+          </div>
+          <div id="guesses-left-container" class="guesses-left-box">
+            Guesses Left:
+            <span id="guesses-count" class="count-highlight">20</span>
+          </div>
+        </div>
+
+        <!--clade block-->
+        <div id="clade-card" class="clade-card">
+          <!--titles-->
+          <div class="card-header">
+            <h2 id="clade-sci-name" class="sci-name">Metazoa</h2>
+            <p id="clade-com-name" class="com-name">Animals</p>
+          </div>
+
+          <!--info-->
+          <div class="clade-scroll-content">
+            <!--image-->
+            <div class="card-image-wrapper">
+              <img
+                id="clade-image"
+                src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Animal_diversity_b.png"
+                alt="Current Clade Visual"
+                class="clade-img"
+              />
+            </div>
+
+            <!--text-->
+            <div id="clade-text" class="card-body-text">
+              Animals are multicellular, eukaryotic organisms belonging to the
+              biological kingdom Animalia. With few exceptions, animals consume
+              organic material, breathe oxygen, have myocytes and are able to
+              move, can reproduce sexually, and grow from a hollow sphere of
+              cells, the blastula, during embryonic development. Animals form a
+              clade, meaning that they arose from a single common ancestor. Over
+              1.5 million living animal species have been described, of which
+              around 1.05 million are insects, over 85,000 are molluscs, and
+              around 65,000 are vertebrates.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div id="tree-container" class="tree-container">
+          <canvas id="tree-canvas" class="tree-canvas"></canvas>
+          <div id="node-overlay" class="node-overlay"></div>
+        </div>
+      </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="web/app.js"></script>
   </body>
 </html>
