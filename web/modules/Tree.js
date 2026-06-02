@@ -134,6 +134,14 @@ export class Tree {
   }
 
   /**
+   * Reveals the name of the answer on it's node
+   */
+  revealAnswer(answerNode) {
+    const answerDiv = document.getElementById(`node-${answerNode.tid}`);
+    answerDiv.innerHTML = `<div class="node-sci">${answerNode.com_name}</div>`;
+  }
+
+  /**
    * Synchronizes canvas rendering buffer allocations to match DOM bounding metrics
    */
   resizeCanvas() {

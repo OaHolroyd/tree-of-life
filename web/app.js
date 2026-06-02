@@ -15,11 +15,12 @@ const guessInput = document.getElementById("guess-input");
 const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
 const guessCount = document.getElementById("guesses-count");
+guessCount.innerHTML = game.guessesRemaining; // force this to always be correct if we change the backend
 
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
 
-// This is your dummy game-engine function
+// Register a guess submission from the input field
 function handleGuessSubmit() {
   const guess = guessInput.value.trim();
 
@@ -30,13 +31,10 @@ function handleGuessSubmit() {
 
   const [isValid, hasEnded, updatedNodes] = game.submitGuess(guess);
   if (isValid) {
-    console.log(updatedNodes);
     treeUI.updateTreeLayout(updatedNodes);
   }
 
   guessCount.innerHTML = game.guessesRemaining;
-
-  // TODO: show info for best clade
 
   // Clear the input box for the next guess
   guessInput.value = "";
@@ -49,11 +47,15 @@ function handleGuessSubmit() {
     return;
   }
 
+  // show info for best clade
+  inspectClade(game.getBestTID());
+
   // guess has ended the game
   if (hasEnded) {
     console.log(`Handle game end`);
-    const answerNode = document.getElementById(`node-${game.answer}`);
-    answerNode.innerHTML = `<div class="node-sci">${game.tree[game.answer].com_name}</div>`;
+
+    treeUI.revealAnswer(game.tree[game.answer]);
+
     return;
   }
 }
@@ -100,7 +102,7 @@ function hideDropdown() {
   currentFocusIndex = -1;
 }
 
-// Highlights an item and manages scrolling position programmatically
+// Highlights an item and manages scrolling position
 function setFocusState(items) {
   if (!items || items.length === 0) return;
 
@@ -126,7 +128,7 @@ function setFocusState(items) {
   }
 }
 
-// --- Left Panel Display Sync ---
+// show the details for the clade at TID
 function inspectClade(tid) {
   const clade = CLADE_LIST[tid];
   if (!clade) return;
@@ -136,6 +138,7 @@ function inspectClade(tid) {
   const activeNode = document.getElementById(`node-${tid}`);
   if (activeNode) activeNode.classList.add("selected");
 
+  // hide answer details while playing
   let sci_name = clade.sci_name;
   let com_name = clade.com_name || "No common name";
   let text = clade.text;
@@ -153,67 +156,66 @@ function inspectClade(tid) {
   document.getElementById("clade-image").src = image;
 }
 
+// allow clicking a node to reveal clade details
 treeUI.onNodeClick((clickedTid) => {
   // Route the clicked ID down to our helper function to update template cards
   inspectClade(clickedTid);
 });
 
-// Wait for the HTML elements to load in the browser
-document.addEventListener("DOMContentLoaded", () => {
-  // --- Event Listeners ---
+// --- Event Listeners ---
 
-  // Trigger filtering updates whenever typing occurs
-  guessInput.addEventListener("input", updateDropdown);
+// Trigger filtering updates whenever typing occurs
+guessInput.addEventListener("input", updateDropdown);
 
-  // Keyboard interception framework
-  guessInput.addEventListener("keydown", (e) => {
-    const items = dropdown.getElementsByClassName("suggestion-item");
+// Keyboard interception framework
+guessInput.addEventListener("keydown", (e) => {
+  const items = dropdown.getElementsByClassName("suggestion-item");
 
-    if (dropdown.classList.contains("hidden") || items.length === 0) {
-      // Standard action if menu is closed
-      if (e.key === "Enter") {
-        handleGuessSubmit();
-      }
-      return;
+  if (dropdown.classList.contains("hidden") || items.length === 0) {
+    // Standard action if menu is closed
+    if (e.key === "Enter") {
+      handleGuessSubmit();
     }
+    return;
+  }
 
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault(); // Prevents cursor text-jumping behavior
-        currentFocusIndex++;
-        setFocusState(items);
-        break;
+  switch (e.key) {
+    case "ArrowDown":
+      e.preventDefault(); // Prevents cursor text-jumping behavior
+      currentFocusIndex++;
+      setFocusState(items);
+      break;
 
-      case "ArrowUp":
-        e.preventDefault();
-        currentFocusIndex--;
-        setFocusState(items);
-        break;
+    case "ArrowUp":
+      e.preventDefault();
+      currentFocusIndex--;
+      setFocusState(items);
+      break;
 
-      case "Enter":
-        e.preventDefault();
-        // If an item is active via arrow keys, select it. Otherwise, submit input value directly.
-        if (currentFocusIndex > -1 && items[currentFocusIndex]) {
-          guessInput.value = items[currentFocusIndex].textContent;
-          hideDropdown();
-        } else {
-          handleGuessSubmit();
-        }
-        break;
-
-      case "Escape":
+    case "Enter":
+      e.preventDefault();
+      // If an item is active via arrow keys, select it.
+      if (currentFocusIndex > -1 && items[currentFocusIndex]) {
+        guessInput.value = items[currentFocusIndex].textContent;
         hideDropdown();
-        break;
-    }
-  });
+      }
 
-  // Dismiss the menu if the user clicks anywhere outside the input interface
-  document.addEventListener("click", (e) => {
-    if (e.target !== guessInput && e.target !== dropdown) {
+      // submit
+      handleGuessSubmit();
+      break;
+
+    case "Escape":
       hideDropdown();
-    }
-  });
-
-  // Link the function to the click action of the button
-  submitBtn.addEventListener("click", handleGuessSubmit);
+      break;
+  }
 });
+
+// Dismiss the menu if the user clicks anywhere outside the input interface
+document.addEventListener("click", (e) => {
+  if (e.target !== guessInput && e.target !== dropdown) {
+    hideDropdown();
+  }
+});
+
+// Link the function to the click action of the button
+submitBtn.addEventListener("click", handleGuessSubmit);

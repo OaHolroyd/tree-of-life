@@ -12,7 +12,7 @@ export function getSuggestions(query, previousGuesses, limit = 10) {
 
   function scoreWord(word) {
     if (previousGuesses.includes(word[1])) {
-      return -100000;
+      return -Infinity;
     }
 
     const lower = word[0].toLowerCase();

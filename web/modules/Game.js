@@ -70,6 +70,16 @@ export class Game {
   }
 
   /**
+   * @returns the node representing the closest known clade to the answer
+   */
+  getBestTID() {
+    if (this.state === GameState.PLAYING) {
+      return this.tree[this.answer].sub_ptid;
+    }
+    return this.answer;
+  }
+
+  /**
    * Handle a guess submission
    * @param {string} guess - user submitted guess string
    * @returns an array of:
@@ -78,8 +88,6 @@ export class Game {
    *    an array of nodes to be added to the tree
    */
   submitGuess(guess) {
-    console.log(`game registered guess: "${guess}"`);
-
     // go through the species and find the guess
     let tid = -1;
     for (let i = 0; i < NUM_SPECIES; i++) {
@@ -90,7 +98,6 @@ export class Game {
 
     // early exit if this isn't a real guess or if we've already guessed it
     if (tid === -1 || this.guesses.includes(tid)) {
-      console.log(`  "${guess}" not recognised`);
       return [false, false, []];
     }
 
@@ -99,7 +106,6 @@ export class Game {
 
     // correct answer or out of guesses means game over
     if (this.answer === tid) {
-      console.log(`  "${guess}" is the answer!`);
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
       return [true, true, [this.tree[tid]]];
