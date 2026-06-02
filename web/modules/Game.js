@@ -88,8 +88,8 @@ export class Game {
       }
     }
 
-    // early exit if this isn't a real guess
-    if (tid === -1) {
+    // early exit if this isn't a real guess or if we've already guessed it
+    if (tid === -1 || this.guesses.includes(tid)) {
       console.log(`  "${guess}" not recognised`);
       return [false, false, []];
     }

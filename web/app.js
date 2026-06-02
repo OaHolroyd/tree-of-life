@@ -1,7 +1,7 @@
 import { CLADE_LIST } from "./data/clades.js";
 import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
-import { getDummySuggestions } from "./modules/Autocomplete.js";
+import { getSuggestions } from "./modules/Autocomplete.js";
 
 // Create the game state and logic
 const game = new Game(4);
@@ -14,6 +14,7 @@ treeUI.updateTreeLayout(game.getCurrentTree());
 const guessInput = document.getElementById("guess-input");
 const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
+const guessCount = document.getElementById("guesses-count");
 
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
@@ -32,6 +33,10 @@ function handleGuessSubmit() {
     console.log(updatedNodes);
     treeUI.updateTreeLayout(updatedNodes);
   }
+
+  guessCount.innerHTML = game.guessesRemaining;
+
+  // TODO: show info for best clade
 
   // Clear the input box for the next guess
   guessInput.value = "";
@@ -56,7 +61,7 @@ function handleGuessSubmit() {
 // Renders the matched entries into HTML items
 function updateDropdown() {
   const query = guessInput.value.trim();
-  const matches = getDummySuggestions(query);
+  const matches = getSuggestions(query, game.guesses);
 
   // Reset state
   dropdown.innerHTML = "";
@@ -155,11 +160,6 @@ treeUI.onNodeClick((clickedTid) => {
 
 // Wait for the HTML elements to load in the browser
 document.addEventListener("DOMContentLoaded", () => {
-  // DUMMY SIMULATION: Unlocks a new branch node every 3.5 seconds so you can see the entry animation!
-  // setTimeout(() => discoverClade(CLADE_LIST[2]), 3500); // Unlocks Cnidaria
-  // setTimeout(() => discoverClade(CLADE_LIST[3]), 7000); // Unlocks Protostomia
-  // setTimeout(() => discoverClade(CLADE_LIST[4]), 10500); // Unlocks Deuterostomia
-
   // --- Event Listeners ---
 
   // Trigger filtering updates whenever typing occurs
