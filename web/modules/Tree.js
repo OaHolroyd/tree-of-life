@@ -163,6 +163,7 @@ export class Tree {
    * The continuous math update and paint loop. Runs via requestAnimationFrame.
    */
   tick() {
+    this.resizeCanvas();
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
@@ -258,6 +259,9 @@ export class Tree {
           node.y = height - margin;
           node.vy *= -0.5;
         }
+      } else {
+        node.x = width / 2;
+        node.y = 60; // Keep locked vertically
       }
 
       // Reposition the corresponding interactive text container block
