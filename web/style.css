@@ -38,13 +38,29 @@ body {
   padding: 20px 20px;
   box-sizing: border-box;
   z-index: 2000; /* Stays fixed above mobile bottom panels and canvas streams */
+
+  position: relative;
 }
 
 .app-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   color: #f0f6fc;
   margin: 0;
   font-weight: 600;
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  /* Pushes the exact mathematical midpoint of the text block to match the pixel center */
+  transform: translate(-50%, -50%);
+
+  /* Prevents your text title from accidentally wrapping onto two lines on very narrow phone screens */
+  white-space: nowrap;
+
+  /* Safety precaution: ensures a click right over the title text passes through
+       to any canvas or element resting behind it */
+  pointer-events: none;
 }
 
 .header-actions {
@@ -145,6 +161,27 @@ body {
   .top {
     height: calc(100vh - 50px);
     flex-direction: column;
+  }
+
+  .app-header {
+    justify-content: space-between;
+    padding: 0 12px; /* Marginally tighten outer margins */
+  }
+
+  .app-title {
+    position: static; /* Returns the title to the normal layout grid flow */
+    transform: none; /* Discards the desktop offset alignment math */
+    font-size: 1.5rem; /* Slightly reduce font size so it has more room to breathe */
+    pointer-events: auto; /* Re-enable tap interactions if needed */
+  }
+
+  .header-actions {
+    gap: 6px; /* Tighten the gap between the Settings and FAQ buttons */
+  }
+
+  .nav-icon-btn {
+    padding: 5px 10px; /* Slightly compress button sizes */
+    font-size: 0.85rem;
   }
 
   .modal-content.fullscreen-takeover {
