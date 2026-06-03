@@ -447,7 +447,7 @@ body {
     height: 420px; /* Fully expanded mobile sheet height */
 
     /* FIX 1: Make the sheet fill the entire viewport screen height */
-    height: calc(100vh - 100px); /* height: 420px; */
+    height: calc(100vh - var(--header-height, 100px));
 
     background: #161b22;
     border-top: 1px solid #30363d;
@@ -466,7 +466,7 @@ body {
     );
     transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); */
 
-    transform: translateY(calc(100vh - 170px));
+    transform: translateY(var(--sheet-peek, 100vh - 170px));
     transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   }
 

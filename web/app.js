@@ -23,12 +23,14 @@ const modalTitle = document.getElementById("modal-title");
 const modalMessage = document.getElementById("modal-message");
 const restartBtn = document.getElementById("restart-btn");
 
+const controlsSection = document.querySelector(".controls-section");
 const cladeCard = document.getElementById("clade-card");
 const cardHeader = cladeCard.querySelector(".card-header");
 
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
 let startY = 0;
+let livePeekOffset = 0;
 
 // Register a guess submission from the input field
 function handleGuessSubmit() {
@@ -202,6 +204,30 @@ function openMobileDrawer() {
   }
 }
 
+/**
+ * Dynamically measures DOM nodes and feeds exact parameters to CSS rules.
+ */
+function recalculateMobileLayout() {
+  if (window.innerWidth > 600) return; // Skip if running on desktop layout dimensions
+
+  // 1. Measure the real-time pixel heights of the elements
+  const currentHeaderHeight = controlsSection.offsetHeight;
+  const currentCardHeaderHeight = cardHeader.offsetHeight;
+  const viewportHeight = window.innerHeight;
+
+  // 2. The maximum workspace space the card can expand inside
+  const cardMaxAvailableHeight = viewportHeight - currentHeaderHeight;
+
+  // 3. The exact sliding distance down to leave only the card header visible
+  livePeekOffset = cardMaxAvailableHeight - currentCardHeaderHeight;
+
+  // 4. Inject these precise values directly into the CSS Engine root context
+  cladeCard.style.setProperty("--header-height", `${currentHeaderHeight}px`);
+  cladeCard.style.setProperty("--sheet-peek", `${livePeekOffset}px`);
+}
+
+recalculateMobileLayout();
+
 // Hook into your global UI panel inspector mechanism
 // to trigger the sheet slide whenever data alters
 const baseInspectClade = inspectClade;
@@ -211,6 +237,9 @@ inspectClade = function (tid) {
 };
 
 // --- Event Listeners ---
+
+// Run it again if the user rotates their phone or scales their browser window container layout
+window.addEventListener("resize", recalculateMobileLayout);
 
 // Trigger filtering updates whenever typing occurs
 guessInput.addEventListener("input", updateDropdown);
@@ -304,15 +333,12 @@ cardHeader.addEventListener(
     const currentY = e.touches[0].clientY;
     const deltaY = currentY - startY;
 
-    // Calculate the live pixel distance from the top of the screen to the hidden peek boundary
-    const peekOffset = window.innerHeight - 170;
-
     if (cladeCard.classList.contains("expanded") && deltaY > 0) {
-      // Dragging downwards from full screen view mode
+      // Smoothly dragging downwards away from the control bar deck line boundary
       cladeCard.style.transform = `translateY(${deltaY}px)`;
     } else if (!cladeCard.classList.contains("expanded") && deltaY < 0) {
-      // Dragging upwards from bottom peek view mode
-      cladeCard.style.transform = `translateY(${peekOffset + deltaY}px)`;
+      // Smoothly pulling upwards using the exact live automated peek offset calculation
+      cladeCard.style.transform = `translateY(${livePeekOffset + deltaY}px)`;
     }
   },
   { passive: true },
