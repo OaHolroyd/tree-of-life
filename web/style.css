@@ -398,3 +398,107 @@ body {
 .restart-button:hover {
   background-color: #2ea043;
 }
+
+/* ============================================================================
+   MOBILE RESPONSIVE BREAKPOINT (< 600px)
+   ============================================================================ */
+@media (max-width: 600px) {
+  /* 1. Turn the main parent container vertical */
+  .top {
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  /* 2. Strip the width from the left-panel and make it transparent for layout layout staging */
+  .left-panel {
+    width: 100%;
+    display: contents; /* Deliberately bypasses this wrapper's layout constraints */
+  }
+
+  /* 3. Style the input controls to stick firmly to the top of the mobile device */
+  .controls-section {
+    background: #161b22;
+    padding: 12px 16px;
+    border-bottom: 1px solid #30363d;
+    z-index: 100;
+    box-sizing: border-box;
+  }
+
+  /* 4. Force the interactive tree container to occupy the middle viewport space */
+  .right-panel {
+    flex: 1;
+    width: 100%;
+    position: relative;
+  }
+
+  .tree-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 5. Transform the Clade Card into the Bottom Sheet Drawer */
+  .clade-card {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 420px; /* Fully expanded mobile sheet height */
+
+    /* FIX 1: Make the sheet fill the entire viewport screen height */
+    height: calc(100vh - 100px); /* height: 420px; */
+
+    background: #161b22;
+    border-top: 1px solid #30363d;
+    border-left: none; /* Strip legacy desktop borders */
+    border-radius: 16px 16px 0 0;
+    z-index: 1000; /* Float above the canvas lines and node dots */
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    /* Hardware accelerated transition setup */
+    /*
+    transform: translateY(
+      350px
+    );
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); */
+
+    transform: translateY(calc(100vh - 170px));
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* When this class is active, the drawer slides up smoothly */
+  .clade-card.expanded {
+    transform: translateY(0px);
+  }
+
+  /* Setup a visual dragging anchor area out of the existing header element */
+  .card-header {
+    padding: 12px 20px;
+    cursor: grab;
+    position: relative;
+    background: #1c2128;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* Generate a decorative modern pill handle bar inside the header via CSS */
+  .card-header::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: #30363d;
+    border-radius: 2px;
+    margin: -4px auto 8px auto;
+  }
+
+  /* Ensure scrollable text works comfortably within the sheet constraints */
+  .clade-scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+  }
+}

@@ -23,8 +23,12 @@ const modalTitle = document.getElementById("modal-title");
 const modalMessage = document.getElementById("modal-message");
 const restartBtn = document.getElementById("restart-btn");
 
+const cladeCard = document.getElementById("clade-card");
+const cardHeader = cladeCard.querySelector(".card-header");
+
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
+let startY = 0;
 
 // Register a guess submission from the input field
 function handleGuessSubmit() {
@@ -189,6 +193,23 @@ treeUI.onNodeClick((clickedTid) => {
   inspectClade(clickedTid);
 });
 
+/**
+ * Automatically pops the sheet open if we are on a smaller viewport screen size
+ */
+function openMobileDrawer() {
+  if (window.innerWidth <= 600) {
+    cladeCard.classList.add("expanded");
+  }
+}
+
+// Hook into your global UI panel inspector mechanism
+// to trigger the sheet slide whenever data alters
+const baseInspectClade = inspectClade;
+inspectClade = function (tid) {
+  baseInspectClade(tid); // Execute original DOM string overwrites
+  openMobileDrawer(); // Make sure the drawer pops open
+};
+
 // --- Event Listeners ---
 
 // Trigger filtering updates whenever typing occurs
@@ -265,4 +286,57 @@ restartBtn.addEventListener("click", () => {
   guessCount.innerHTML = game.guessesRemaining;
   inspectClade(0);
   guessInput.focus();
+});
+
+// --- Mobile Touch Gestures (Drag-to-Swipe Mechanics) ---
+cardHeader.addEventListener(
+  "touchstart",
+  (e) => {
+    startY = e.touches[0].clientY;
+    cladeCard.style.transition = "none";
+  },
+  { passive: true },
+);
+
+cardHeader.addEventListener(
+  "touchmove",
+  (e) => {
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - startY;
+
+    // Calculate the live pixel distance from the top of the screen to the hidden peek boundary
+    const peekOffset = window.innerHeight - 170;
+
+    if (cladeCard.classList.contains("expanded") && deltaY > 0) {
+      // Dragging downwards from full screen view mode
+      cladeCard.style.transform = `translateY(${deltaY}px)`;
+    } else if (!cladeCard.classList.contains("expanded") && deltaY < 0) {
+      // Dragging upwards from bottom peek view mode
+      cladeCard.style.transform = `translateY(${peekOffset + deltaY}px)`;
+    }
+  },
+  { passive: true },
+);
+
+cardHeader.addEventListener("touchend", (e) => {
+  cladeCard.style.transition = "transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)";
+
+  const endY = e.changedTouches[0].clientY;
+  const totalDelta = endY - startY;
+
+  if (Math.abs(totalDelta) > 65) {
+    if (totalDelta > 0) {
+      cladeCard.classList.remove("expanded"); // Swiped down to collapse
+    } else {
+      cladeCard.classList.add("expanded"); // Swiped up to cover tree
+    }
+  }
+
+  cladeCard.style.transform = "";
+});
+
+cardHeader.addEventListener("click", (e) => {
+  if (window.innerWidth <= 600 && e.target.tagName !== "BUTTON") {
+    cladeCard.classList.toggle("expanded");
+  }
 });
