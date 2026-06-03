@@ -35,6 +35,16 @@ export class Tree {
   }
 
   /**
+   * Reset the tree ready for a new game
+   */
+  reset() {
+    this.nodes = [];
+    this.overlay.innerHTML = "";
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.resizeCanvas();
+  }
+
+  /**
    * Main Data Synchronization Bridge.
    * Compares currently running nodes against the list of active/visible nodes
    * handed down from the Game controller.

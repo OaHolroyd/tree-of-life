@@ -8,3 +8,11 @@ export const SPECIES_LIST = [
   ["human", 11],
   ["gorilla", 12],
 ];
+
+/**
+ * Get a random species TID
+ * @returns a species TID
+ */
+export function randomSpeciesTID() {
+  return SPECIES_LIST[Math.floor(Math.random() * SPECIES_LIST.length)][0];
+}

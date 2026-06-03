@@ -1,4 +1,5 @@
 import { CLADE_LIST } from "./data/clades.js";
+import { randomSpeciesTID } from "./data/species.js";
 import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
@@ -16,6 +17,11 @@ const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
 const guessCount = document.getElementById("guesses-count");
 guessCount.innerHTML = game.guessesRemaining; // force this to always be correct if we change the backend
+
+const modalOverlay = document.getElementById("game-over-modal");
+const modalTitle = document.getElementById("modal-title");
+const modalMessage = document.getElementById("modal-message");
+const restartBtn = document.getElementById("restart-btn");
 
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
@@ -47,17 +53,30 @@ function handleGuessSubmit() {
     return;
   }
 
-  // show info for best clade
-  inspectClade(game.getBestTID());
-
   // guess has ended the game
   if (hasEnded) {
     console.log(`Handle game end`);
+    inspectClade(game.answer);
 
+    // 1. Fire the reveal function on the rendering framework
     treeUI.revealAnswer(game.tree[game.answer]);
 
+    // 2. Check the game state engine to determine victory conditions
+    if (game.state === GameState.WON) {
+      modalTitle.textContent = "You win!";
+      modalMessage.textContent = `The answer was ${game.tree[game.answer].com_name}. You got it in ${game.getTurnsTaken()} guesses!`;
+    } else {
+      modalTitle.textContent = "Game Over";
+      modalMessage.textContent = `Out of turns! The correct clade answer was: ${game.tree[game.answer].com_name}.`;
+    }
+
+    // 3. Drop down the centered banner overlay
+    modalOverlay.classList.remove("hidden");
     return;
   }
+
+  // show info for best clade
+  inspectClade(game.getBestTID());
 }
 
 // Renders the matched entries into HTML items
@@ -219,3 +238,23 @@ document.addEventListener("click", (e) => {
 
 // Link the function to the click action of the button
 submitBtn.addEventListener("click", handleGuessSubmit);
+
+// Pipeline Trigger: Handle Resetting the Entire Ecosystem Loop
+restartBtn.addEventListener("click", () => {
+  // 1. Hide the centered dialog interface
+  modalOverlay.classList.add("hidden");
+
+  // 2. Select a new random tid sequence out of your python or static module arrays
+  game.restart(randomSpeciesTID());
+
+  // 3. Wipe out the old layout records from the canvas simulation tracker
+  treeUI.reset(); // Make sure to add this small reset hook in TreePhysics.js!
+
+  // 4. Feed the new initial state (the fresh root nodes) straight to the layout engine
+  treeUI.updateTreeLayout(game.getCurrentTree());
+
+  // 5. Re-focus inputs and sidebar information frames
+  guessCount.innerHTML = game.guessesRemaining;
+  inspectClade(0);
+  guessInput.focus();
+});

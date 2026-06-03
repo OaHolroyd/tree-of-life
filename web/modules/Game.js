@@ -1,7 +1,7 @@
 import { CLADE_LIST, CladeState } from "../data/clades.js";
 import { SPECIES_LIST } from "../data/species.js";
 
-const NUM_GUESSES = 20;
+const NUM_GUESSES = 3;
 const NUM_CLADES = CLADE_LIST.length;
 const NUM_SPECIES = SPECIES_LIST.length;
 
@@ -77,6 +77,13 @@ export class Game {
       return this.tree[this.answer].sub_ptid;
     }
     return this.answer;
+  }
+
+  /**
+   * @returns how many turns the player has taken
+   */
+  getTurnsTaken() {
+    return NUM_GUESSES - this.guessesRemaining;
   }
 
   /**
