@@ -81,11 +81,39 @@ body {
     border-color 0.2s;
 }
 
+/* Swaps out the old google font formatting rule for modern SVG layout logic */
+.nav-icon-btn .nav-svg-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor; /* Forces the SVG lines to dynamically match your hover text colors! */
+  transition: transform 0.2s;
+  display: block;
+}
+
+.nav-icon-btn:hover .nav-svg-icon {
+  transform: rotate(
+    30deg
+  ); /* Optional fun micro-interaction: gears slightly rotate on hover */
+}
+
+/*.nav-icon-btn {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
 .nav-icon-btn:hover {
   background-color: #30363d;
   border-color: #8b949e;
   color: #f0f6fc;
-}
+}*/
 
 /* --- Modal Architecture Profiles --- */
 .modal-header {
