@@ -17,6 +17,24 @@
   </head>
 
   <body class="fullscreen">
+    <header class="app-header">
+      <div class="header-branding">
+        <h1 class="app-title">CladeGame</h1>
+      </div>
+      <nav class="header-actions">
+        <button
+          id="nav-settings-btn"
+          class="nav-icon-btn"
+          title="Settings & Data"
+        >
+          ⚙️ Settings
+        </button>
+        <button id="nav-faq-btn" class="nav-icon-btn" title="Help & Info">
+          ❓ FAQ
+        </button>
+      </nav>
+    </header>
+
     <div class="top">
       <div class="left-panel">
         <div class="controls-section">
@@ -91,6 +109,89 @@
         <h2 id="modal-title">Game Over!</h2>
         <p id="modal-message">You have run out of guesses.</p>
         <button id="restart-btn" class="restart-button">Play Again</button>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-content floating-window">
+        <div class="modal-header">
+          <h2>Game Settings & Data</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="settings-group">
+            <h3>Player Storage Metrics</h3>
+            <p>
+              Manage your client-side stats data tracking indicators profile
+              records.
+            </p>
+            <button id="clear-data-btn" class="danger-btn">
+              Reset All Career Statistics
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="faq-modal" class="modal-overlay hidden">
+      <div class="modal-content fullscreen-takeover">
+        <div class="modal-header">
+          <h2>Information & Frequently Asked Questions</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body scrollable">
+          <section class="faq-item">
+            <h3>What is a Clade?</h3>
+            <p>
+              A clade is a biological grouping that includes a common ancestor
+              and all of its descendants. It represents a single complete branch
+              on the evolutionary tree of life.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>How do I play?</h3>
+            <p>
+              Type animal or plant taxonomy classifications into the search
+              input box. Correct entries will organically build out visible
+              sub-node physics branches tracking towards the mystery hidden
+              target answer clade.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>What is a Clade?</h3>
+            <p>
+              A clade is a biological grouping that includes a common ancestor
+              and all of its descendants. It represents a single complete branch
+              on the evolutionary tree of life.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>How do I play?</h3>
+            <p>
+              Type animal or plant taxonomy classifications into the search
+              input box. Correct entries will organically build out visible
+              sub-node physics branches tracking towards the mystery hidden
+              target answer clade.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>What is a Clade?</h3>
+            <p>
+              A clade is a biological grouping that includes a common ancestor
+              and all of its descendants. It represents a single complete branch
+              on the evolutionary tree of life.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>How do I play?</h3>
+            <p>
+              Type animal or plant taxonomy classifications into the search
+              input box. Correct entries will organically build out visible
+              sub-node physics branches tracking towards the mystery hidden
+              target answer clade.
+            </p>
+          </section>
+        </div>
       </div>
     </div>
 

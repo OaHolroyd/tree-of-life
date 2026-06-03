@@ -23,9 +23,16 @@ const modalTitle = document.getElementById("modal-title");
 const modalMessage = document.getElementById("modal-message");
 const restartBtn = document.getElementById("restart-btn");
 
+const appHeader = document.querySelector(".app-header");
 const controlsSection = document.querySelector(".controls-section");
 const cladeCard = document.getElementById("clade-card");
 const cardHeader = cladeCard.querySelector(".card-header");
+
+const settingsModal = document.getElementById("settings-modal");
+const faqModal = document.getElementById("faq-modal");
+const openSettingsBtn = document.getElementById("nav-settings-btn");
+const openFaqBtn = document.getElementById("nav-faq-btn");
+const clearDataBtn = document.getElementById("clear-data-btn");
 
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
@@ -90,7 +97,7 @@ function handleGuessSubmit() {
   }
 
   // show info for best clade
-  inspectClade(game.getBestTID());
+  inspectClade(game.getBestTID(), false);
 }
 
 // Renders the matched entries into HTML items
@@ -206,34 +213,63 @@ function openMobileDrawer() {
 
 /**
  * Dynamically measures DOM nodes and feeds exact parameters to CSS rules.
+ * Updated to account for the persistent top navigation app-header.
  */
 function recalculateMobileLayout() {
-  if (window.innerWidth > 600) return; // Skip if running on desktop layout dimensions
+  // If the user resizes to desktop view, clean up mobile-specific inline styles
+  if (window.innerWidth > 600) {
+    cladeCard.style.removeProperty("--header-height");
+    cladeCard.style.removeProperty("--sheet-peek");
+    return;
+  }
 
-  // 1. Measure the real-time pixel heights of the elements
-  const currentHeaderHeight = controlsSection.offsetHeight;
+  // 1. Measure the real-time pixel heights of ALL stacking elements
+  const navHeaderHeight = appHeader.offsetHeight;
+  const guessControlsHeight = controlsSection.offsetHeight;
   const currentCardHeaderHeight = cardHeader.offsetHeight;
   const viewportHeight = window.innerHeight;
 
   // 2. The maximum workspace space the card can expand inside
-  const cardMaxAvailableHeight = viewportHeight - currentHeaderHeight;
+  // (Total screen minus the top nav header and the guess input header)
+  const cardMaxAvailableHeight =
+    viewportHeight - navHeaderHeight - guessControlsHeight;
 
-  // 3. The exact sliding distance down to leave only the card header visible
+  // 3. The exact sliding distance down to leave only the card header peeking out
   livePeekOffset = cardMaxAvailableHeight - currentCardHeaderHeight;
 
-  // 4. Inject these precise values directly into the CSS Engine root context
-  cladeCard.style.setProperty("--header-height", `${currentHeaderHeight}px`);
+  // 4. Inject these precise values directly into the CSS Custom Properties
+  cladeCard.style.setProperty(
+    "--header-height",
+    `${guessControlsHeight + navHeaderHeight}px`,
+  );
   cladeCard.style.setProperty("--sheet-peek", `${livePeekOffset}px`);
 }
 
 recalculateMobileLayout();
 
+/**
+ * Global modular utility hook to handle toggling visibility wrappers
+ * @param {HTMLElement} targetModalElement
+ * @param {boolean} shouldShow
+ */
+function toggleModalState(targetModalElement, shouldShow) {
+  if (shouldShow) {
+    targetModalElement.classList.remove("hidden");
+  } else {
+    targetModalElement.classList.add("hidden");
+  }
+}
+
 // Hook into your global UI panel inspector mechanism
 // to trigger the sheet slide whenever data alters
 const baseInspectClade = inspectClade;
-inspectClade = function (tid) {
-  baseInspectClade(tid); // Execute original DOM string overwrites
-  openMobileDrawer(); // Make sure the drawer pops open
+inspectClade = function (tid, shouldOpenMobile = true) {
+  baseInspectClade(tid); // Update text, imagery, and selected borders
+
+  // Only pop the drawer up if we are on mobile AND explicitly allowed to
+  if (shouldOpenMobile && window.innerWidth <= 600) {
+    cladeCard.classList.add("expanded");
+  }
 };
 
 // --- Event Listeners ---
@@ -364,5 +400,50 @@ cardHeader.addEventListener("touchend", (e) => {
 cardHeader.addEventListener("click", (e) => {
   if (window.innerWidth <= 600 && e.target.tagName !== "BUTTON") {
     cladeCard.classList.toggle("expanded");
+  }
+});
+
+// 1. Open Button Interaction Registrations
+openSettingsBtn.addEventListener("click", () => {
+  toggleModalState(settingsModal, true);
+});
+
+openFaqBtn.addEventListener("click", () => {
+  toggleModalState(faqModal, true);
+});
+
+// 2. Automated Event Capture for Close Switches inside the layers
+document.querySelectorAll(".modal-overlay").forEach((overlayElement) => {
+  // Close if clicking the specific dark background backdrop area layer frame directly
+  overlayElement.addEventListener("click", (e) => {
+    if (e.target === overlayElement) {
+      toggleModalState(overlayElement, false);
+    }
+  });
+
+  // Close if hitting the internal cross configuration escape buttons
+  const closeBtn = overlayElement.querySelector(".close-modal-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      toggleModalState(overlayElement, false);
+    });
+  }
+});
+
+// 3. Functional Settings Administrative Storage Erasure Action Stub
+clearDataBtn.addEventListener("click", () => {
+  const confirmation = confirm(
+    "Are you completely sure you want to clear your local game progress metrics? This action will permanently erase your current streaks data records.",
+  );
+  if (confirmation) {
+    console.log(
+      "Storage clean action verified. Executing memory purge methods...",
+    );
+
+    // game.clearSavedProgress(); // To be added to your Game engine class logic routine later
+    // localStorage.removeItem("clade_game_stats");
+
+    alert("Career stats profile cleanly reset.");
+    toggleModalState(settingsModal, false);
   }
 });

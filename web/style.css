@@ -5,6 +5,13 @@ body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #f5f5f5;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  margin: 0;
 }
 
 .fullscreen {
@@ -16,9 +23,137 @@ body {
 }
 
 .top {
+  flex: 1;
   display: flex;
+  height: calc(
+    100vh - 50px
+  ); /* Adjusts height dynamically based on header sizing */
+  width: 100vw;
+}
+
+/* --- App Master Header Styles --- */
+.app-header {
+  height: 50px;
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 2000; /* Stays fixed above mobile bottom panels and canvas streams */
+}
+
+.app-title {
+  font-size: 1.25rem;
+  color: #f0f6fc;
+  margin: 0;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-icon-btn {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.nav-icon-btn:hover {
+  background-color: #30363d;
+  border-color: #8b949e;
+  color: #f0f6fc;
+}
+
+/* --- Modal Architecture Profiles --- */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.close-modal-btn:hover {
+  color: #f0f6fc;
+}
+
+/* Variation A: Floating Compact Settings Modal Configuration Profile */
+.modal-content.floating-window {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 460px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Variation B: Screen takeover profile panel */
+.modal-content.fullscreen-takeover {
+  background: #0d1117;
+  /*max-width: 900px;*/
+  width: 100vw;
   height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body.scrollable {
+  flex: 1;
+  overflow-y: auto;
+  max-width: 800px;
+  margin: 0 auto;
   width: 100%;
+}
+
+.danger-btn {
+  background-color: #da3637;
+  color: #f0f6fc;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.danger-btn:hover {
+  background-color: #b82a2b;
+}
+
+/* --- Responsive Adjustments (< 600px) --- */
+@media (max-width: 600px) {
+  .top {
+    height: calc(100vh - 50px);
+    flex-direction: column;
+  }
+
+  .modal-content.fullscreen-takeover {
+    padding: 20px;
+  }
 }
 
 /* --- Left Panel UI Layout --- */
@@ -453,7 +588,7 @@ body {
     border-top: 1px solid #30363d;
     border-left: none; /* Strip legacy desktop borders */
     border-radius: 16px 16px 0 0;
-    z-index: 1000; /* Float above the canvas lines and node dots */
+    z-index: 9; /* Float above the canvas lines and node dots */
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
     display: flex;
