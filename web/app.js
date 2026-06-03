@@ -64,11 +64,19 @@ function handleGuessSubmit() {
     // 2. Check the game state engine to determine victory conditions
     if (game.state === GameState.WON) {
       modalTitle.textContent = "You win!";
-      modalMessage.textContent = `The answer was ${game.tree[game.answer].com_name}. You got it in ${game.getTurnsTaken()} guesses!`;
+      // modalMessage.textContent = `The answer was ${game.tree[game.answer].com_name}. You got it in ${game.getTurnsTaken()} guesses!`;
     } else {
       modalTitle.textContent = "Game Over";
-      modalMessage.textContent = `Out of turns! The correct clade answer was: ${game.tree[game.answer].com_name}.`;
+      // modalMessage.textContent = `Out of turns! The correct clade answer was: ${game.tree[game.answer].com_name}.`;
     }
+
+    // Populate the stats directly inside your modal body string
+    const currentStats = game.getStats();
+    modalMessage.innerHTML = `
+      Current Streak: <strong>${currentStats.currentStreak}</strong> |
+      Longest Streak: <strong>${currentStats.longestStreak}</strong><br>
+      Games Won: ${currentStats.won} / ${currentStats.played}
+    `;
 
     // 3. Drop down the centered banner overlay
     modalOverlay.classList.remove("hidden");

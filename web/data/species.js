@@ -14,5 +14,5 @@ export const SPECIES_LIST = [
  * @returns a species TID
  */
 export function randomSpeciesTID() {
-  return SPECIES_LIST[Math.floor(Math.random() * SPECIES_LIST.length)][0];
+  return SPECIES_LIST[Math.floor(Math.random() * SPECIES_LIST.length)][1];
 }

@@ -20,6 +20,14 @@ export class Game {
     this.state = 0; // 0: playing, 1: won, 2: lost
     this.subtree = [];
     this.restart(tid);
+
+    // Load existing stats or initialize fresh defaults
+    this.stats = JSON.parse(localStorage.getItem("clade_game_stats")) || {
+      played: 0,
+      won: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+    };
   }
 
   /**
@@ -37,6 +45,8 @@ export class Game {
    * @param {int} tid - taxon ID (ie the position in CLADE_DATABASE) of the answer
    */
   restart(tid) {
+    console.log(`RESTART (${tid}: ${this.tree[tid].com_name})`);
+
     this.answer = tid;
     this.guessesRemaining = NUM_GUESSES;
     this.guesses = [];
@@ -113,6 +123,7 @@ export class Game {
 
     // correct answer or out of guesses means game over
     if (this.answer === tid) {
+      this.saveGameResult(true);
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
       return [true, true, [this.tree[tid]]];
@@ -160,10 +171,44 @@ export class Game {
 
     let has_ended = false;
     if (this.guessesRemaining === 0) {
+      this.saveGameResult(false);
       has_ended = true;
     }
 
     console.log(`  "${guess}" is not the answer (${updated_nodes})`);
     return [true, has_ended, Array.from(updated_nodes, (i) => this.tree[i])];
+  }
+
+  /**
+   * Call this method exactly when hasEnded becomes true
+   * @param {boolean} isWin
+   */
+  saveGameResult(isWin) {
+    this.stats.played += 1;
+
+    if (isWin) {
+      this.stats.won += 1;
+      this.stats.currentStreak += 1;
+      if (this.stats.currentStreak > this.stats.longestStreak) {
+        this.stats.longestStreak = this.stats.currentStreak;
+      }
+    } else {
+      this.stats.currentStreak = 0; // Break the streak
+    }
+
+    // Commit cleanly to local browser storage
+    localStorage.setItem("clade_game_stats", JSON.stringify(this.stats));
+  }
+
+  getStats() {
+    return this.stats;
+  }
+
+  eraseStats() {
+    this.stats.played = 0;
+    this.stats.won = 0;
+    this.stats.currentStreak = 0;
+    this.stats.longestStreak = 0;
+    localStorage.setItem("clade_game_stats", JSON.stringify(this.stats));
   }
 }
