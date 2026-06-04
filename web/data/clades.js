@@ -19,6 +19,22 @@ export class Clade {
     this.onChain = false;
     this.state = CladeState.OFF;
   }
+
+  clone() {
+    let clone = new Clade(
+      this.tid,
+      this.ptid,
+      this.sci_name,
+      this.com_name,
+      this.text,
+      this.image,
+      this.rank,
+    );
+    clone.sub_ptid = this.sub_ptid;
+    clone.onChain = this.onChain;
+    clone.state = this.state;
+    return clone;
+  }
 }
 
 export const CLADE_LIST = [

@@ -3,11 +3,13 @@ import { randomSpeciesTID } from "./data/species.js";
 import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
+import { loadGameSettings, saveGameSettings } from "./modules/Storage.js";
 
 const AVAILABLE_ROOT_TIDS = [0, 2, 3, 5, 10];
 
 // Create the game state and logic
-const game = new Game(4);
+const game = new Game(-1, 0, 1);
+let suggestionList = game.getSpeciesTIDs(true);
 
 // Instantiate the visual Canvas rendering layer, passing its target container
 const treeUI = new Tree(document.getElementById("tree-container"));
@@ -43,6 +45,18 @@ const rootNodeSelect = document.getElementById("root-node-select");
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
 let startY = 0;
 let livePeekOffset = 0;
+
+/**
+ * Restart the game
+ * @param {int} tid - TID of the answer
+ */
+function restartGame(tid = -1) {
+  game.restart(tid, game.root, game.size);
+  suggestionList = game.getSpeciesTIDs(true);
+  treeUI.reset();
+  treeUI.updateTreeLayout(game.getCurrentTree());
+  inspectClade(game.getBestTID());
+}
 
 // Register a guess submission from the input field
 function handleGuessSubmit() {
@@ -108,7 +122,7 @@ function handleGuessSubmit() {
 // Renders the matched entries into HTML items
 function updateDropdown() {
   const query = guessInput.value.trim();
-  const matches = getSuggestions(query, game.guesses);
+  const matches = getSuggestions(query, game.guesses, suggestionList);
 
   // Reset state
   dropdown.innerHTML = "";
@@ -345,8 +359,47 @@ function initializeRootNodeDropdown() {
   });
 }
 
-// 2. Trigger the generation routine immediately on app startup
-initializeRootNodeDropdown();
+function saveSettings() {
+  const selectElement = document.getElementById("root-node-select");
+
+  // 1. Gather the selected integer index from our species pool radios
+  const speciesRadios = Array.from(
+    document.querySelectorAll('input[name="species-pool"]'),
+  );
+  const activeRadio = document.querySelector(
+    'input[name="species-pool"]:checked',
+  );
+  const speciesPoolSize = speciesRadios.indexOf(activeRadio);
+  const rootTID = parseInt(selectElement.value, 10);
+
+  // 3. Serialize and commit to client profile memory
+  saveGameSettings(speciesPoolSize, rootTID);
+}
+
+function loadAndApplySettings() {
+  // 1. Fetch saved memory payload string, parse it, or drop back to defaults
+  const savedData = loadGameSettings();
+
+  // 2. Synchronize the Radio buttons UI
+  const speciesRadios = document.querySelectorAll('input[name="species-pool"]');
+  if (speciesRadios[savedData.speciesPoolSize]) {
+    speciesRadios[savedData.speciesPoolSize].checked = true;
+  }
+
+  // 3. Synchronize the Dropdown select element UI
+  const selectElement = document.getElementById("root-node-select");
+  if (selectElement) {
+    selectElement.value = savedData.rootTID.toString();
+  }
+
+  game.size = savedData.speciesPoolSize;
+  game.root = savedData.rootTID;
+  restartGame();
+
+  // STUB: Inform your core gameplay loop modules to update their state configurations
+  // game.setDifficultyPoolByIndex(settings.speciesPoolIndex);
+  // game.setRootTaxonomyID(settings.rootTID);
+}
 
 // --- Event Listeners ---
 
@@ -415,7 +468,7 @@ restartBtn.addEventListener("click", () => {
   modalOverlay.classList.add("hidden");
 
   // 2. Select a new random tid sequence out of your python or static module arrays
-  game.restart(randomSpeciesTID());
+  restartGame();
 
   // 3. Wipe out the old layout records from the canvas simulation tracker
   treeUI.reset(); // Make sure to add this small reset hook in TreePhysics.js!
@@ -522,26 +575,32 @@ clearDataBtn.addEventListener("click", () => {
 
 document.querySelectorAll('input[name="species-pool"]').forEach((radio) => {
   radio.addEventListener("change", (e) => {
-    const selectedSize = e.target.value;
+    const selectedIndex = parseInt(e.target.value, 10);
     console.log(
-      `Difficulty change detected! Selected species pool size: ${selectedSize}`,
+      `Difficulty change detected! Selected species pool size: ${selectedIndex}`,
     );
+    saveSettings();
 
     // STUB: Hook into your game loading engine here
     // game.setDifficultyPool(selectedSize);
     // game.restartMatch();
+    game.size = selectedIndex;
+    restartGame(-1);
   });
 });
 
 rootNodeSelect.addEventListener("change", (e) => {
-  const selectedTID = e.target.value;
+  const selectedTID = parseInt(e.target.value, 10);
   console.log(
     `Root node change detected! Selected target TID parameter: ${selectedTID}`,
   );
+  saveSettings();
 
   // STUB: Hook into your taxonomy generation mapping framework here
   // game.setRootTaxonomyID(parseInt(selectedTID));
   // game.restartMatch();
+  game.root = selectedTID;
+  restartGame(-1);
 });
 
 resetDefaultsBtn.addEventListener("click", () => {
@@ -552,9 +611,25 @@ resetDefaultsBtn.addEventListener("click", () => {
   // Reset the UI states inside the settings panel wrapper DOM
   document.getElementById("list-medium").checked = true;
   rootNodeSelect.value = "0";
+  saveSettings();
+  game.size = 1;
+  game.root = 0;
+  restartGame(-1);
 
   // STUB: Fire notifications to update your internal engine memory states
   // game.setDifficultyPool("medium");
   // game.setRootTaxonomyID(0);
   // game.restartMatch();
+});
+
+// --- Global Initialization Pipeline Loop ---
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Build your dynamic drop-down nodes inside the HTML container DOM
+  initializeRootNodeDropdown();
+
+  // 2. Immediately look up, apply, and sync persistent configurations
+  loadAndApplySettings();
+
+  // 3. Load career tracking statistics metrics dashboards
+  // populateSettingsStats();
 });

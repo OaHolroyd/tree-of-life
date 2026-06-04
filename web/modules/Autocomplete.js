@@ -1,13 +1,12 @@
-import { SPECIES_LIST } from "./../data/species.js";
-
 /**
  * Get suggestions for species completions
  * @param {str} query - input string to match to possible species
  * @param {Array[int]} previousGuesses - array of previously-guessed TIDs to exclude
+ * @param {Array} options - array of [name, TID] pairs of valid options
  * @param {int} limit - the maximum number of suggestions returned in the case of poor matches
- * @returns an array of strings of possible completions
+ * @returns
  */
-export function getSuggestions(query, previousGuesses, limit = 10) {
+export function getSuggestions(query, previousGuesses, options, limit = 10) {
   query = query.toLowerCase();
 
   function scoreWord(word) {
@@ -53,10 +52,11 @@ export function getSuggestions(query, previousGuesses, limit = 10) {
     return score;
   }
 
-  const scored = SPECIES_LIST.map((word) => ({
-    word,
-    score: scoreWord(word),
-  }))
+  const scored = options
+    .map((word) => ({
+      word,
+      score: scoreWord(word),
+    }))
     .filter((x) => x.score > -Infinity)
     .sort((a, b) => b.score - a.score);
 
