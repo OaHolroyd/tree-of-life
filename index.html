@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>TEMPLATE</title>
+    <title>Cladogram</title>
     <link rel="stylesheet" href="web/style.css" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
@@ -19,7 +19,7 @@
   <body class="fullscreen">
     <header class="app-header">
       <div class="header-branding">
-        <h1 class="app-title">CladeGame</h1>
+        <h1 class="app-title">Cladogram</h1>
       </div>
       <nav class="header-actions">
         <button
@@ -151,14 +151,75 @@
           <button class="close-modal-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <div class="settings-group">
-            <h3>Player Storage Metrics</h3>
-            <p>
-              Manage your client-side stats data tracking indicators profile
-              records.
-            </p>
+          <div class="stats-dashboard">
+            <h3>Statistics</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span id="stat-played" class="stat-value">0</span>
+                <span class="stat-label">Played</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-winrate" class="stat-value">0%</span>
+                <span class="stat-label">Win %</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-streak" class="stat-value">0</span>
+                <span class="stat-label">Current Streak</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-max-streak" class="stat-value">0</span>
+                <span class="stat-label">Max Streak</span>
+              </div>
+            </div>
             <button id="clear-data-btn" class="danger-btn">
-              Reset All Career Statistics
+              Reset Statistics
+            </button>
+          </div>
+
+          <hr class="modal-divider" />
+
+          <div class="settings-group">
+            <h3>Game Settings</h3>
+
+            <div class="setting-item">
+              <label class="setting-label">Species Pool Difficulty</label>
+              <div class="segmented-control">
+                <input
+                  type="radio"
+                  id="list-small"
+                  name="species-pool"
+                  value="small"
+                />
+                <label for="list-small">Small (Easy)</label>
+
+                <input
+                  type="radio"
+                  id="list-medium"
+                  name="species-pool"
+                  value="medium"
+                  checked
+                />
+                <label for="list-medium">Medium</label>
+
+                <input
+                  type="radio"
+                  id="list-large"
+                  name="species-pool"
+                  value="large"
+                />
+                <label for="list-large">Large (Hard)</label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <label for="root-node-select" class="setting-label"
+                >Starting Clade</label
+              >
+              <select id="root-node-select" class="custom-select"></select>
+            </div>
+
+            <button id="reset-defaults-btn" class="secondary-btn">
+              Reset to Defaults
             </button>
           </div>
         </div>

@@ -4,6 +4,8 @@ import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
 
+const AVAILABLE_ROOT_TIDS = [0, 2, 3, 5, 10];
+
 // Create the game state and logic
 const game = new Game(4);
 
@@ -33,6 +35,9 @@ const faqModal = document.getElementById("faq-modal");
 const openSettingsBtn = document.getElementById("nav-settings-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
+
+const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
+const rootNodeSelect = document.getElementById("root-node-select");
 
 // UI state
 let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
@@ -260,6 +265,27 @@ function toggleModalState(targetModalElement, shouldShow) {
   }
 }
 
+// Function to pull stats data metrics from engine storage profiles
+function populateSettingsStats() {
+  // Pull data from local storage, fallback to empty defaults if a brand new profile
+  const stats = JSON.parse(localStorage.getItem("clade_game_stats")) || {
+    played: 0,
+    won: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+  };
+
+  // Calculate the win percentage accurately
+  const winRate =
+    stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
+
+  // Inject computed stats directly into the text wrapper frames
+  document.getElementById("stat-played").textContent = stats.played;
+  document.getElementById("stat-winrate").textContent = `${winRate}%`;
+  document.getElementById("stat-streak").textContent = stats.currentStreak;
+  document.getElementById("stat-max-streak").textContent = stats.longestStreak;
+}
+
 // Hook into your global UI panel inspector mechanism
 // to trigger the sheet slide whenever data alters
 const baseInspectClade = inspectClade;
@@ -271,6 +297,56 @@ inspectClade = function (tid, shouldOpenMobile = true) {
     cladeCard.classList.add("expanded");
   }
 };
+
+/**
+ * Helper to fetch the currently selected radio value for species pool size
+ * @returns {string} "small", "medium", or "large"
+ */
+function getSelectedSpeciesPool() {
+  const selectedRadio = document.querySelector(
+    'input[name="species-pool"]:checked',
+  );
+  return selectedRadio ? selectedRadio.value : "medium";
+}
+
+/**
+ * Automatically builds the root node select list using data from CLADE_LIST
+ */
+function initializeRootNodeDropdown() {
+  const selectElement = document.getElementById("root-node-select");
+
+  // Clear any structural template residuals just in case
+  selectElement.innerHTML = "";
+
+  AVAILABLE_ROOT_TIDS.forEach((tid) => {
+    // Look up the matching object inside your core taxonomy array
+    const node = CLADE_LIST[tid];
+
+    if (node) {
+      // Create a brand new option element node
+      const option = document.createElement("option");
+      option.value = tid;
+
+      // Format the string. Handles cases where common name might be missing
+      const displayName = node.com_name
+        ? `${node.sci_name} (${node.com_name})`
+        : node.sci_name;
+
+      // Append a clear structural note for the default starting profile
+      option.textContent = tid === 0 ? `${displayName} (Default)` : displayName;
+
+      // Append the option to our select dropdown menu tree
+      selectElement.appendChild(option);
+    } else {
+      console.warn(
+        `Initialization warning: TID ${tid} was not found in CLADE_LIST.`,
+      );
+    }
+  });
+}
+
+// 2. Trigger the generation routine immediately on app startup
+initializeRootNodeDropdown();
 
 // --- Event Listeners ---
 
@@ -405,6 +481,7 @@ cardHeader.addEventListener("click", (e) => {
 
 // 1. Open Button Interaction Registrations
 openSettingsBtn.addEventListener("click", () => {
+  populateSettingsStats();
   toggleModalState(settingsModal, true);
 });
 
@@ -436,14 +513,48 @@ clearDataBtn.addEventListener("click", () => {
     "Are you completely sure you want to clear your local game progress metrics? This action will permanently erase your current streaks data records.",
   );
   if (confirmation) {
-    console.log(
-      "Storage clean action verified. Executing memory purge methods...",
-    );
+    game.eraseStats();
+    populateSettingsStats();
 
-    // game.clearSavedProgress(); // To be added to your Game engine class logic routine later
-    // localStorage.removeItem("clade_game_stats");
-
-    alert("Career stats profile cleanly reset.");
     toggleModalState(settingsModal, false);
   }
+});
+
+document.querySelectorAll('input[name="species-pool"]').forEach((radio) => {
+  radio.addEventListener("change", (e) => {
+    const selectedSize = e.target.value;
+    console.log(
+      `Difficulty change detected! Selected species pool size: ${selectedSize}`,
+    );
+
+    // STUB: Hook into your game loading engine here
+    // game.setDifficultyPool(selectedSize);
+    // game.restartMatch();
+  });
+});
+
+rootNodeSelect.addEventListener("change", (e) => {
+  const selectedTID = e.target.value;
+  console.log(
+    `Root node change detected! Selected target TID parameter: ${selectedTID}`,
+  );
+
+  // STUB: Hook into your taxonomy generation mapping framework here
+  // game.setRootTaxonomyID(parseInt(selectedTID));
+  // game.restartMatch();
+});
+
+resetDefaultsBtn.addEventListener("click", () => {
+  console.log(
+    "Restoring settings configurations back to system factory defaults...",
+  );
+
+  // Reset the UI states inside the settings panel wrapper DOM
+  document.getElementById("list-medium").checked = true;
+  rootNodeSelect.value = "0";
+
+  // STUB: Fire notifications to update your internal engine memory states
+  // game.setDifficultyPool("medium");
+  // game.setRootTaxonomyID(0);
+  // game.restartMatch();
 });
