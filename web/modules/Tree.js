@@ -16,12 +16,12 @@ export class Tree {
     this.ctx = this.canvas.getContext("2d");
 
     // 2. Physics Configuration Constants
-    this.SPRING_LENGTH = 50;
+    this.SPRING_LENGTH = 60;
     this.K_SPRING = 0.05;
-    this.REPULSION = 4000;
+    this.REPULSION = 2000;
     this.FRICTION = 0.82;
     this.GRAVITY = 0.2;
-    this.MAX_FORCE = 8;
+    this.MAX_FORCE = 0.5;
 
     // 3. Internal Tracking Repositories
     this.nodes = []; // Holds persistent engine properties (x, y, vx, vy, inflation, element)
@@ -77,7 +77,17 @@ export class Tree {
         // Trigger smooth spawn alignment relative to its parent
         if (!isRoot && cladeData.sub_ptid !== null) {
           const parent = this.nodes.find((n) => n.tid === cladeData.sub_ptid);
-          if (parent) {
+          const child = this.nodes.find((n) => n.sub_ptid === cladeData.tid);
+
+          if (parent && child) {
+            const visibleSiblings = this.nodes.filter(
+              (n) => n.sub_ptid === cladeData.sub_ptid && n.spawned,
+            );
+            const siblingOffset = visibleSiblings.length * 40 - 20;
+
+            existingNode.x = parent.x + siblingOffset;
+            existingNode.y = (parent.y + child.y) / 2;
+          } else if (parent) {
             const visibleSiblings = this.nodes.filter(
               (n) => n.sub_ptid === cladeData.sub_ptid && n.spawned,
             );
