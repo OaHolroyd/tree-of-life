@@ -706,4 +706,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 3. Load career tracking statistics metrics dashboards
   // populateSettingsStats();
+
+  // --- Register PWA Service Worker Core Engine ---
+  console.log("A");
+  if ("serviceWorker" in navigator) {
+    console.log("B");
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log(
+            "ServiceWorker successfully registered with scope footprint: ",
+            registration.scope,
+          );
+        })
+        .catch((error) => {
+          console.error("ServiceWorker registration failed: ", error);
+        });
+    });
+  }
 });
