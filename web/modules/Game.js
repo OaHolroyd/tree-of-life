@@ -29,6 +29,7 @@ export class Game {
     this.guesses = [];
     this.state = GameState.PLAYING; // 0: playing, 1: won, 2: lost
     this.subtree = [];
+    this.species_tids = [];
     this.restart(tid, this.root, this.size);
 
     // Load existing stats or initialize fresh defaults
@@ -47,6 +48,16 @@ export class Game {
   }
 
   /**
+   * Get a random valid species ID
+   * @returns a species TID
+   */
+  getRandomSpeciesTID() {
+    return this.species_tids[
+      Math.floor(Math.random() * this.species_tids.length)
+    ];
+  }
+
+  /**
    * Set the game to the initial condition
    * @param {int} tid - taxon ID (ie the position in CLADE_DATABASE) of the answer
    * @param {int} root - taxon ID (ie the position in CLADE_DATABASE) of the root node
@@ -58,9 +69,9 @@ export class Game {
     this.size = size;
 
     // if the TID is invalid, pick our own
+    this.getSpeciesTIDs();
     if (tid === -1) {
-      const tids = this.getSpeciesTIDs();
-      tid = tids[Math.floor(Math.random() * tids.length)];
+      tid = this.getRandomSpeciesTID();
     }
     console.log(`RESTART (${tid}: ${this.tree[tid].com_name})`);
 
@@ -113,6 +124,10 @@ export class Game {
         tid = this.tree[tid].ptid;
       }
     });
+
+    if (!includeNames) {
+      this.species_tids = tids;
+    }
 
     return tids;
   }

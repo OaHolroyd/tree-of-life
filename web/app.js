@@ -48,6 +48,11 @@ let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 m
 let startY = 0;
 let livePeekOffset = 0;
 
+const imageRotationPeriod = 1000;
+let activeInspectionID = -1;
+let mysteryImageInterval = null;
+let currentMysteryImageTID = -1;
+
 /**
  * Restart the game
  * @param {int} tid - TID of the answer
@@ -139,6 +144,39 @@ function handleGuessSubmit() {
   inspectClade(game.getBestTID(), false);
 }
 
+/**
+ * Starts a background loop that selects a random species image
+ * from the game's currently active pool every imageRotationPeriod ms.
+ */
+function startMysteryImageShuffler() {
+  // Clear any existing interval just in case to prevent memory leaks
+  if (mysteryImageInterval) clearInterval(mysteryImageInterval);
+
+  // Fallback default image in case our lookup loop below fails
+  currentMysteryImageTID = game.root;
+
+  // 2. Spin up the interval loop
+  mysteryImageInterval = setInterval(() => {
+    // Pick a new completely random index from our image array
+    let tid = game.getRandomSpeciesTID();
+    while (tid === currentMysteryImageTID) {
+      tid = game.getRandomSpeciesTID();
+    }
+    currentMysteryImageTID = tid;
+
+    // CRUCIAL: If the player is currently inspecting the secret answer,
+    // force the live HTML image tag to update instantly without needing a re-click!
+    if (
+      activeInspectionID === game.answer &&
+      game.state === GameState.PLAYING
+    ) {
+      document.getElementById("clade-image").src =
+        game.tree[currentMysteryImageTID].image;
+    }
+  }, imageRotationPeriod); // Speed modifier (in milliseconds)
+}
+startMysteryImageShuffler();
+
 // Renders the matched entries into HTML items
 function updateDropdown() {
   const query = guessInput.value.trim();
@@ -211,6 +249,7 @@ function setFocusState(items) {
 // show the details for the clade at TID
 function inspectClade(tid) {
   const clade = CLADE_LIST[tid];
+  activeInspectionID = tid;
   if (!clade) return;
   document
     .querySelectorAll(".tree-node")
@@ -224,10 +263,11 @@ function inspectClade(tid) {
   let text = clade.text;
   let image = clade.image;
   if (tid === game.answer && game.state === GameState.PLAYING) {
-    sci_name = "??? ???";
-    com_name = "Mystery animal";
-    text = "Keep guessing to find the mystery animal";
-    image = CLADE_LIST[0].image;
+    sci_name = "Mystery animal";
+    com_name = "Keep guessing!";
+    text = "";
+
+    image = game.tree[currentMysteryImageTID].image;
   }
 
   document.getElementById("clade-sci-name").textContent = sci_name;
