@@ -1,10 +1,9 @@
 import { CLADE_LIST, CladeState } from "../data/clades.js";
-import { SPECIES_LISTS, SPECIES_LIST } from "../data/species.js";
+import { SPECIES_LISTS } from "../data/species.js";
 import { loadGameStats, saveGameStats } from "./Storage.js";
 
 const NUM_GUESSES = 20;
 const NUM_CLADES = CLADE_LIST.length;
-const NUM_SPECIES = SPECIES_LIST.length;
 
 export const GameState = Object.freeze({
   PLAYING: 0,
@@ -108,14 +107,17 @@ export class Game {
   getSpeciesTIDs(includeNames = false) {
     let tids = [];
 
-    SPECIES_LISTS[this.size].forEach((tid) => {
+    SPECIES_LISTS[this.size].forEach((entry) => {
+      let name = entry[0];
+      let tid = entry[1];
+
       // check if the chain starting at this TID passes through the root node,
       // and only add it to the list if it does
       let stid = tid;
       while (this.tree[tid].ptid !== null) {
         if (this.tree[tid].ptid === this.root) {
           if (includeNames) {
-            tids.push([this.tree[stid].com_name, stid]);
+            tids.push([name, stid]);
           } else {
             tids.push(stid);
           }
@@ -213,9 +215,10 @@ export class Game {
   submitGuess(guess) {
     // go through the species and find the guess
     let tid = -1;
-    for (let i = 0; i < NUM_SPECIES; i++) {
-      if (guess === SPECIES_LIST[i][0]) {
-        tid = SPECIES_LIST[i][1];
+    const num_species = SPECIES_LISTS[this.size].length;
+    for (let i = 0; i < num_species; i++) {
+      if (guess === SPECIES_LISTS[this.size][i][0]) {
+        tid = SPECIES_LISTS[this.size][i][1];
       }
     }
 

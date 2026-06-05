@@ -1,5 +1,4 @@
 import { CLADE_LIST } from "./data/clades.js";
-import { randomSpeciesTID } from "./data/species.js";
 import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
@@ -704,13 +703,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // 2. Immediately look up, apply, and sync persistent configurations
   loadAndApplySettings();
 
-  // 3. Load career tracking statistics metrics dashboards
-  // populateSettingsStats();
-
   // --- Register PWA Service Worker Core Engine ---
-  console.log("A");
   if ("serviceWorker" in navigator) {
-    console.log("B");
     window.addEventListener("load", () => {
       navigator.serviceWorker
         .register("/sw.js")
