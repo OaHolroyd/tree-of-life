@@ -19,13 +19,15 @@ treeUI.updateTreeLayout(game.getCurrentTree());
 const guessInput = document.getElementById("guess-input");
 const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
+const hintBtn = document.getElementById("game-hint-btn");
+const restartBtn = document.getElementById("game-restart-btn");
 const guessCount = document.getElementById("guesses-count");
 guessCount.innerHTML = game.guessesRemaining; // force this to always be correct if we change the backend
 
 const modalOverlay = document.getElementById("game-over-modal");
 const modalTitle = document.getElementById("modal-title");
 const modalMessage = document.getElementById("modal-message");
-const restartBtn = document.getElementById("restart-btn");
+const restartGameBtn = document.getElementById("restart-btn");
 
 const appHeader = document.querySelector(".app-header");
 const controlsSection = document.querySelector(".controls-section");
@@ -56,7 +58,24 @@ function restartGame(tid = -1) {
   treeUI.reset();
   treeUI.updateTreeLayout(game.getCurrentTree());
   inspectClade(game.getBestTID());
+  updateHintButtonState();
 }
+
+/**
+ * Utility tracker loop to refresh the clickable state of your Hint selector.
+ * You should call this function inside your initialization routine AND
+ * right after a user makes any guess or unlocks a new node layer!
+ */
+function updateHintButtonState() {
+  if (!hintBtn) return;
+
+  const isAvailable = game.canHint();
+  hintBtn.innerHTML = `Hint (${game.hint_cost})`;
+
+  // Setting the disabled property to false makes it clickable; true locks it out
+  hintBtn.disabled = !isAvailable;
+}
+updateHintButtonState();
 
 // Register a guess submission from the input field
 function handleGuessSubmit() {
@@ -73,6 +92,7 @@ function handleGuessSubmit() {
   }
 
   guessCount.innerHTML = game.guessesRemaining;
+  updateHintButtonState();
 
   // Clear the input box for the next guess
   guessInput.value = "";
@@ -453,7 +473,7 @@ document.addEventListener("click", (e) => {
 submitBtn.addEventListener("click", handleGuessSubmit);
 
 // Pipeline Trigger: Handle Resetting the Entire Ecosystem Loop
-restartBtn.addEventListener("click", () => {
+restartGameBtn.addEventListener("click", () => {
   // 1. Hide the centered dialog interface
   modalOverlay.classList.add("hidden");
 
@@ -610,6 +630,30 @@ resetDefaultsBtn.addEventListener("click", () => {
   // game.setDifficultyPool("medium");
   // game.setRootTaxonomyID(0);
   // game.restartMatch();
+});
+
+// 1. Hook up Hint interaction loop listener
+hintBtn.addEventListener("click", () => {
+  game.getHint();
+  treeUI.updateTreeLayout(game.getCurrentTree());
+  inspectClade(game.getBestTID());
+  updateHintButtonState();
+  guessCount.innerHTML = game.guessesRemaining;
+});
+
+// 2. Hook up Restart match interaction listener
+restartBtn.addEventListener("click", () => {
+  const confirmRestart = confirm(
+    "Are you sure you want to abandon this match and start a clean game session layout?",
+  );
+  if (confirmRestart) {
+    console.log("Reinitializing gameplay loop frameworks...");
+
+    restartGame();
+
+    // Ensure button values adapt safely to the newly generated match state parameters
+    updateHintButtonState();
+  }
 });
 
 // --- Global Initialization Pipeline Loop ---

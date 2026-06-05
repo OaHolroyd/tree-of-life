@@ -549,6 +549,92 @@ body {
   font-size: 1.1rem;
 }
 
+/* --- Controls Master Row Framework --- */
+.game-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Perfectly spaces out container boxes and action items */
+  margin-bottom: 0px;
+}
+
+/* Ensure your legacy container box strips away accidental display margin blocks */
+.guesses-left-box {
+  margin: 0;
+  flex-grow: 1; /* Lets the counter stretch to fill remaining room, pushing buttons to the right */
+}
+
+/* --- Shared Game Control Button Foundation --- */
+.control-btn {
+  height: 38px; /* Matches the vertical height profile of your guesses counter box */
+  padding: 0 16px;
+  margin: 8px 0 0 0;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    opacity 0.2s;
+}
+
+/* --- 1. Yellow Hint Button Configuration --- */
+.hint-btn {
+  background-color: rgba(
+    242,
+    199,
+    68,
+    0.15
+  ); /* Muted dark-theme translucent gold */
+  border: 1px solid rgba(242, 199, 68, 0.4);
+  color: #f2c744;
+}
+
+.hint-btn:hover:not(:disabled) {
+  background-color: rgba(242, 199, 68, 0.3);
+  border-color: #f2c744;
+}
+
+/* Disabled State: Grays out cleanly when game.canHint() evaluates false */
+.hint-btn:disabled {
+  background-color: #21262d;
+  border-color: #30363d;
+  color: #8b949e;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- 2. Red Restart Button Configuration --- */
+.restart-btn {
+  background-color: rgba(218, 54, 55, 0.15); /* Muted dark-theme red frame */
+  border: 1px solid rgba(218, 54, 55, 0.4);
+  color: #da3637;
+  padding: 0 12px; /* Narrower square padding footprint for standalone icons */
+}
+
+.restart-btn:hover {
+  background-color: rgba(218, 54, 55, 0.3);
+  border-color: #da3637;
+  color: #f0f6fc;
+}
+
+.restart-btn .control-svg-icon {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+/* Fun micro-interaction: The circular arrow rotates backward when hovered */
+.restart-btn:hover .control-svg-icon {
+  transform: rotate(-180deg);
+}
+
 /* --- Clade Info Card Component --- */
 .clade-card {
   flex: 1;

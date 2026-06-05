@@ -20,6 +20,7 @@ export class Game {
    * @param {int} size - size of the species list (0/1/2, small/medium/large)
    */
   constructor(tid, root = 0, size = 1) {
+    this.hint_cost = 3;
     this.root = root;
     this.size = size;
     this.answer = tid;
@@ -52,6 +53,7 @@ export class Game {
    * @param {int} size - size of the species list (0/1/2, small/medium/large)
    */
   restart(tid, root = 0, size = 1) {
+    this.hint_cost = 3;
     this.root = root;
     this.size = size;
 
@@ -138,6 +140,51 @@ export class Game {
    */
   getTurnsTaken() {
     return NUM_GUESSES - this.guessesRemaining;
+  }
+
+  /**
+   * Get the clade that would be the next hint
+   * @returns the TID of the hint clade
+   */
+  getHintTID() {
+    let tid = this.answer;
+
+    // go up the chain until we hit something visible
+    let ptid = this.tree[tid].ptid;
+    while (this.tree[ptid].state !== CladeState.VISIBLE) {
+      tid = ptid;
+      ptid = this.tree[tid].ptid;
+    }
+
+    return tid;
+  }
+
+  /**
+   * Whether the player can ask for a hint
+   * @returns true/false
+   */
+  canHint() {
+    // TODO: also check how close we are to the answer
+    if (
+      this.guessesRemaining > this.hint_cost &&
+      this.getTurnsTaken() > 0 &&
+      this.getHintTID() !== this.answer
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Shows the next clade
+   */
+  getHint() {
+    this.guessesRemaining -= this.hint_cost;
+    const hint = this.getHintTID();
+    console.log(`hint (${hint}: ${this.tree[hint].sci_name})`);
+    this.subtree.add(hint);
+    this.tree[hint].state = CladeState.VISIBLE;
+    this.tree[this.answer].sub_ptid = hint;
   }
 
   /**
