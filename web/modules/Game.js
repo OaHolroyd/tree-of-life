@@ -2,7 +2,7 @@ import { CLADE_LIST, CladeState } from "../data/clades.js";
 import { SPECIES_LISTS, SPECIES_LIST } from "../data/species.js";
 import { loadGameStats, saveGameStats } from "./Storage.js";
 
-const NUM_GUESSES = 3;
+const NUM_GUESSES = 20;
 const NUM_CLADES = CLADE_LIST.length;
 const NUM_SPECIES = SPECIES_LIST.length;
 

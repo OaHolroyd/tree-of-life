@@ -16,10 +16,11 @@ export class Tree {
     this.ctx = this.canvas.getContext("2d");
 
     // 2. Physics Configuration Constants
-    this.SPRING_LENGTH = 140;
+    this.SPRING_LENGTH = 50;
     this.K_SPRING = 0.05;
     this.REPULSION = 4000;
     this.FRICTION = 0.82;
+    this.GRAVITY = 0.2;
     this.MAX_FORCE = 8;
 
     // 3. Internal Tracking Repositories
@@ -231,7 +232,7 @@ export class Tree {
         }
       }
       if (!node.isRoot) {
-        node.vy += 0.35 * node.inflation; // Apply directional tree gravity
+        node.vy += this.GRAVITY * node.inflation; // Apply directional tree gravity
       }
     });
 

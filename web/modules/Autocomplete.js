@@ -7,6 +7,10 @@
  * @returns
  */
 export function getSuggestions(query, previousGuesses, options, limit = 10) {
+  if (query.length === 0) {
+    return [];
+  }
+
   query = query.toLowerCase();
 
   function scoreWord(word) {

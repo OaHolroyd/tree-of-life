@@ -313,17 +313,6 @@ inspectClade = function (tid, shouldOpenMobile = true) {
 };
 
 /**
- * Helper to fetch the currently selected radio value for species pool size
- * @returns {string} "small", "medium", or "large"
- */
-function getSelectedSpeciesPool() {
-  const selectedRadio = document.querySelector(
-    'input[name="species-pool"]:checked',
-  );
-  return selectedRadio ? selectedRadio.value : "medium";
-}
-
-/**
  * Automatically builds the root node select list using data from CLADE_LIST
  */
 function initializeRootNodeDropdown() {
