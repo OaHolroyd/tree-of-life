@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cladogram</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <meta name="theme-color" content="#161b22" />
+    <meta name="background-color" content="#0d1117" />
+
+    <link rel="stylesheet" href="web/style.css" />
+
+    <link rel="manifest" href="manifest.json" />
+
+    <link rel="shortcut icon" href="web/images/icon-32.png" type="image/png" />
+    <link
+      rel="icon"
+      href="web/images/icon-32.png"
+      sizes="32x32"
+      type="image/png"
+    />
+    <link
+      rel="icon"
+      href="web/images/icon-192.png"
+      sizes="192x192"
+      type="image/png"
+    />
+
+    <link
+      rel="icon"
+      href="web/images/icon-192.png"
+      sizes="192x192"
+      type="image/png"
+    />
+    <link rel="apple-touch-icon" href="images/icon-180.png" />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Cladogram" />
+  </head>
+
+  <body class="fullscreen">
+    <header class="app-header">
+      <div class="header-branding">
+        <h1 class="app-title">Cladogram</h1>
+      </div>
+      <nav class="header-actions">
+        <button
+          id="nav-settings-btn"
+          class="nav-icon-btn"
+          title="Settings & Data"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="nav-svg-icon"
+          >
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+            ></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+
+        <button id="nav-faq-btn" class="nav-icon-btn" title="Information & FAQ">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="nav-svg-icon"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <div class="top">
+      <div class="left-panel">
+        <div class="controls-section">
+          <div class="input-group">
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="guess-input"
+                class="guess-input"
+                placeholder="Enter an animal..."
+                autocomplete="off"
+              />
+              <div
+                id="suggestions-dropdown"
+                class="suggestions-dropdown hidden"
+              ></div>
+            </div>
+            <button id="submit-guess-btn" class="submit-btn">Guess</button>
+          </div>
+          <div class="game-controls-bar">
+            <div id="guesses-left-container" class="guesses-left-box">
+              Guesses Left:
+              <span id="guesses-count" class="count-highlight">20</span>
+            </div>
+
+            <button
+              id="game-hint-btn"
+              class="control-btn hint-btn"
+              title="Get a Hint"
+            >
+              Hint (3)
+            </button>
+
+            <button
+              id="game-restart-btn"
+              class="control-btn restart-btn"
+              title="Restart Match"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="control-svg-icon"
+              >
+                <path
+                  d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!--clade block-->
+        <div id="clade-card" class="clade-card">
+          <!--titles-->
+          <div class="card-header">
+            <h2 id="clade-sci-name" class="sci-name">Metazoa</h2>
+            <p id="clade-com-name" class="com-name">Animals</p>
+          </div>
+
+          <!--info-->
+          <div class="clade-scroll-content">
+            <!--image-->
+            <div class="card-image-wrapper">
+              <img
+                id="clade-image"
+                src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Animal_diversity_b.png"
+                alt="Current Clade Visual"
+                class="clade-img"
+              />
+            </div>
+
+            <!--text-->
+            <div id="clade-text" class="card-body-text">
+              Animals are multicellular, eukaryotic organisms belonging to the
+              biological kingdom Animalia. With few exceptions, animals consume
+              organic material, breathe oxygen, have myocytes and are able to
+              move, can reproduce sexually, and grow from a hollow sphere of
+              cells, the blastula, during embryonic development. Animals form a
+              clade, meaning that they arose from a single common ancestor. Over
+              1.5 million living animal species have been described, of which
+              around 1.05 million are insects, over 85,000 are molluscs, and
+              around 65,000 are vertebrates.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div id="tree-container" class="tree-container">
+          <canvas id="tree-canvas" class="tree-canvas"></canvas>
+          <div id="node-overlay" class="node-overlay"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="game-over-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h2 id="modal-title">Game Over!</h2>
+        <p id="modal-message">You have run out of guesses.</p>
+        <button id="restart-btn" class="restart-button">Play Again</button>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-content floating-window">
+        <div class="modal-header">
+          <h2>Game Settings & Data</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="stats-dashboard">
+            <h3>Statistics</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span id="stat-played" class="stat-value">0</span>
+                <span class="stat-label">Played</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-winrate" class="stat-value">0%</span>
+                <span class="stat-label">Win %</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-streak" class="stat-value">0</span>
+                <span class="stat-label">Current Streak</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-max-streak" class="stat-value">0</span>
+                <span class="stat-label">Max Streak</span>
+              </div>
+            </div>
+            <button id="clear-data-btn" class="danger-btn">
+              Reset Statistics
+            </button>
+          </div>
+
+          <hr class="modal-divider" />
+
+          <div class="settings-group">
+            <h3>Game Settings</h3>
+
+            <div class="setting-item">
+              <label class="setting-label">Species Pool Difficulty</label>
+              <div class="segmented-control">
+                <input
+                  type="radio"
+                  id="list-small"
+                  name="species-pool"
+                  value="0"
+                />
+                <label for="list-small">Small (Easy)</label>
+
+                <input
+                  type="radio"
+                  id="list-medium"
+                  name="species-pool"
+                  value="1"
+                  checked
+                />
+                <label for="list-medium">Medium</label>
+
+                <input
+                  type="radio"
+                  id="list-large"
+                  name="species-pool"
+                  value="2"
+                />
+                <label for="list-large">Large (Hard)</label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <label for="root-node-select" class="setting-label"
+                >Starting Clade</label
+              >
+              <select id="root-node-select" class="custom-select"></select>
+            </div>
+
+            <button id="reset-defaults-btn" class="secondary-btn">
+              Reset to Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="faq-modal" class="modal-overlay hidden">
+      <div class="modal-content fullscreen-takeover">
+        <div class="modal-header">
+          <h2>Information & FAQs</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body scrollable">
+          <section class="faq-item">
+            <h3>How do I play?</h3>
+            <p>
+              Type an animal into the search input box. If you guess the hidden
+              species, you win! If your guess is not correct then it will be
+              added to the tree of life, along with the least inclusive clade
+              containing your guess and the answer (or a previous guess if this
+              one is further away).
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>What is a Clade?</h3>
+            <p>
+              A clade is a biological grouping that is composed of a common
+              ancestor and all of its descendants. For example, Dinosauria is
+              defined by the most recent common ancestor of
+              <em>Triceratops</em> and modern birds. The does result in a
+              divergence between common usage of some terms and their cladistic
+              meaning; by this definition, humans are all fish, since we can
+              trace our ancestry back to fish that emerged onto land 375 million
+              years ago in the Devonian.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>What species are included?</h3>
+            <p>
+              I have tried to include a wide range of species to capture the
+              diversity of animal life. The game has three levels of difficulty
+              representing three differently sized list of possible animals: the
+              smallest list might contain "Elephant" as an answer, and the
+              largest would contain the three separate species of extant
+              elephant.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>Bugs are so hard! Can I play without them?</h3>
+            <p>
+              Yes! As well as changing the diversity of animals that are
+              possible answers/guesses you can change the root clade to one of
+              your choosing.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>What on earth is a lancelet!?</h3>
+            <p>
+              As well as some more commonly known species like lions or orcas, I
+              have tried to include some less well-known species that showcase
+              the evolutionary history of animal life. The lancelet is a
+              chordate without a backbone - it just has a bundle of nerves and a
+              flexible notochord rather than a spine like us.
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>Why is this game so Euro-centric?</h3>
+            <p>
+              The short answer is because that's where I come from! I mainly
+              made this game because I wanted to play a version of it with a
+              wider variety of animals than the existing
+              <a href="https://metazooa.com">Metazooa</a> (from which this is
+              very obviously derived!). I essentially added animals that I'd
+              heard of, and so if I've not included your favourite lizard from
+              your home country I'm very sorry!
+            </p>
+          </section>
+          <section class="faq-item">
+            <h3>How are the links between clades defined?</h3>
+            <p>
+              The tree that underpins the game is derived from the
+              <a href="https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/"
+                >NCBI taxonomy database</a
+              >, which defines around 1.3 million(!) animal clades, from which I
+              have extracted a subset. This database is curated by specialists
+              at the NCBI, relying on published taxonomic data and external
+              expert opinion. That being said, there are still many groups where
+              there is uncertainty in their exact evolutionary origins, such as
+              bats, comb jellies, and sponges.<br />
+              More detail on exactly how the underlying data is cleaned and
+              cross-linked with information from Wikipedia can be found at the
+              game's
+              <a href="https://github.com/OaHolroyd/tree-of-life"
+                >GitHub repository</a
+              >.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="web/app.js"></script>
+  </body>
+</html>
