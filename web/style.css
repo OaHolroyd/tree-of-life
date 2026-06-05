@@ -357,21 +357,6 @@ body {
   margin: 0px 0 0 0;
 }
 
-/* Secondary Action Button (Defaults Reset) */
-/*.secondary-btn {
-  background-color: #21262d;
-  color: #c9d1d9;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-weight: 500;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    color 0.2s;
-}*/
-
 .secondary-btn:hover {
   background-color: #30363d;
   border-color: #8b949e;
@@ -897,4 +882,40 @@ body {
     overflow-y: auto;
     padding: 16px 20px;
   }
+}
+
+/* --- Global Link Styling (Targeting FAQ and Modals) --- */
+.modal-content a {
+  /* A soft, bright blue that pops against #161b22 */
+  color: #58a6ff;
+  text-decoration: none;
+
+  /* Adds a subtle underline transition for better UX */
+  border-bottom: 1px solid transparent;
+  transition:
+    border-bottom-color 0.2s,
+    color 0.2s;
+
+  /* Ensures the tap target is comfortable on mobile */
+  padding: 2px 0;
+}
+
+.modal-content a:hover {
+  /* Slightly brighter on hover for feedback */
+  color: #79c0ff;
+  border-bottom-color: #79c0ff;
+  text-decoration: none;
+}
+
+.modal-content a:active {
+  color: #1f6feb; /* Darker blue when clicked/tapped */
+}
+
+/* Optional: Styling for 'visited' links if you want them to feel different */
+.modal-content a:visited {
+  color: #a5d6ff;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }

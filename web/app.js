@@ -144,6 +144,7 @@ function updateDropdown() {
       guessInput.value = matchText;
       hideDropdown();
       guessInput.focus();
+      handleGuessSubmit();
     });
 
     dropdown.appendChild(item);
