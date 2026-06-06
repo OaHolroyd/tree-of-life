@@ -703,6 +703,33 @@ document.addEventListener("DOMContentLoaded", () => {
   // 2. Immediately look up, apply, and sync persistent configurations
   loadAndApplySettings();
 
+  if (guessInput) {
+    // Force coordinates to snap back to origin point when keyboard closes
+    guessInput.addEventListener("blur", () => {
+      window.scrollTo(0, 0);
+    });
+
+    // Automatically blur the input and close the keyboard if the tree is scrolled
+    const rightPanel = document.querySelector(".right-panel");
+    if (rightPanel) {
+      rightPanel.addEventListener("scroll", () => {
+        if (document.activeElement === guessInput) {
+          guessInput.blur();
+        }
+      });
+    }
+
+    // Automatically blur the input and close the keyboard if the clade sheet is scrolled
+    const cladeScroll = document.querySelector(".clade-scroll-content");
+    if (cladeScroll) {
+      cladeScroll.addEventListener("scroll", () => {
+        if (document.activeElement === guessInput) {
+          guessInput.blur();
+        }
+      });
+    }
+  }
+
   // --- Register PWA Service Worker Core Engine ---
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

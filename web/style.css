@@ -240,20 +240,6 @@ body {
   line-height: 1.4;
 }
 
-/* --- Mobile Grid Compression --- */
-@media (max-width: 500px) {
-  .stats-grid {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* 2x2 grid wrapper stack on tiny phone screens */
-    gap: 8px;
-  }
-  .stat-value {
-    font-size: 1.3rem;
-  }
-}
-
 .danger-btn {
   background-color: #da3637;
   color: #f0f6fc;
@@ -367,39 +353,6 @@ body {
 .settings-actions .danger-btn {
   margin: 0; /* Clear out old custom legacy margins */
   width: 100%;
-}
-
-/* --- Responsive Adjustments (< 600px) --- */
-@media (max-width: 600px) {
-  .top {
-    height: calc(100vh - 50px);
-    flex-direction: column;
-  }
-
-  .app-header {
-    justify-content: space-between;
-    padding: 0 12px; /* Marginally tighten outer margins */
-  }
-
-  .app-title {
-    position: static; /* Returns the title to the normal layout grid flow */
-    transform: none; /* Discards the desktop offset alignment math */
-    font-size: 1.5rem; /* Slightly reduce font size so it has more room to breathe */
-    pointer-events: auto; /* Re-enable tap interactions if needed */
-  }
-
-  .header-actions {
-    gap: 6px; /* Tighten the gap between the Settings and FAQ buttons */
-  }
-
-  .nav-icon-btn {
-    padding: 5px 10px; /* Slightly compress button sizes */
-    font-size: 0.85rem;
-  }
-
-  .modal-content.fullscreen-takeover {
-    padding: 20px;
-  }
 }
 
 /* --- Left Panel UI Layout --- */
@@ -869,106 +822,6 @@ body {
 /* ============================================================================
    MOBILE RESPONSIVE BREAKPOINT (< 600px)
    ============================================================================ */
-@media (max-width: 600px) {
-  /* 1. Turn the main parent container vertical */
-  .top {
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-  }
-
-  /* 2. Strip the width from the left-panel and make it transparent for layout layout staging */
-  .left-panel {
-    width: 100%;
-    display: contents; /* Deliberately bypasses this wrapper's layout constraints */
-  }
-
-  /* 3. Style the input controls to stick firmly to the top of the mobile device */
-  .controls-section {
-    background: #161b22;
-    padding: 12px 16px;
-    border-bottom: 1px solid #30363d;
-    z-index: 100;
-    box-sizing: border-box;
-  }
-
-  /* 4. Force the interactive tree container to occupy the middle viewport space */
-  .right-panel {
-    flex: 1;
-    width: 100%;
-    position: relative;
-  }
-
-  .tree-container {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* 5. Transform the Clade Card into the Bottom Sheet Drawer */
-  .clade-card {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 420px; /* Fully expanded mobile sheet height */
-
-    /* FIX 1: Make the sheet fill the entire viewport screen height */
-    height: calc(100vh - var(--header-height, 100px));
-
-    background: #161b22;
-    border-top: 1px solid #30363d;
-    border-left: none; /* Strip legacy desktop borders */
-    border-radius: 16px 16px 0 0;
-    z-index: 9; /* Float above the canvas lines and node dots */
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-
-    /* Hardware accelerated transition setup */
-    /*
-    transform: translateY(
-      350px
-    );
-    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); */
-
-    transform: translateY(var(--sheet-peek, 100vh - 170px));
-    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  /* When this class is active, the drawer slides up smoothly */
-  .clade-card.expanded {
-    transform: translateY(0px);
-  }
-
-  /* Setup a visual dragging anchor area out of the existing header element */
-  .card-header {
-    padding: 12px 20px;
-    cursor: grab;
-    position: relative;
-    background: #1c2128;
-    border-radius: 16px 16px 0 0;
-  }
-
-  /* Generate a decorative modern pill handle bar inside the header via CSS */
-  .card-header::before {
-    content: "";
-    display: block;
-    width: 36px;
-    height: 4px;
-    background: #30363d;
-    border-radius: 2px;
-    margin: -4px auto 8px auto;
-  }
-
-  /* Ensure scrollable text works comfortably within the sheet constraints */
-  .clade-scroll-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-  }
-}
 
 /* --- Global Link Styling (Targeting FAQ and Modals) --- */
 .modal-content a {
@@ -1004,4 +857,168 @@ body {
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* --- Responsive Adjustments (< 600px) --- */
+@media (max-width: 600px) {
+  /* 1. Prevent the root document body from dragging/bouncing on swipe */
+  html,
+  body {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* 1. Turn the main parent container vertical */
+  .top {
+    flex-direction: column;
+    height: 100vh;
+    /*height: calc(100vh - 50px);*/
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .app-header {
+    justify-content: space-between;
+    padding: 0 12px; /* Marginally tighten outer margins */
+  }
+
+  .app-title {
+    position: static; /* Returns the title to the normal layout grid flow */
+    transform: none; /* Discards the desktop offset alignment math */
+    font-size: 1.5rem; /* Slightly reduce font size so it has more room to breathe */
+    pointer-events: auto; /* Re-enable tap interactions if needed */
+  }
+
+  .header-actions {
+    gap: 6px; /* Tighten the gap between the Settings and FAQ buttons */
+  }
+
+  .nav-icon-btn {
+    padding: 5px 10px; /* Slightly compress button sizes */
+    font-size: 0.85rem;
+  }
+
+  .modal-content.fullscreen-takeover {
+    padding: 20px;
+  }
+
+  /* 2. Make the Left Panel act as a fixed container on mobile */
+  .left-panel {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: auto !important; /* Lets content dictate height block profiles */
+    flex-shrink: 0;
+    border-right: none;
+    border-bottom: 1px solid #323842;
+  }
+
+  /* 3. Style the input controls to stick firmly to the top of the mobile device */
+  .controls-section {
+    background: #161b22;
+    padding: 12px 16px;
+    border-bottom: 1px solid #30363d;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-sizing: border-box;
+  }
+
+  /* 4. Force the interactive tree container to occupy the middle viewport space */
+  .right-panel {
+    flex: 1;
+    width: 100%;
+    position: relative;
+
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    height: auto;
+  }
+
+  .tree-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 5. Transform the Clade Card into the Bottom Sheet Drawer */
+  .clade-card {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    /*height: 420px;*/
+
+    /* FIX 1: Make the sheet fill the entire viewport screen height */
+    height: calc(100vh - var(--header-height, 100px));
+
+    background: #161b22;
+    border-top: 1px solid #30363d;
+    border-left: none; /* Strip legacy desktop borders */
+    border-radius: 16px 16px 0 0;
+    z-index: 9; /* Float above the canvas lines and node dots */
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    /* Hardware accelerated transition setup */
+    /*
+    transform: translateY(
+      350px
+    );
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); */
+
+    transform: translateY(var(--sheet-peek, 100vh - 170px));
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+
+    touch-action: none;
+  }
+
+  /* When this class is active, the drawer slides up smoothly */
+  .clade-card.expanded {
+    transform: translateY(0px);
+  }
+
+  /* Setup a visual dragging anchor area out of the existing header element */
+  .card-header {
+    padding: 12px 20px;
+    cursor: grab;
+    position: relative;
+    background: #1c2128;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* Generate a decorative modern pill handle bar inside the header via CSS */
+  .card-header::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: #30363d;
+    border-radius: 2px;
+    margin: -4px auto 8px auto;
+  }
+
+  /* Ensure scrollable text works comfortably within the sheet constraints */
+  .clade-scroll-content {
+    flex: 1;
+    padding: 16px 20px;
+
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Re-enables iOS momentum tracking */
+    touch-action: pan-y; /* Tells iOS to allow scrolling exclusively on this axis */
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* 2x2 grid wrapper stack on tiny phone screens */
+    gap: 8px;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
 }
