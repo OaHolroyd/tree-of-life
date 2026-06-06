@@ -1,3 +1,8 @@
+/* Global state helper to cleanly collapse and hide interface elements */
+.hidden {
+  display: none !important;
+}
+
 /* --- Core Layout Configuration --- */
 body {
   margin: 0;
