@@ -2,7 +2,11 @@ import { CLADE_LIST } from "./data/clades.js";
 import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
-import { loadGameSettings, saveGameSettings } from "./modules/Storage.js";
+import {
+  loadGameSettings,
+  saveGameSettings,
+  hasOpenedBefore,
+} from "./modules/Storage.js";
 
 const AVAILABLE_ROOT_TIDS = [0, 2, 3, 5, 10];
 
@@ -783,4 +787,113 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
   }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Capture our unique elements
+  const pwaModal = document.getElementById("pwa-prompt-modal");
+  const pwaCloseBtn = document.getElementById("close-pwa-prompt-btn");
+  const pwaInstructions = document.getElementById("pwa-instructions-container");
+  const nativeInstallBtn = document.getElementById("pwa-native-install-btn");
+
+  let deferredPrompt = null;
+
+  // --- A. Native Android/Chrome Interception ---
+  // Chrome fires this event if the site meets PWA criteria and isn't installed yet
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault(); // Stop the default mini-infobar from popping up
+    deferredPrompt = e; // Cache the event so we can trigger it manually later
+
+    // Evaluate if this is a first-time mobile visitor
+    evaluatePromptTrigger("ios");
+  });
+
+  // --- B. Evaluate Prompt Conditions ---
+  function evaluatePromptTrigger(detectedOS) {
+    const isMobileSize = window.matchMedia("(max-width: 768px)").matches;
+
+    // Assume your storage utility function returns false on their absolute first visit
+    const isFirstTime = !hasOpenedBefore();
+
+    if (isFirstTime && isMobileSize) {
+      showPWAPrompt(detectedOS);
+    }
+  }
+
+  // --- C. Build Conditional UI Content Structures ---
+  function showPWAPrompt(os) {
+    // Determine the device platform user agent profile if not explicitly flagged by Chrome
+    if (!os) {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        os = "ios";
+      } else if (/android/i.test(userAgent)) {
+        os = "android";
+      } else {
+        return; // Exit silently on standard desktop environments
+      }
+    }
+
+    // Don't show the prompt if the app is already running inside PWA mode (standalone)
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      return;
+    }
+
+    // Inject step-by-step guidance parameters
+    if (os === "ios") {
+      pwaInstructions.innerHTML = `
+          <div style="background:#21262d; border:1px solid #30363d; padding:16px; border-radius:6px; margin-top:10px;">
+            <ol style="margin:0; padding-left:20px; color:#c9d1d9; line-height:1.8;">
+              <li style="margin-bottom:10px;">
+                Tap the <strong>Share</strong> button
+                <svg fill="currentColor" width="20px" height="20px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle; margin:0 4px; display:inline-block;">
+                  <path d="M30.3 13.7L25 8.4l-5.3 5.3-1.4-1.4L25 5.6l6.7 6.7z"/>
+                  <path d="M24 7h2v21h-2z"/>
+                  <path d="M35 40H15c-1.7 0-3-1.3-3-3V19c0-1.7 1.3-3 3-3h7v2h-7c-.6 0-1 .4-1 1v18c0 .6.4 1 1 1h20c.6 0 1-.4 1-1V19c0-.6-.4-1-1-1h-7v-2h7c1.7 0 3 1.3 3 3v18c0 1.7-1.3 3-3 3z"/>
+                </svg>
+                on the right side of the search bar.
+              </li>
+              <li style="margin-bottom:10px;">Scroll down through the options menu.</li>
+              <li>Tap <strong>Add to Home Screen</strong>.</li>
+            </ol>
+          </div>`;
+      nativeInstallBtn.classList.add("hidden");
+    } else if (os === "android") {
+      pwaInstructions.innerHTML = `
+        <p style="color:#8b949e;">Click the install button below to automatically add the game to your applications drawer.</p>`;
+      nativeInstallBtn.classList.remove("hidden"); // Reveal the hidden native trigger button
+    }
+
+    // Display the completed modal layout
+    pwaModal.classList.remove("hidden");
+  }
+
+  // --- D. Action Listeners ---
+  if (nativeInstallBtn) {
+    nativeInstallBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+
+      pwaModal.classList.add("hidden"); // Hide modal overlay framework
+      deferredPrompt.prompt(); // Reveal native Android system setup dialog
+
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User installation choice outcome evaluated: ${outcome}`);
+      deferredPrompt = null; // Clear out cached request memory references
+    });
+  }
+
+  if (pwaCloseBtn) {
+    pwaCloseBtn.addEventListener("click", () => {
+      pwaModal.classList.add("hidden");
+    });
+  }
+
+  // --- E. Direct Fallback Check for iOS Safari ---
+  // iOS doesn't support 'beforeinstallprompt', so we have to call evaluation directly on page load
+  setTimeout(() => {
+    // Only execute if Android setup didn't already intercept the event routine
+    if (!deferredPrompt) {
+      evaluatePromptTrigger();
+    }
+  }, 1000);
 });
