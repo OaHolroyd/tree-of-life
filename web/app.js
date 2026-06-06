@@ -455,7 +455,6 @@ function loadAndApplySettings() {
 
 function activateCladeMobileSheet() {
   console.log("activateCladeMobileSheet");
-  guessCount.innerHTML = "ON";
 
   // Force document body to clear out old active focus elements safely
   if (document.activeElement instanceof HTMLElement) {
@@ -478,7 +477,6 @@ function activateCladeMobileSheet() {
 
 function deactivateCladeMobileSheet() {
   console.log("deactivateCladeMobileSheet");
-  guessCount.innerHTML = "OFF";
   document.body.classList.remove("clade-card-active");
 }
 
@@ -567,7 +565,6 @@ restartGameBtn.addEventListener("click", () => {
 cardHeader.addEventListener(
   "touchstart",
   (e) => {
-    guessCount.innerHTML = "STRT";
     startY = e.touches[0].clientY;
     cladeCard.style.transition = "none";
   },
@@ -577,7 +574,6 @@ cardHeader.addEventListener(
 cardHeader.addEventListener(
   "touchmove",
   (e) => {
-    guessCount.innerHTML = "MVE";
     const currentY = e.touches[0].clientY;
     const deltaY = currentY - startY;
 
@@ -593,7 +589,6 @@ cardHeader.addEventListener(
 );
 
 cardHeader.addEventListener("touchend", (e) => {
-  guessCount.innerHTML = "END";
   cladeCard.style.transition = "transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)";
 
   const endY = e.changedTouches[0].clientY;
@@ -766,7 +761,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const cladeScroll = document.querySelector(".clade-scroll-content");
     if (cladeScroll) {
       cladeScroll.addEventListener("scroll", () => {
-        guessCount.innerHTML = "SCR";
         if (document.activeElement === guessInput) {
           guessInput.blur();
           cladeScroll.focus();

@@ -945,7 +945,6 @@ body {
   .clade-card-active .right-panel {
     pointer-events: none !important;
     user-select: none !important;
-    background: #ff0000;
   }
 
   /* 5. Transform the Clade Card into the Bottom Sheet Drawer */
