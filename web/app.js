@@ -455,6 +455,7 @@ function loadAndApplySettings() {
 
 function activateCladeMobileSheet() {
   console.log("activateCladeMobileSheet");
+  guessCount.innerHTML = "ON";
 
   // Force document body to clear out old active focus elements safely
   if (document.activeElement instanceof HTMLElement) {
@@ -477,6 +478,7 @@ function activateCladeMobileSheet() {
 
 function deactivateCladeMobileSheet() {
   console.log("deactivateCladeMobileSheet");
+  guessCount.innerHTML = "OFF";
   document.body.classList.remove("clade-card-active");
 }
 
