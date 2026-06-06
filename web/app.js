@@ -273,16 +273,7 @@ function inspectClade(tid) {
   document.getElementById("clade-com-name").textContent = com_name;
   document.getElementById("clade-text").textContent = text;
   document.getElementById("clade-image").src = image;
-
-  // TODO: maybe limit this to when the screen is sufficiently narrow?
-  activateCladeMobileSheet();
 }
-
-// allow clicking a node to reveal clade details
-treeUI.onNodeClick((clickedTid) => {
-  // Route the clicked ID down to our helper function to update template cards
-  inspectClade(clickedTid);
-});
 
 /**
  * Automatically pops the sheet open if we are on a smaller viewport screen size
@@ -366,14 +357,21 @@ function populateSettingsStats() {
 // Hook into your global UI panel inspector mechanism
 // to trigger the sheet slide whenever data alters
 const baseInspectClade = inspectClade;
-inspectClade = function (tid, shouldOpenMobile = true) {
+inspectClade = function (tid, shouldOpenMobile = false) {
   baseInspectClade(tid); // Update text, imagery, and selected borders
 
   // Only pop the drawer up if we are on mobile AND explicitly allowed to
   if (shouldOpenMobile && window.innerWidth <= 600) {
     cladeCard.classList.add("expanded");
+    activateCladeMobileSheet();
   }
 };
+
+// allow clicking a node to reveal clade details
+treeUI.onNodeClick((clickedTid) => {
+  // Route the clicked ID down to our helper function to update template cards
+  inspectClade(clickedTid, true);
+});
 
 /**
  * Automatically builds the root node select list using data from CLADE_LIST
@@ -466,13 +464,13 @@ function activateCladeMobileSheet() {
 
   // Crucial iOS Hack: A micro-timeout forces WebKit to redraw layout layers,
   // snapping the touch engine back to reality before the user starts swiping.
-  setTimeout(() => {
-    if (cladeCard) {
-      cladeCard.style.display = "none";
-      cladeCard.offsetHeight; // Triggers a forced structural hardware reflow
-      cladeCard.style.display = "flex";
-    }
-  }, 10);
+  // setTimeout(() => {
+  //   if (cladeCard) {
+  //     cladeCard.style.display = "none";
+  //     cladeCard.offsetHeight; // Triggers a forced structural hardware reflow
+  //     cladeCard.style.display = "flex";
+  //   }
+  // }, 10);
 }
 
 function deactivateCladeMobileSheet() {
@@ -763,7 +761,10 @@ document.addEventListener("DOMContentLoaded", () => {
       cladeScroll.addEventListener("scroll", () => {
         if (document.activeElement === guessInput) {
           guessInput.blur();
-          cladeScroll.focus();
+          setTimeout(() => {
+            cladeScroll.focus();
+          }, 50);
+          // cladeScroll.focus();
         }
       });
     }
