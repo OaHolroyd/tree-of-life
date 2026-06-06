@@ -464,13 +464,13 @@ function activateCladeMobileSheet() {
 
   // Crucial iOS Hack: A micro-timeout forces WebKit to redraw layout layers,
   // snapping the touch engine back to reality before the user starts swiping.
-  // setTimeout(() => {
-  //   if (cladeCard) {
-  //     cladeCard.style.display = "none";
-  //     cladeCard.offsetHeight; // Triggers a forced structural hardware reflow
-  //     cladeCard.style.display = "flex";
-  //   }
-  // }, 10);
+  setTimeout(() => {
+    if (cladeCard) {
+      cladeCard.style.display = "none";
+      cladeCard.offsetHeight; // Triggers a forced structural hardware reflow
+      cladeCard.style.display = "flex";
+    }
+  }, 355);
 }
 
 function deactivateCladeMobileSheet() {
@@ -761,10 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cladeScroll.addEventListener("scroll", () => {
         if (document.activeElement === guessInput) {
           guessInput.blur();
-          setTimeout(() => {
-            cladeScroll.focus();
-          }, 50);
-          // cladeScroll.focus();
+          cladeScroll.focus();
         }
       });
     }
