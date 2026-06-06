@@ -1,6 +1,6 @@
 {
-  "short_name": "Cladogram",
-  "name": "Cladogram",
+  "short_name": "Tree of Life",
+  "name": "Tree of Life",
   "description": "Guess the mystery species on the tree of life",
   "id": "/index.html",
   "start_url": "./index.html",
