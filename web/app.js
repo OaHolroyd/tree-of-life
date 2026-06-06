@@ -454,6 +454,8 @@ function loadAndApplySettings() {
 }
 
 function activateCladeMobileSheet() {
+  console.log("activateCladeMobileSheet");
+
   // Force document body to clear out old active focus elements safely
   if (document.activeElement instanceof HTMLElement) {
     document.activeElement.blur();
@@ -474,6 +476,7 @@ function activateCladeMobileSheet() {
 }
 
 function deactivateCladeMobileSheet() {
+  console.log("deactivateCladeMobileSheet");
   document.body.classList.remove("clade-card-active");
 }
 
@@ -596,6 +599,7 @@ cardHeader.addEventListener("touchend", (e) => {
       deactivateCladeMobileSheet();
       cladeCard.classList.remove("expanded"); // Swiped down to collapse
     } else {
+      activateCladeMobileSheet();
       cladeCard.classList.add("expanded"); // Swiped up to cover tree
     }
   }
@@ -606,6 +610,12 @@ cardHeader.addEventListener("touchend", (e) => {
 cardHeader.addEventListener("click", (e) => {
   if (window.innerWidth <= 600 && e.target.tagName !== "BUTTON") {
     cladeCard.classList.toggle("expanded");
+
+    if (cladeCard.classList.contains("expanded")) {
+      activateCladeMobileSheet();
+    } else {
+      deactivateCladeMobileSheet();
+    }
   }
 });
 
