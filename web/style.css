@@ -941,6 +941,12 @@ body {
     height: 100%;
   }
 
+  /* 1. When the sheet is open, block all touch interactions on the tree panel */
+  .clade-card-active .right-panel {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
+
   /* 5. Transform the Clade Card into the Bottom Sheet Drawer */
   .clade-card {
     position: fixed;
@@ -972,7 +978,8 @@ body {
     transform: translateY(var(--sheet-peek, 100vh - 170px));
     transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 
-    touch-action: none;
+    /*touch-action: none;*/
+    pointer-events: auto !important;
   }
 
   /* When this class is active, the drawer slides up smoothly */
@@ -1008,6 +1015,7 @@ body {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important; /* Re-enables iOS momentum tracking */
     touch-action: pan-y; /* Tells iOS to allow scrolling exclusively on this axis */
+    pointer-events: auto !important; /* Force touch engine assignment */
   }
 
   .stats-grid {

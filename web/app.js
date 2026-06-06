@@ -273,6 +273,9 @@ function inspectClade(tid) {
   document.getElementById("clade-com-name").textContent = com_name;
   document.getElementById("clade-text").textContent = text;
   document.getElementById("clade-image").src = image;
+
+  // TODO: maybe limit this to when the screen is sufficiently narrow?
+  activateCladeMobileSheet();
 }
 
 // allow clicking a node to reveal clade details
@@ -450,6 +453,30 @@ function loadAndApplySettings() {
   // game.setRootTaxonomyID(settings.rootTID);
 }
 
+function activateCladeMobileSheet() {
+  // Force document body to clear out old active focus elements safely
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
+  // Inject state configuration layout modifier flag properties
+  document.body.classList.add("clade-card-active");
+
+  // Crucial iOS Hack: A micro-timeout forces WebKit to redraw layout layers,
+  // snapping the touch engine back to reality before the user starts swiping.
+  setTimeout(() => {
+    if (cladeCard) {
+      cladeCard.style.display = "none";
+      cladeCard.offsetHeight; // Triggers a forced structural hardware reflow
+      cladeCard.style.display = "flex";
+    }
+  }, 10);
+}
+
+function deactivateCladeMobileSheet() {
+  document.body.classList.remove("clade-card-active");
+}
+
 // --- Event Listeners ---
 
 // Run it again if the user rotates their phone or scales their browser window container layout
@@ -566,6 +593,7 @@ cardHeader.addEventListener("touchend", (e) => {
 
   if (Math.abs(totalDelta) > 65) {
     if (totalDelta > 0) {
+      deactivateCladeMobileSheet();
       cladeCard.classList.remove("expanded"); // Swiped down to collapse
     } else {
       cladeCard.classList.add("expanded"); // Swiped up to cover tree
