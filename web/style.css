@@ -3,6 +3,18 @@
   display: none !important;
 }
 
+:root {
+  /* This forces native user-agent controls (like <select>, scrollbars,
+     and keyboards) to adopt their dark-mode styles by default */
+  color-scheme: dark !important;
+}
+
+/* Hard target for your guess input box and select menus */
+input,
+select {
+  color-scheme: dark !important;
+}
+
 /* --- Core Layout Configuration --- */
 body {
   margin: 0;
