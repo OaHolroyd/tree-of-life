@@ -330,12 +330,8 @@ function blurGuessInput() {
 
 function populateSettingsStats() {
   // Pull data from local storage, fallback to empty defaults if a brand new profile
-  const stats = JSON.parse(localStorage.getItem("clade_game_stats")) || {
-    played: 0,
-    won: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-  };
+  const stats = loadGameStats();
+  console.log(stats);
 
   // Calculate the win percentage accurately
   const winRate =

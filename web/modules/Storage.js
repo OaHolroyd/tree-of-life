@@ -55,7 +55,6 @@ export function loadGameStats() {
 export function hasOpenedBefore() {
   const savedData = loadStorage();
   if (savedData.played > 0) {
-    return false;
     return true;
   }
   return false;
