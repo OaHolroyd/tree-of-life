@@ -318,6 +318,6 @@ export class Game {
     this.stats.won = 0;
     this.stats.currentStreak = 0;
     this.stats.longestStreak = 0;
-    localStorage.setItem("clade_game_stats", JSON.stringify(this.stats));
+    saveGameStats(this.stats);
   }
 }

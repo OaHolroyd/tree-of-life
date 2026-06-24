@@ -329,9 +329,7 @@ function blurGuessInput() {
 }
 
 function populateSettingsStats() {
-  // Pull data from local storage, fallback to empty defaults if a brand new profile
-  const stats = loadGameStats();
-  console.log(stats);
+  const stats = game.getStats();
 
   // Calculate the win percentage accurately
   const winRate =
