@@ -8,24 +8,39 @@ import {
   hasOpenedBefore,
 } from "./modules/Storage.js";
 
+// ====================================
+//   CONSTANTS AND APP STATE
+// ====================================
+lkdnsdsand TODO: check focus issues with settings modal
 const AVAILABLE_ROOT_TIDS = [0, 2, 3, 5, 10];
+const IMAGE_ROTATION_PERIOD = 1000;
 
-// Create the game state and logic
+// clade sheet state
+let currentFocusIndex = -1;
+let startY = 0;
+let livePeekOffset = 0;
+
+// clade inspection state
+let activeInspectionID = -1;
+let mysteryImageInterval = null;
+let currentMysteryImageTID = -1;
+
+// Game and core UI state
 const game = new Game(-1, 0, 1);
 let suggestionList = game.getSpeciesTIDs(true);
-
-// Instantiate the visual Canvas rendering layer, passing its target container
 const treeUI = new Tree(document.getElementById("tree-container"));
-treeUI.updateTreeLayout(game.getCurrentTree());
 
-// --- DOM Elements ---
+// ====================================
+//   DOM ELEMENTS
+// ====================================
+
+const rightPanel = document.querySelector(".right-panel");
 const guessInput = document.getElementById("guess-input");
 const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
 const hintBtn = document.getElementById("game-hint-btn");
 const restartBtn = document.getElementById("game-restart-btn");
 const guessCount = document.getElementById("guesses-count");
-guessCount.innerHTML = game.guessesRemaining; // force this to always be correct if we change the backend
 
 const modalOverlay = document.getElementById("game-over-modal");
 const modalTitle = document.getElementById("modal-title");
@@ -36,56 +51,50 @@ const appHeader = document.querySelector(".app-header");
 const controlsSection = document.querySelector(".controls-section");
 const cladeCard = document.getElementById("clade-card");
 const cardHeader = cladeCard.querySelector(".card-header");
+const cladeScroll = document.querySelector(".clade-scroll-content");
+const cladeImage = document.getElementById("clade-image");
 
-const settingsModal = document.getElementById("settings-modal");
 const faqModal = document.getElementById("faq-modal");
+const settingsModal = document.getElementById("settings-modal");
 const openSettingsBtn = document.getElementById("nav-settings-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
-
 const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
 const rootNodeSelect = document.getElementById("root-node-select");
 
-// UI state
-let currentFocusIndex = -1; // Tracks which suggestion item is highlighted (-1 means none)
-let startY = 0;
-let livePeekOffset = 0;
+const pwaModal = document.getElementById("pwa-prompt-modal");
+const pwaCloseBtn = document.getElementById("close-pwa-prompt-btn");
+const pwaInstructions = document.getElementById("pwa-instructions-container");
+const nativeInstallBtn = document.getElementById("pwa-native-install-btn");
 
-const imageRotationPeriod = 1000;
-let activeInspectionID = -1;
-let mysteryImageInterval = null;
-let currentMysteryImageTID = -1;
+// ====================================
+//   GAME INTERACTION FUNCTIONS
+// ====================================
 
 /**
- * Restart the game
- * @param {int} tid - TID of the answer
+ * Restart the game and UI
+ * @param {int} tid - if set to -1 it will be chosen at random
  */
 function restartGame(tid = -1) {
   game.restart(tid, game.root, game.size);
+
   suggestionList = game.getSpeciesTIDs(true);
+
   treeUI.reset();
   treeUI.updateTreeLayout(game.getCurrentTree());
   inspectClade(game.getBestTID());
+
   updateHintButtonState();
+  guessCount.innerHTML = game.guessesRemaining;
 }
 
-/**
- * Utility tracker loop to refresh the clickable state of your Hint selector.
- * You should call this function inside your initialization routine AND
- * right after a user makes any guess or unlocks a new node layer!
- */
 function updateHintButtonState() {
   if (!hintBtn) return;
 
-  const isAvailable = game.canHint();
   hintBtn.innerHTML = `Hint (${game.hint_cost})`;
-
-  // Setting the disabled property to false makes it clickable; true locks it out
-  hintBtn.disabled = !isAvailable;
+  hintBtn.disabled = !game.canHint();
 }
-updateHintButtonState();
 
-// Register a guess submission from the input field
 function handleGuessSubmit() {
   const guess = guessInput.value.trim();
 
@@ -109,28 +118,23 @@ function handleGuessSubmit() {
 
   // invalid guess submitted
   if (!isValid) {
-    console.log(`Handle invalid guess: "${guess}"`);
     return;
   }
 
   // guess has ended the game
   if (hasEnded) {
-    console.log(`Handle game end`);
+    // show the answer in the clade inspector and tree
     inspectClade(game.answer);
-
-    // 1. Fire the reveal function on the rendering framework
     treeUI.revealAnswer(game.tree[game.answer]);
 
-    // 2. Check the game state engine to determine victory conditions
+    // prepare popover text
     if (game.state === GameState.WON) {
       modalTitle.textContent = "You win!";
-      // modalMessage.textContent = `The answer was ${game.tree[game.answer].com_name}. You got it in ${game.getTurnsTaken()} guesses!`;
     } else {
       modalTitle.textContent = "Game Over";
-      // modalMessage.textContent = `Out of turns! The correct clade answer was: ${game.tree[game.answer].com_name}.`;
     }
 
-    // Populate the stats directly inside your modal body string
+    // populate the stats inside the popover
     const currentStats = game.getStats();
     modalMessage.innerHTML = `
       Current Streak: <strong>${currentStats.currentStreak}</strong> |
@@ -138,7 +142,7 @@ function handleGuessSubmit() {
       Games Won: ${currentStats.won} / ${currentStats.played}
     `;
 
-    // 3. Drop down the centered banner overlay
+    // show the popover
     modalOverlay.classList.remove("hidden");
     return;
   }
@@ -147,40 +151,38 @@ function handleGuessSubmit() {
   inspectClade(game.getBestTID(), false);
 }
 
-/**
- * Starts a background loop that selects a random species image
- * from the game's currently active pool every imageRotationPeriod ms.
- */
+// ====================================
+//   UI FUNCTIONS
+// ====================================
+
 function startMysteryImageShuffler() {
   // Clear any existing interval just in case to prevent memory leaks
-  if (mysteryImageInterval) clearInterval(mysteryImageInterval);
+  if (mysteryImageInterval) {
+    clearInterval(mysteryImageInterval);
+  }
 
-  // Fallback default image in case our lookup loop below fails
+  // fallback to the root image in case
   currentMysteryImageTID = game.root;
 
-  // 2. Spin up the interval loop
+  // start up the rotation through the images
   mysteryImageInterval = setInterval(() => {
-    // Pick a new completely random index from our image array
-    let tid = game.getRandomSpeciesTID();
-    while (tid === currentMysteryImageTID) {
-      tid = game.getRandomSpeciesTID();
-    }
-    currentMysteryImageTID = tid;
-
-    // CRUCIAL: If the player is currently inspecting the secret answer,
-    // force the live HTML image tag to update instantly without needing a re-click!
+    // only do an update if we are inspecting the answer clade
     if (
       activeInspectionID === game.answer &&
       game.state === GameState.PLAYING
     ) {
-      document.getElementById("clade-image").src =
-        game.tree[currentMysteryImageTID].image;
-    }
-  }, imageRotationPeriod); // Speed modifier (in milliseconds)
-}
-startMysteryImageShuffler();
+      // pick a random index (not the previous one)
+      let tid = game.getRandomSpeciesTID();
+      while (tid === currentMysteryImageTID) {
+        tid = game.getRandomSpeciesTID();
+      }
+      currentMysteryImageTID = tid;
 
-// Renders the matched entries into HTML items
+      cladeImage.src = game.tree[currentMysteryImageTID].image;
+    }
+  }, IMAGE_ROTATION_PERIOD);
+}
+
 function updateDropdown() {
   const query = guessInput.value.trim();
   const matches = getSuggestions(query, game.guesses, suggestionList);
@@ -223,7 +225,6 @@ function hideDropdown() {
   currentFocusIndex = -1;
 }
 
-// Highlights an item and manages scrolling position
 function setFocusState(items) {
   if (!items || items.length === 0) return;
 
@@ -249,8 +250,7 @@ function setFocusState(items) {
   }
 }
 
-// show the details for the clade at TID
-function inspectClade(tid) {
+function inspectClade(tid, shouldOpenMobile = false) {
   const clade = CLADE_LIST[tid];
   activeInspectionID = tid;
   if (!clade) return;
@@ -277,21 +277,14 @@ function inspectClade(tid) {
   document.getElementById("clade-com-name").textContent = com_name;
   document.getElementById("clade-text").textContent = text;
   document.getElementById("clade-image").src = image;
-}
 
-/**
- * Automatically pops the sheet open if we are on a smaller viewport screen size
- */
-function openMobileDrawer() {
-  if (window.innerWidth <= 600) {
+  // Only pop the drawer up if we are on mobile AND explicitly allowed to
+  if (shouldOpenMobile && window.innerWidth <= 600) {
     cladeCard.classList.add("expanded");
+    activateCladeMobileSheet();
   }
 }
 
-/**
- * Dynamically measures DOM nodes and feeds exact parameters to CSS rules.
- * Updated to account for the persistent top navigation app-header.
- */
 function recalculateMobileLayout() {
   // If the user resizes to desktop view, clean up mobile-specific inline styles
   if (window.innerWidth > 600) {
@@ -322,13 +315,6 @@ function recalculateMobileLayout() {
   cladeCard.style.setProperty("--sheet-peek", `${livePeekOffset}px`);
 }
 
-recalculateMobileLayout();
-
-/**
- * Global modular utility hook to handle toggling visibility wrappers
- * @param {HTMLElement} targetModalElement
- * @param {boolean} shouldShow
- */
 function toggleModalState(targetModalElement, shouldShow) {
   if (shouldShow) {
     targetModalElement.classList.remove("hidden");
@@ -337,7 +323,6 @@ function toggleModalState(targetModalElement, shouldShow) {
   }
 }
 
-// Function to pull stats data metrics from engine storage profiles
 function populateSettingsStats() {
   // Pull data from local storage, fallback to empty defaults if a brand new profile
   const stats = JSON.parse(localStorage.getItem("clade_game_stats")) || {
@@ -358,28 +343,6 @@ function populateSettingsStats() {
   document.getElementById("stat-max-streak").textContent = stats.longestStreak;
 }
 
-// Hook into your global UI panel inspector mechanism
-// to trigger the sheet slide whenever data alters
-const baseInspectClade = inspectClade;
-inspectClade = function (tid, shouldOpenMobile = false) {
-  baseInspectClade(tid); // Update text, imagery, and selected borders
-
-  // Only pop the drawer up if we are on mobile AND explicitly allowed to
-  if (shouldOpenMobile && window.innerWidth <= 600) {
-    cladeCard.classList.add("expanded");
-    activateCladeMobileSheet();
-  }
-};
-
-// allow clicking a node to reveal clade details
-treeUI.onNodeClick((clickedTid) => {
-  // Route the clicked ID down to our helper function to update template cards
-  inspectClade(clickedTid, true);
-});
-
-/**
- * Automatically builds the root node select list using data from CLADE_LIST
- */
 function initializeRootNodeDropdown() {
   const selectElement = document.getElementById("root-node-select");
 
@@ -482,7 +445,9 @@ function deactivateCladeMobileSheet() {
   document.body.classList.remove("clade-card-active");
 }
 
-// --- Event Listeners ---
+// ====================================
+//   EVENT LISTENERS
+// ====================================
 
 // Run it again if the user rotates their phone or scales their browser window container layout
 window.addEventListener("resize", recalculateMobileLayout);
@@ -531,6 +496,11 @@ guessInput.addEventListener("keydown", (e) => {
       hideDropdown();
       break;
   }
+});
+
+// Force coordinates to snap back to origin point when keyboard closes
+guessInput.addEventListener("blur", () => {
+  window.scrollTo(0, 0);
 });
 
 // Dismiss the menu if the user clicks anywhere outside the input interface
@@ -618,6 +588,14 @@ cardHeader.addEventListener("click", (e) => {
     } else {
       deactivateCladeMobileSheet();
     }
+  }
+});
+
+// Automatically blur the input and close the keyboard if the clade sheet is scrolled
+cladeScroll.addEventListener("scroll", () => {
+  if (document.activeElement === guessInput) {
+    guessInput.blur();
+    cladeScroll.focus();
   }
 });
 
@@ -735,43 +713,27 @@ restartBtn.addEventListener("click", () => {
   }
 });
 
+// Automatically blur the input and close the keyboard if the tree is scrolled
+rightPanel.addEventListener("scroll", () => {
+  if (document.activeElement === guessInput) {
+    guessInput.blur();
+  }
+});
+
 // --- Global Initialization Pipeline Loop ---
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Build your dynamic drop-down nodes inside the HTML container DOM
+  // Start up the UI
+  treeUI.onNodeClick((clickedTid) => {
+    // Route the clicked ID down to our helper function to update template cards
+    inspectClade(clickedTid, true);
+  });
+  restartGame();
+  startMysteryImageShuffler();
+  recalculateMobileLayout();
   initializeRootNodeDropdown();
-
-  // 2. Immediately look up, apply, and sync persistent configurations
   loadAndApplySettings();
 
-  if (guessInput) {
-    // Force coordinates to snap back to origin point when keyboard closes
-    guessInput.addEventListener("blur", () => {
-      window.scrollTo(0, 0);
-    });
-
-    // Automatically blur the input and close the keyboard if the tree is scrolled
-    const rightPanel = document.querySelector(".right-panel");
-    if (rightPanel) {
-      rightPanel.addEventListener("scroll", () => {
-        if (document.activeElement === guessInput) {
-          guessInput.blur();
-        }
-      });
-    }
-
-    // Automatically blur the input and close the keyboard if the clade sheet is scrolled
-    const cladeScroll = document.querySelector(".clade-scroll-content");
-    if (cladeScroll) {
-      cladeScroll.addEventListener("scroll", () => {
-        if (document.activeElement === guessInput) {
-          guessInput.blur();
-          cladeScroll.focus();
-        }
-      });
-    }
-  }
-
-  // --- Register PWA Service Worker Core Engine ---
+  // Register PWA service worker
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker
@@ -789,13 +751,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// Prompt PWA installation
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Capture our unique elements
-  const pwaModal = document.getElementById("pwa-prompt-modal");
-  const pwaCloseBtn = document.getElementById("close-pwa-prompt-btn");
-  const pwaInstructions = document.getElementById("pwa-instructions-container");
-  const nativeInstallBtn = document.getElementById("pwa-native-install-btn");
-
   let deferredPrompt = null;
 
   // --- A. Native Android/Chrome Interception ---
@@ -805,33 +762,32 @@ document.addEventListener("DOMContentLoaded", () => {
     deferredPrompt = e; // Cache the event so we can trigger it manually later
 
     // Evaluate if this is a first-time mobile visitor
-    evaluatePromptTrigger("ios");
+    evaluatePromptTrigger();
   });
 
   // --- B. Evaluate Prompt Conditions ---
-  function evaluatePromptTrigger(detectedOS) {
+  function evaluatePromptTrigger() {
     const isMobileSize = window.matchMedia("(max-width: 768px)").matches;
 
     // Assume your storage utility function returns false on their absolute first visit
     const isFirstTime = !hasOpenedBefore();
 
     if (isFirstTime && isMobileSize) {
-      showPWAPrompt(detectedOS);
+      showPWAPrompt();
     }
   }
 
   // --- C. Build Conditional UI Content Structures ---
-  function showPWAPrompt(os) {
+  function showPWAPrompt() {
     // Determine the device platform user agent profile if not explicitly flagged by Chrome
-    if (!os) {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        os = "ios";
-      } else if (/android/i.test(userAgent)) {
-        os = "android";
-      } else {
-        return; // Exit silently on standard desktop environments
-      }
+    const userAgent = navigator.userAgent || window.opera;
+    let os = null;
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      os = "ios";
+    } else if (/android/i.test(userAgent)) {
+      os = "android";
+    } else {
+      return; // Exit silently on standard desktop environments
     }
 
     // Don't show the prompt if the app is already running inside PWA mode (standalone)

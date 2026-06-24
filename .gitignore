@@ -1,6 +1,7 @@
 # Project-specific
 tol
 taxdump
+tmp
 tmp-*
 .env
 log.txt

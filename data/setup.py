@@ -1,824 +1,1628 @@
-from pathlib import Path
+from time import time, sleep
 import os
+from pathlib import Path
 import json
-import textwrap
+import re
+from typing import Any
 import requests
-import zipfile
-import io
-import time
+from copy import deepcopy
+import xml.etree.ElementTree as ET
 
-from PIL import Image
 from dotenv import load_dotenv
-import pandas as pd
+from itertools import islice
+import mwparserfromhell
+
 import networkx as nx
 from pyvis.network import Network
 import community as community_louvain
 import colorsys
+import textwrap
 
-SMALL = False
-SIZE_EXT = "-small" if SMALL else "-large"
+load_dotenv()
+EMAIL = os.getenv("EMAIL")
 
-URL = "https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip"
 BASE_DIR = Path(__file__).parent
-TAXDUMP_DIR = BASE_DIR / "taxdump"
-
-TMP_DIR = BASE_DIR / ("tmp" + SIZE_EXT)
+TMP_DIR = BASE_DIR / "tmp"
 TMP_DIR.mkdir(exist_ok=True)
 
-
-def species_txt_to_json():
-    """Convert from the txt format `sci_name (common names)` to json"""
-    species = []
-    with open(BASE_DIR / f"species{SIZE_EXT}.txt", "r") as fp:
-        for line in fp:
-            line = line.strip()
-
-            # extract sci name and common name(s)
-            line = line.split(" (")
-            sci_name = line[0]
-            common_names = line[1][:-1].split(", ")
-            species.append({"short": common_names, "scientific": sci_name})
-
-    # save intermediate in file
-    with open(BASE_DIR / f"species{SIZE_EXT}.json", "w") as fp:
-        json.dump({"species": species}, fp, indent=2)
+XML_PATH = (
+    Path(__file__).parent.parent.parent.parent.parent
+    / "Downloads/specieswiki-20260601-pages-articles.xml"
+)
+TEST_XML_PATH = (
+    Path(__file__).parent.parent.parent.parent.parent / "Downloads/subsection.xml"
+)
 
 
-def read_names(update=False) -> pd.DataFrame:
+# These are mostly genera that don't have their own page
+MANUAL_LINKS = [
+    {"name": "Anoplogaster", "parent": "Anoplogastridae", "rank": "Genus"},
+    {"name": "Balanoglossus", "parent": "Ptychoderidae", "rank": "Genus"},
+    {"name": "Cariama", "parent": "Cariamidae", "rank": "Genus"},
+    {"name": "Cephenemyia", "parent": "Oestrinae", "rank": "Genus"},
+    {"name": "Cerastoderma", "parent": "Cardiidae", "rank": "Genus"},
+    {"name": "Cryptochiton", "parent": "Acanthochitonidae", "rank": "Genus"},
+    {"name": "Dactylotum", "parent": "Acrididae", "rank": "Genus"},
+    {"name": "Dodecolopoda", "parent": "Colossendeidae", "rank": "Genus"},
+    {"name": "Dracunculus (Dracunculidae)", "parent": "Dracunculidae", "rank": "Genus"},
+    {"name": "Eulipoa", "parent": "Megapodiidae", "rank": "Genus"},
+    {"name": "Evadne", "parent": "Podonidae", "rank": "Genus"},
+    {"name": "Frankliniella", "parent": "Thripinae", "rank": "Genus"},
+    {"name": "Leiopathes", "parent": "Leiopathidae", "rank": "Genus"},
+    {"name": "Melopsittacus", "parent": "Melopsittacini", "rank": "Genus"},
+    {"name": "Nemobius", "parent": "Nemobiini", "rank": "Genus"},
+    {"name": "Numida", "parent": "Numididae", "rank": "Genus"},
+    {"name": "Pandion", "parent": "Pandionidae", "rank": "Genus"},
+    {"name": "Partamona", "parent": "Apidae", "rank": "Genus"},
+    {"name": "Placopecten", "parent": "Palliolinae", "rank": "Genus"},
+    {"name": "Radianthus", "parent": "Stichodactylidae", "rank": "Genus"},
+    {"name": "Rhincodon", "parent": "Rhincodontidae", "rank": "Genus"},
+    {"name": "Thromidia", "parent": "Mithrodiidae", "rank": "Genus"},
+    {"name": "Trigona", "parent": "Meliponini", "rank": "Genus"},
+    {"name": "Musophagiformes", "parent": "Otidimorphae", "rank": "Order"},
+    {"name": "Otidiformes", "parent": "Otidimorphae", "rank": "Order"},
+    {"name": "Cuculiformes", "parent": "Otidimorphae", "rank": "Order"},
+    #
+    {"name": "Otidimorphae", "parent": "Columbaves", "rank": "Clade"},
+    {"name": "Columbimorphae", "parent": "Columbaves", "rank": "Clade"},
+    {"name": "Columbaves", "parent": "Neoaves", "rank": "Clade"},
+    #
+    {"name": "Opisthocomiformes", "parent": "Gruae", "rank": "Order"},
+    {"name": "Gruiformes", "parent": "Gruimorphae", "rank": "Order"},
+    {"name": "Charadriiformes", "parent": "Gruimorphae", "rank": "Order"},
+    {"name": "Gruimorphae", "parent": "Gruae", "rank": "Clade"},
+    {"name": "Gruae", "parent": "Elementaves", "rank": "Clade"},
+    {"name": "Phaethoquornithes", "parent": "Elementaves", "rank": "Clade"},
+    {"name": "Caprimulgimorphae", "parent": "Elementaves", "rank": "Order"},
+    {"name": "Eurypygimorphae", "parent": "Phaethoquornithes", "rank": "Clade"},
+    {"name": "Aequornithes", "parent": "Phaethoquornithes", "rank": "Clade"},
+    {"name": "Phaethoquornithes", "parent": "Elementaves", "rank": "Clade"},
+    {"name": "Elementaves", "parent": "Neoaves", "rank": "Clade"},
+    #
+    {"name": "Strigiformes", "parent": "Hieraves", "rank": "Order"},
+    {"name": "Accipitriformes", "parent": "Hieraves", "rank": "Order"},
+    {"name": "Hieraves", "parent": "Afroaves", "rank": "Clade"},
+    {"name": "Afroaves", "parent": "Telluraves", "rank": "Clade"},
+    {"name": "Piciformes", "parent": "Picodynastornithes", "rank": "Order"},
+    {"name": "Coraciiformes", "parent": "Picodynastornithes", "rank": "Order"},
+    {"name": "Picodynastornithes", "parent": "Picocoraciae", "rank": "Clade"},
+    {"name": "Bucerotiformes", "parent": "Picocoraciae", "rank": "Order"},
+    {"name": "Picocoraciae", "parent": "Eucavitaves", "rank": "Clade"},
+    {"name": "Trogoniformes", "parent": "Eucavitaves", "rank": "Order"},
+    {"name": "Eucavitaves", "parent": "Cavitaves", "rank": "Clade"},
+    {"name": "Leptosomiformes", "parent": "Cavitaves", "rank": "Order"},
+    {"name": "Cavitaves", "parent": "Coraciimorphae", "rank": "Clade"},
+    {"name": "Coliiformes", "parent": "Coraciimorphae", "rank": "Order"},
+    {"name": "Coraciimorphae", "parent": "Afroaves", "rank": "Clade"},
+    #
+    {"name": "Araneae", "parent": "Tetrapulmonata", "rank": "Order"},
+    {"name": "Amblypygi", "parent": "Tetrapulmonata", "rank": "Order"},
+    {"name": "Tetrapulmonata", "parent": "Arachnopulmonata", "rank": "Superorder"},
+    {"name": "Pseudoscorpiones", "parent": "Panscorpiones", "rank": "Order"},
+    {"name": "Scorpiones", "parent": "Panscorpiones", "rank": "Order"},
+    {"name": "Panscorpiones", "parent": "Arachnopulmonata", "rank": "Superorder"},
+    {"name": "Arachnopulmonata", "parent": "Arachnida", "rank": "Clade"},
+    {"name": "Parasitiformes", "parent": "Arachnida", "rank": "Superorder"},
+    {"name": "Cephalosomata", "parent": "Arachnida", "rank": "Clade"},
+    {"name": "Poecilophysidea", "parent": "Cephalosomata", "rank": "Clade"},
+    {"name": "Palpigradi", "parent": "Cephalosomata", "rank": "Order"},
+    {"name": "Solifugae", "parent": "Poecilophysidea", "rank": "Order"},
+    {"name": "Acariformes", "parent": "Poecilophysidea", "rank": "Order"},
+    #
+    {"name": "Vespoidea", "parent": "Aculeata", "rank": "Superfamily"},
+    {"name": "Formicoidea", "parent": "Aculeata", "rank": "Superfamily"},
+    {"name": "Pompiloidea", "parent": "Aculeata", "rank": "Superfamily"},
+    {"name": "Apoidea", "parent": "Aculeata", "rank": "Superfamily"},
+    {"name": "Aculeata", "parent": "Apocrita", "rank": "Infraorder"},
+    {"name": "Cynipoidea", "parent": "Proctotrupomorpha", "rank": "Superfamily"},
+    {"name": "Chalcidoidea", "parent": "Proctotrupomorpha", "rank": "Superfamily"},
+    {"name": "Proctotrupomorpha", "parent": "Parasitoida", "rank": "Infraorder"},
+    {"name": "Ichneumonoidea", "parent": "Parasitoida", "rank": "Superfamily"},
+    {"name": "Parasitoida", "parent": "Apocrita", "rank": "Superfamily"},
+    {"name": "Delphinoidea", "parent": "Delphinida", "rank": "Superfamily"},
+    {"name": "Inioidea", "parent": "Delphinida", "rank": "Superfamily"},
+    #
+    {"name": "Caprini", "parent": "Caprinae", "rank": "Tribe"},
+    {"name": "Caprinae", "parent": "Bovidae", "rank": "Subfamily"},
+    #
+    {"name": "Ranidae", "parent": "Victoranura", "rank": "Family"},
+    {"name": "Conrauidae", "parent": "Victoranura", "rank": "Family"},
+    {"name": "Victoranura", "parent": "Natatanura", "rank": "Clade"},
+    {"name": "Natatanura", "parent": "Ranoidea", "rank": "Clade"},
+    {"name": "Arthroleptidae", "parent": "Allodapanura", "rank": "Family"},
+    {"name": "Microhylidae", "parent": "Allodapanura", "rank": "Family"},
+    {"name": "Allodapanura", "parent": "Ranoidea", "rank": "Clade"},
+    {"name": "Ranoidea", "parent": "Phthanobatrachia", "rank": "Clade"},
+    #
+    {"name": "Bufonidae", "parent": "Agastorophrynia", "rank": "Family"},
+    {"name": "Dendrobatidae", "parent": "Agastorophrynia", "rank": "Family"},
+    {"name": "Hylidae", "parent": "Athesphatanura", "rank": "Family"},
+    {"name": "Phyllomedusidae", "parent": "Athesphatanura", "rank": "Family"},
+    {"name": "Agastorophrynia", "parent": "Athesphatanura", "rank": "Clade"},
+    {"name": "Athesphatanura", "parent": "Phthanobatrachia", "rank": "Clade"},
+    {"name": "Phthanobatrachia", "parent": "Neobatrachia", "rank": "Clade"},
+    #
+    {"name": "Scarinae", "parent": "Labridae", "rank": "Subfamily"},
+    {"name": "Moronidae", "parent": "Acanthuriformes", "rank": "Family"},
+    {"name": "Sparidae", "parent": "Acanthuriformes", "rank": "Family"},
+    {"name": "Lutjanidae", "parent": "Acanthuriformes", "rank": "Family"},
+    #
+    {"name": "Asinus", "parent": "Equus", "rank": "Subgenus"},
+    #
+    {"name": "Myrmicinae", "parent": "Formicoid", "rank": "Subfamily"},
+    {"name": "Formicinae", "parent": "Formicoid", "rank": "Subfamily"},
+    {"name": "Ecitonini", "parent": "Dorylinae", "rank": "Tribe"},
+    {"name": "Dorylinae", "parent": "Formicoid", "rank": "Subfamily"},
+    {"name": "Paraponerinae", "parent": "Poneroid", "rank": "Subfamily"},
+    {"name": "Formicoid", "parent": "Formicidae", "rank": "Clade"},
+    {"name": "Poneroid", "parent": "Formicidae", "rank": "Clade"},
+    {"name": "Leptanilloid", "parent": "Formicidae", "rank": "Clade"},
+    #
+    {"name": "Sphyraenidae", "parent": "Centropomoidei", "rank": "Family"},
+    {"name": "Centropomoidei", "parent": "Carangiformes", "rank": "Suborder"},
+    {"name": "Soleidae", "parent": "Pleuronectoidei", "rank": "Family"},
+    {"name": "Pleuronectoidei", "parent": "Carangiformes", "rank": "Suborder"},
+    {"name": "Istiophoridae", "parent": "Menoidei", "rank": "Superfamily"},
+    {"name": "Xiphiidae", "parent": "Xiphioidea", "rank": "Family"},
+    {"name": "Xiphioidea", "parent": "Menoidei", "rank": "Superfamily"},
+    {"name": "Menoidei", "parent": "Carangiformes", "rank": "Suborder"},
+    {"name": "Carangiformes", "parent": "Carangaria", "rank": "Order"},
+    {"name": "Scorpaenoidei", "parent": "Perciformes", "rank": "Suborder"},
+    {"name": "Syngnathiformes", "parent": "Percomorpha", "rank": "Order"},
+    #
+    {"name": "Pelecaniformes", "parent": "Pelecanes", "rank": "Order"},
+    {"name": "Suliformes", "parent": "Pelecanes", "rank": "Order"},
+    {"name": "Pelecanes", "parent": "Pelecanimorphae", "rank": "Clade"},
+    {"name": "Ciconiiformes", "parent": "Pelecanimorphae", "rank": "Order"},
+    {"name": "Pelecanimorphae", "parent": "Feraequornithes", "rank": "Clade"},
+    {"name": "Austrodyptornithes", "parent": "Feraequornithes", "rank": "Clade"},
+    {"name": "Feraequornithes", "parent": "Aequornithes", "rank": "Clade"},
+    #
+    {"name": "Ophiuroidea", "parent": "Asterozoa", "rank": "Class"},
+    {"name": "Asterozoa", "parent": "Eleutherozoa", "rank": "Superclass"},
+    {"name": "Holothuroidea", "parent": "Echinozoa", "rank": "Class"},
+    {"name": "Echinoidea", "parent": "Echinozoa", "rank": "Class"},
+    {"name": "Echinozoa", "parent": "Eleutherozoa", "rank": "Superclass"},
+    #
+    {"name": "Otocolobus", "parent": "Leopard cat lineage", "rank": "Genus"},
+    {"name": "Prionailurus", "parent": "Leopard cat lineage", "rank": "Genus"},
+    {"name": "Leopard cat lineage", "parent": "Felinae", "rank": "Clade"},
+    {"name": "Puma", "parent": "Puma lineage", "rank": "Genus"},
+    {"name": "Acinonyx", "parent": "Puma lineage", "rank": "Genus"},
+    {"name": "Puma lineage", "parent": "Felinae", "rank": "Clade"},
+    #
+    {"name": "Toxicofera", "parent": "Episquamata", "rank": "Clade"},
+    {"name": "Lacertoidea", "parent": "Episquamata", "rank": "Clade"},
+    {"name": "Episquamata", "parent": "Unidentata", "rank": "Clade"},
+    {"name": "Unidentata", "parent": "Bifurcata", "rank": "Clade"},
+    {"name": "Bifurcata", "parent": "Squamata", "rank": "Clade"},
+]
+
+MANUAL_REDIRECTS = [
+    {"old": "Percomorphaceae", "new": "Percomorpha"},
+    {"old": "Caprimulgimorphae", "new": "Strisores"},
+    {"old": "Castorimorphi", "new": "Castorimorpha"},
+]
+
+RANK_MAP = {
+    "dominium": "Domain",
+    "dominia": "Domain",
+    "superregnum": "Superkingdom",
+    "superregna": "Superkingdom",
+    "regnum": "Kingdom",
+    "regna": "Kingdom",
+    "phylum": "Phylum",
+    "phyla": "Phylum",
+    "superclassis": "Superclass",
+    "superclasses": "Superclass",
+    "classis": "Class",
+    "classes": "Class",
+    "superordo": "Superorder",
+    "superordines": "Superorder",
+    "ordo": "Order",
+    "ordines": "Order",
+    "subordo": "Suborder",
+    "subordines": "Suborder",
+    "superfamilia": "Superfamily",
+    "superfamiliae": "Superfamily",
+    "familia": "Family",
+    "familiae": "Family",
+    "subfamilia": "Subfamily",
+    "subfamiliae": "Subfamily",
+    "divisio": "Division",
+    "divisiones": "Division",
+    "cohors": "Cohort",
+    "cohortes": "Cohort",
+    "sectio": "Section",
+    "sectiones": "Section",
+    "tribus": "Tribe",
+    "tribus": "Tribe",
+    "subtribus": "Subtribe",
+    "subtribus": "Subtribe",
+    "genus": "Genus",
+    "genera": "Genus",
+    "subgenus": "Subgenus",
+    "subgenera": "Subgenus",
+    "series": "Series",
+    "series": "Series",
+    "species": "Species",
+    "species": "Species",
+    "varietas": "Variety",
+    "varietates": "Variety",
+    "forma": "Form",
+    "formae": "Form",
+    "cladus": "Clade",
+    "cladi": "Clade",
+    "chimaera genus": "Genus",
+    "clade": "Clade",
+    "clades": "Clade",
+    "clasis": "Class",
+    "class": "Class",
+    "claudus": "Clade",
+    "cohort": "Cohort",
+    "cultivar": "Cultivar",
+    "division": "Division",
+    "epifamilia": "Epifamily",
+    "famililia": "Family",
+    "family": "Family",
+    "famolia": "Family",
+    "gdenus": "Genus",
+    "gednus": "Genus",
+    "generus": "Genus",
+    "genius": "Genus",
+    "gennus": "Genus",
+    "genu": "Genus",
+    "genua": "Genus",
+    "genud": "Genus",
+    "genujs": "Genus",
+    "genusd": "Genus",
+    "genys": "Genus",
+    "gernus": "Genus",
+    "geunus": "Genus",
+    "geus": "Genus",
+    "gewnus": "Genus",
+    "ggenus": "Genus",
+    "group": "Group",
+    "hypordo": "Hyporder",
+    "infraclasse": "Infraclass",
+    "infraclassis": "Infraclass",
+    "infracohors": "Infracohort",
+    "infraorden": "Infraorder",
+    "infraorder": "Infraorder",
+    "infraordo": "Infraorder",
+    "infraphylum": "Infraphylum",
+    "infraregnum": "Infrakingdom",
+    "lectotype species": "Species",
+    "magnordo": "Magnorder",
+    "megacohors": "Megacohort",
+    "microordo": "Microorder",
+    "mirordo": "Microorder",
+    "nanordo": "Nanoorder",
+    "nothogenus": "Nothogenus",
+    "nothospecies": "Nothospecies",
+    "order": "Order",
+    "ordine": "Order",
+    "parafamilia": "Parafamily",
+    "parvorder": "Parvorder",
+    "parvordo": "Parvorder",
+    "realm": "Realm",
+    "section": "Section",
+    "siubgenus": "Subgenus",
+    "specie": "Species",
+    "species group": "Species group",
+    "specis": "Species",
+    "speies": "Species",
+    "subamilia": "Subfamily",
+    "subbgenus": "Subgenus",
+    "subclass": "Subclass",
+    "subclasse": "Subclass",
+    "subclassis": "Subclass",
+    "subcohors": "Subcohort",
+    "subcohort": "Subcohort",
+    "subdivisio": "Subdivision",
+    "subdivision": "Subdivision",
+    "subenus": "Subgenus",
+    "subertribus": "Subtribe",
+    "subfamila": "Subfamily",
+    "subfamilae": "Subfamily",
+    "subfamilie": "Subfamily",
+    "subfamillia": "Subfamily",
+    "subfamily": "Subfamily",
+    "subfamlia": "Subfamily",
+    "subfamoly": "Subfamily",
+    "subfmilia": "Subfamily",
+    "subinfraordinal group": "Subinfraorder group",
+    "subinfraordo": "Subinfraorder",
+    "suborder": "Suborder",
+    "subordine": "Suborder",
+    "subordo incertae sedis": "Suborder",
+    "suboro": "Suborder",
+    "subpecies": "Subspecies",
+    "subphylum": "Subphylum",
+    "subprdo": "Suborder",
+    "subregnum": "Subkingdom",
+    "subribus": "Subtribe",
+    "subsectio": "Subsection",
+    "subsection": "Subsection",
+    "subseries": "Subseries",
+    "subspecies": "Subspecies",
+    "subtaxon": "Subtaxon",
+    "subtribe": "Subtribe",
+    "suhgenus": "Subgenus",
+    "sungenus": "Subgenus",
+    "superamilia": "Superfamily",
+    "superclass": "Superclass",
+    "supercohors": "Supercohort",
+    "supercohort": "Supercohort",
+    "superdomain": "Superdomain",
+    "superfamila": "Superfamily",
+    "superfamily": "Superfamily",
+    "superfamily group": "Superfamily group",
+    "superfamlia": "Superfamily",
+    "supergroup": "Supergroup",
+    "superorder": "Superorder",
+    "superordine": "Superorder",
+    "superphylum": "Superphylum",
+    "supertribus": "Supertribe",
+    "suprafamilia": "Superfamily",
+    "surbordo": "Suborder",
+    "sybgenus": "Subgenus",
+    "sybtribus": "Subtribe",
+    "taxon": "Taxon",
+    "tibus": "Tribe",
+    "tribe": "Tribe",
+    "tribes": "Tribe",
+    "tribu": "Tribe",
+    "type genus": "Genus",
+    "type species": "Species",
+}
+
+
+def parse_articles(xml_path: Path, force: bool = False):
     """
-    Reads in the name info from names.dmp
+    Parse the XML dump of WikiSpecies page data and extract the useful info:
+        * names
+        * links (from child to parent)
+        * redirects
+
+    This will by default try and load the data from TMP_DIR/page_data.json
+    because parsing the XML is very slow.
     """
-    if update or not Path(TMP_DIR / "names.feather").is_file():
-        file = TAXDUMP_DIR / "names.dmp"
-        df = pd.read_csv(
-            file,
-            sep="|",
-            usecols=[0, 1, 3],
-            names=["tid", "name", "class"],
-        )
-        df["name"] = df["name"].str.strip()
-        df["class"] = df["class"].str.strip()
-        df.to_feather(TMP_DIR / "names.feather")
-    else:
-        df = pd.read_feather(TMP_DIR / "names.feather")
-    return df
+    if (TMP_DIR / "page_data.json").is_file() and not force:
+        with open(TMP_DIR / "page_data.json", "r") as fp:
+            return json.load(fp)
 
+    # Parse XML
+    t0 = time()
+    tree = ET.parse(xml_path)
+    print(f"load XML: {time() - t0}")
+    t0 = time()
+    root = tree.getroot()
 
-def read_nodes(update=False) -> pd.DataFrame:
-    """
-    Reads in the node info from nodes.dmp
-    """
-    if update or not Path(TMP_DIR / "nodes.feather").is_file():
-        filename = TAXDUMP_DIR / "nodes.dmp"
-        df = pd.read_csv(
-            filename,
-            sep="|",
-            usecols=[0, 1, 2],
-            names=["tid", "ptid", "rank"],
-        )
-        df["rank"] = df["rank"].str.strip()
-        df.to_feather(TMP_DIR / "nodes.feather")
-    else:
-        df = pd.read_feather(TMP_DIR / "nodes.feather")
-    return df
+    rank_re = re.compile(r"^\s*([A-Za-z][A-Za-z ]*)\s*:", re.MULTILINE)
 
-
-def generate_species(
-    names: pd.DataFrame,
-    update_short: bool = True,
-    update: bool = False,
-    verbose: bool = True,
-) -> dict:
-    """Read the species names (leaves) from species.json"""
-    # Try to shortcut from tmp file
-    if not update:
-        try:
-            with open(TMP_DIR / "species.json", "r") as fp:
-                species = json.load(fp)["species"]
-            return species
-        except FileNotFoundError:
-            print("tmp file not found, falling back to species.json")
-            pass
-
-    # Get a list of the scientific names
-    with open(BASE_DIR / f"species{SIZE_EXT}.json", "r") as fp:
-        species = json.load(fp)["species"]
-
-    # Find a TID and common names for each one
-    n = len(species)
-    for i, sp in enumerate(species):
-        sci_name = sp["scientific"]
-        if verbose:
-            print(f"{i + 1:3d}/{n} ({sci_name})")
-
-        # Find all rows with matching scientific name
-        rows = names.loc[names["name"] == sci_name]
-
-        # there should only be one match, otherwise something has gone wrong
-        if len(rows) != 1:
-            # raise RuntimeError(f"{sci_name}: {len(rows)} matches")
-            print(f"ERROR: {sci_name}: {len(rows)} matches")
+    # Iterate over pages and extract the data
+    links = []
+    redirects = []
+    names = []
+    missing_ranks = set()
+    for elem in root:
+        if not elem.tag.endswith("page"):
             continue
 
-        # Get the TID
-        tid = int(rows["tid"].iloc[0])
-        species[i]["tid"] = tid
+        etitle = elem.find("{*}title")
+        etext = elem.find(".//{*}text")
+        if etitle is None or etext is None:
+            continue
 
-        # Find short name
-        if update_short:
-            short_names = []
-            rows = names.loc[names["tid"] == tid]
-            name_classes = [
-                "common name",
-                "genbank common name",
-                "blast name",
-                "scientific name",
-            ]
-            for name_class in name_classes:
-                sub_rows = rows.loc[names["class"] == name_class]
-                if len(sub_rows) > 0:
-                    short_names = [sub_rows["name"].iloc[0]]
-                    break
+        title = etitle.text
+        if title is None:
+            continue
 
-            for name in short_names:
-                if name not in species[i]["short"]:
-                    species[i]["short"].append(name)
+        text = etext.text
+        if text is None:
+            continue
 
-    # save intermediate in file
-    with open(TMP_DIR / "species.json", "w") as fp:
-        json.dump({"species": species}, fp, indent=2)
+        # Save redirects
+        eredirect = elem.find("{*}redirect")
+        if eredirect is not None:
+            ens = elem.find("{*}ns")
+            if ens is not None and ens.text == "0":
+                redirects.append({"old": title, "new": eredirect.get("title")})
+            continue
 
-    return species
+        # Filter out pages we don't care about (eg citations)
+        if any([c in title for c in [".", ",", "&", "0", "1"]]):
+            continue
+        if any([c in title for c in ["Documentation", "Taxon italics"]]):
+            continue
 
+        # The page is either a standard taxon page (<title>Clade</title>) or a
+        # template page (<title>Template:Clade</title>)
+        if title.startswith("Template:"):
+            # Template pages typically include the parent clade as a nested template
+            name = title[9:]
+            code = mwparserfromhell.parse(text)
+            for template in code.filter_templates():
+                template_name = str(template.name).strip()
 
-def filter_graph(
-    nodes: pd.DataFrame,
-    names: pd.DataFrame,
-    species: dict,
-    update: bool = False,
-    verbose: bool = True,
-    root: int | str | None = None,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Filters the nodes in the graph so only the subgraph with the species as
-    leaves remains. Also filters the names to match.
+                if template_name.lower() == "taxonav":
+                    if len(template.params) >= 1:
+                        template_name = str(template.params[0].value).strip()
 
-    If root is set (scientific name or NCBI TID) also remove everything
-    above this point.
-    """
-    if (
-        (not update)
-        and Path(TMP_DIR / "sub_nodes.feather").is_file()
-        and Path(TMP_DIR / "sub_names.feather").is_file()
-    ):
-        sub_nodes = pd.read_feather(TMP_DIR / "sub_nodes.feather")
-        sub_names = pd.read_feather(TMP_DIR / "sub_names.feather")
+                # Ignore obvious non-taxonomic templates
+                if template_name.lower() in {
+                    "namespace",
+                    "ns:0",
+                    "pbr",
+                    "sbr",
+                    "tbr",
+                    "fbr",
+                    "gbr",
+                    "cbr",
+                    "obr",
+                    "pagenamee",
+                    "BASEPAGENAME",
+                }:
+                    continue
+                if "#if" in template_name.lower():
+                    continue
+                if "taxon italics" in template_name.lower():
+                    continue
+                if "taxonav" in template_name.lower():
+                    continue
 
-        if verbose:
-            print(f"filtered from {len(nodes):,} to {len(sub_nodes):,} nodes")
+                if template_name.startswith("Template:"):
+                    template_name = template_name[9:]
 
-        return sub_nodes, sub_names
+                # Try and find the rank of this node
+                rank = rank_re.search(text)
+                if rank is not None:
+                    rank = (
+                        rank.group(1)
+                        .strip()
+                        .encode("ascii", errors="ignore")
+                        .strip()
+                        .decode("ascii")
+                    )
+                    if rank.lower() not in RANK_MAP:
+                        missing_ranks.add(rank.lower())
+                    rank = RANK_MAP.get(rank.lower())
 
-    # find root TID
-    if isinstance(root, int):
-        root_tid = root
-        row = nodes.loc[nodes["tid"] == root]
-        if len(row) != 1:
-            raise ValueError(f"root with name {root} not found")
-    elif isinstance(root, str):
-        row = names.loc[names["name"] == root]
-        if len(row) == 1:
-            root_tid = row.iloc[0]["tid"]
+                # Sometimes there will be weird unicode characters (eg zero-width spaces) but
+                # all the data we care about should be ASCII
+                links.append(
+                    {
+                        "name": name.encode("ascii", errors="ignore")
+                        .strip()
+                        .decode("ascii"),
+                        "parent": template_name.encode("ascii", errors="ignore")
+                        .strip()
+                        .decode("ascii"),
+                        "rank": rank,
+                    }
+                )
         else:
-            raise ValueError(f"root with name {root} not found")
+            # TODO: find the english vernacular name
+            # TODO: find the clade name
+
+            # Only include things that could be species
+            # TODO: change this later
+            if len(title.strip().split(" ")) == 2:
+                names.append(title)
+
+    for link in MANUAL_LINKS:
+        links = [l for l in links if l["name"] != link["name"]]
+        links.append(link)
+
+    redirects += MANUAL_REDIRECTS
+
+    print(f"parse XML: {time() - t0}")
+
+    with open(TMP_DIR / "page_data.json", "w") as fp:
+        json.dump(
+            {"links": links, "redirects": redirects, "names": names}, fp, indent=2
+        )
+
+    return {"links": links, "redirects": redirects, "names": names}
+
+
+def find_parents_and_rank_and_name(
+    node_name: str,
+    data,
+    ensure_full: bool = False,
+) -> tuple[list[str], str | None, str]:
+    """
+    For a given node name (scientific name), find all possible parents in the
+    data extracted from the XML dump, using redirects where necessary.
+
+    If ensure_full is set to False then the code will only return a parent once.
+    """
+    parents = []
+    rank = None
+    true_name = node_name
+    has_found = False
+    for i, node in enumerate(data["links"]):
+        if node["name"] == node_name:
+            has_found = True
+            if not ensure_full:
+                if node.get("handled"):
+                    continue
+            data["links"][i]["handled"] = True
+
+            parents.append(node["parent"])
+            rank = node["rank"]
+
+    if len(parents) == 0 and not has_found:
+        for pair in data["redirects"]:
+            if pair["old"] == node_name:
+                true_name = pair["new"]
+                _parents, rank, _ = find_parents_and_rank_and_name(true_name, data)
+                parents += _parents
+
+    return parents, rank, true_name
+
+
+# TODO: Should be able to get around this by finding the species page and checking for the genus
+MANUAL_GENUS = {
+    "Aurelia aurita": "Aurelia (Ulmaridae)",
+    "Calopteryx splendens": "Calopteryx (Calopterygidae)",
+    "Cyanea capillata": "Cyanea (Cyaneidae)",
+    "Cynocephalus volans": "Cynocephalus (Cynocephalidae)",
+    "Cystophora cristata": "Cystophora (Phocidae)",
+    "Dracunculus medinensis": "Dracunculus (Dracunculidae)",
+    "Drosophila melanogaster": "Drosophila (Sophophora)",
+    "Echinus esculentus": "Echinus (Echinidae)",
+    "Glaucidium passerinum": "Glaucidium (Strigidae)",
+    "Hystrix africaeaustralis": "Hystrix (Hystricidae)",
+    "Mertensia ovum": "Mertensia (Mertensiidae)",
+    "Morelia viridis": "Morelia (Pythonidae)",
+    "Pieris rapae": "Pieris (Pieridae)",
+    "Vandellia cirrhosa": "Vandellia (Trichomycteridae)",
+    "Zeus faber": "Zeus (Linnaeus)",
+    "Equus hemionus": "Asinus",
+    "Equus kiang": "Asinus",
+    "Equus africanus": "Asinus",
+}
+
+
+def make_chain(
+    node_name: str,
+    data,
+    ensure_full: bool = False,
+) -> list:
+    """
+    Starting at a named node (scientific name), continue finding parents until
+    none are available. If there are nodes with multiple possible parents
+    return the longest chain.
+
+    If ensure_full is set to False then the code will stop if it hits a clade
+    it has seen before.
+    """
+    # initialise the chains:
+    #    [has_ended, (node_name, rank), (node_name, rank), ..., node_name]
+    if re.match(r"[A-Z][a-z]+ [a-z]+", node_name):
+        # Species are a special case
+        genus = MANUAL_GENUS.get(node_name)
+        if genus is None:
+            genus = node_name.split(" ")[0]
+        chains = [[False, (node_name, "Species"), genus]]
     else:
-        root_tid = None
+        chains = [[False, node_name]]
+    multiple_chains = False
 
-    sub_tids = set()
-    nodes["status"] = 0
+    # Keep extending the chains until no parents are found.
+    # In the case of multiple parents, duplicate the chain and continue
+    # growing in both directions.
+    while True:
+        all_ended = True
 
-    def recursive_filter(input_tid):
-        """Adds this TID and recurses to the parent"""
-        sub_tids.add(input_tid)
+        new_chains = []
+        for chain in chains:
+            # skip if chain has ended
+            if chain[0]:
+                new_chains.append(chain)
+                continue
 
-        if input_tid == root_tid:
-            nodes.loc[nodes["tid"] == input_tid, "ptid"] = 1
-            return
+            # find all possible parents, the rank, and apply any redirects
+            parents, rank, true_name = find_parents_and_rank_and_name(
+                chain[-1], data, ensure_full or multiple_chains
+            )
+            chain[-1] = true_name
 
-        row = nodes.loc[nodes["tid"] == input_tid]
-        if len(row) > 0:
-            ptid = row["ptid"].iloc[0]
-            if row["status"].iloc[0] == 1:
-                return
-            nodes.at[row.iloc[0].name, "status"] = 1
-            if ptid != 1:
-                recursive_filter(ptid)
+            # no parents found -> chain has ended
+            if len(parents) == 0:
+                chain[0] = True
+                chain[-1] = (chain[-1], rank)
+                new_chains.append(chain)
+                continue
+            all_ended = False
 
-    # add each species TID and travel up the chain of parents
-    n = len(species)
-    for i, sp in enumerate(species):
-        if verbose:
-            print(f"{i + 1:3d}/{n} ({sp['short'][0]})")
-        recursive_filter(sp["tid"])
+            # otherwise make the chain longer
+            for parent in parents:
+                new_chain = deepcopy(chain)
+                new_chain[-1] = (new_chain[-1], rank)
+                new_chain.append(parent)
+                new_chains.append(new_chain)
 
-    if verbose:
-        print(f"filtered from {len(nodes):,} to {len(sub_tids):,} nodes")
+        chains = new_chains
+        if len(chains) != 1:
+            # filter so only the longest are kept
+            max_len = max([len(chain) for chain in chains])
+            new_chains = []
+            for chain in chains:
+                if len(chain) == max_len:
+                    new_chains.append(chain)
+            chains = new_chains
 
-    sub_nodes = nodes[nodes["tid"].isin(sub_tids)]
-    sub_names = names[names["tid"].isin(sub_tids)]
+        if len(chains) != 1:
+            multiple_chains = True
 
-    sub_nodes.to_feather(TMP_DIR / "sub_nodes.feather")
-    sub_names.to_feather(TMP_DIR / "sub_names.feather")
+        if all_ended:
+            break
 
-    return sub_nodes, sub_names
+    if len(chains) != 1:
+        # if all the chains are identical
+
+        for n0, n1 in zip(chains[0][1:], chains[1][1:]):
+            print(f"{n0} {n1}")
+        raise RuntimeError("more than one chain found")
+
+    return chains[0][1:]
 
 
-def name_nodes(
-    nodes: pd.DataFrame,
-    names: pd.DataFrame,
-    species: dict,
-    verbose: bool = True,
-) -> pd.DataFrame:
+def apply_redirects(nodes, page_data):
     """
-    Gives a scientific and common name to all of the nodes. If species is
-    provided then a species short name overrides the common name.
+    Enforce the redirects so only the most up to date names are used.
+
+    NOTE: there are some redirects which link down to their descendants
+          and so must be ignored.
     """
-    # add new column for the names
-    nodes["com_name"] = ""
-    nodes["sci_name"] = ""
+    redirects = page_data["redirects"]
+    for redirect in redirects:
+        old = redirect["old"]
+        new = redirect["new"]
 
-    # for each one try and find a correct name
-    nodes = nodes.reset_index(drop=True)
-    n = len(nodes)
-    for i, row in nodes.iterrows():
-        tid = row["tid"]
-        has_name = False
+        if old in [
+            "Crocodyliformes",
+            "Neobatrachia",
+            "Delphinida",
+            "Caprinae",
+            "Percomorpha",
+            "Asinus",
+        ]:
+            continue
 
-        if verbose:
-            print(f"{i + 1:4d} / {n} ({tid})")
-
-        # try and find a common name
-        rows = names.loc[(names["tid"] == tid) & (names["class"] == "common name")]
-        if len(rows) > 0:
-            nodes.at[i, "com_name"] = rows["name"].iloc[0]
-            has_name = True
-        else:
-            # use other types of common name as a backup
-            rows = names.loc[
-                (names["tid"] == tid) & (names["class"].str.contains("common name"))
-            ]
-            if len(rows) > 0:
-                nodes.at[i, "com_name"] = rows["name"].iloc[0]
-                has_name = True
-
-        # try and find a scientific name
-        rows = names.loc[(names["tid"] == tid) & (names["class"] == "scientific name")]
-        if len(rows) > 0:
-            nodes.at[i, "sci_name"] = rows["name"].iloc[0]
-            has_name = True
-
-        # override common name with short name (if it exists)
-        if row["rank"] == "species" and species is not None:
-            for sp in species:
-                if sp["tid"] == tid:
-                    # short might be a list of names
-                    if isinstance(sp["short"], str):
-                        nodes.at[i, "com_name"] = [sp["short"]]
-                    else:
-                        nodes.at[i, "com_name"] = sp["short"]
-                    has_name = True
-
-                    nodes.at[i, "sci_name"] = sp["scientific"]
-                    break
-
-        if (not has_name) and verbose:
-            print(f"  {tid} has no name")
-
+        if old in nodes:
+            if new in nodes:
+                # new already exists, just point everything to it
+                for i, node in nodes.items():
+                    if node["ptid"] == nodes[old]["tid"]:
+                        nodes[i]["ptid"] = nodes[new]["tid"]
+            else:
+                # new doesn't exist, move old -> new
+                nodes[new] = nodes[old]
+                nodes[new]["sci_name"] = new
+            nodes.pop(old)
     return nodes
 
 
-def _reformat_wiki_text(text: str) -> str:
-    """Clean up a wikipedia text string"""
-    if text is None:
-        return text
+def make_nodes(
+    species_list: list[dict[str, Any]],
+    data,
+    force: bool = False,
+    ensure_eukaryota: bool = False,
+):
+    """
+    Take the XML dump data and convert it into linked nodes, starting at each
+    entry in the list of species.
 
-    # replace bad character combinations
-    text = text.replace(" ()", "")
-    text = text.replace("( ", "(")
-    text = text.replace(" )", ")")
-    text = text.replace('""', '"')
+    Note that this relies on the scientific names being unique, which, since
+    they are derived from the WikiSpecies template data, they should be.
 
-    # split into sentences
-    MAX_LEN = 600
-    sentences = text.split(".")
-    text = ""
-    for s in sentences:
-        s = s + "."
-        if len(text + s) > MAX_LEN:
+    This will by default try and load the data from TMP_DIR/nodes_0.json
+    because parsing the data is fairly slow.
+    """
+    if (TMP_DIR / "nodes_0.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_0.json", "r") as fp:
+            return json.load(fp)
+    nodes = {}
+
+    def node_from_data(tid: int, ptid: int, sci_name: str, rank: str | None):
+        return {"tid": tid, "ptid": ptid, "sci_name": sci_name, "rank": rank}
+
+    n = len(species_list)
+    tid = 0
+    for i, species in enumerate(species_list):
+        print(f"{i + 1:3d}/{n:3d}: {species['scientific']} ({species['common'][0]})")
+        chain = make_chain(species["scientific"], data, ensure_eukaryota)
+
+        if ensure_eukaryota and chain[-1][0] != "Eukaryota":
+            raise RuntimeError(f"Eukaryota not reached in chain of {species}")
+
+        if chain[-1][0] not in nodes:
+            nodes[chain[-1][0]] = node_from_data(tid, -1, chain[-1][0], chain[-1][1])
+            tid += 1
+        for j in range(len(chain) - 2, -1, -1):
+            parent_name = chain[j + 1][0]
+            child_name = chain[j][0]
+
+            if child_name in nodes:
+                continue
+
+            nodes[child_name] = node_from_data(
+                tid, nodes[parent_name]["tid"], child_name, chain[j][1]
+            )
+            tid += 1
+        nodes[species["scientific"]]["com_name"] = species["common"]
+
+    nodes = apply_redirects(nodes, page_data)
+
+    # sort by tid
+    nodes_list = sorted(list(nodes.values()), key=lambda n: n["tid"])
+    nodes = {n["sci_name"]: n for n in nodes_list}
+
+    with open(TMP_DIR / "nodes_0.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+
+    return {"nodes": nodes}
+
+
+def check_nodes(nodes):
+    """Ensure that all nodes have the same root"""
+    nodes = nodes["nodes"]
+
+    for _, node in nodes.items():
+        node["status"] = 0
+
+    root = None
+    for _, node in nodes.items():
+        tid = node["tid"]
+        ptid = node["ptid"]
+        parent = None
+        for _, _node in nodes.items():
+            if _node["tid"] == ptid:
+                parent = _node
+
+        tids = {tid}
+        while ptid != -1 and parent is not None and parent["status"] == 0:
+            nodes[node["sci_name"]]["status"] = 1
+            tid = nodes[parent["sci_name"]]["tid"]
+
+            if tid in tids:
+                raise RuntimeError(f"cycle detected: repeated TID ({tid})")
+            tids.add(tid)
+
+            ptid = nodes[parent["sci_name"]]["ptid"]
+            for _, _node in nodes.items():
+                if _node["tid"] == ptid:
+                    parent = _node
+            node = parent
+
+        if root is None:
+            root = tid
+        else:
+            if root != tid:
+                if parent is None or parent["status"] == 0:
+                    raise ValueError(
+                        f"Nodes do not all have the same root_tid ({tid} is likely missing)."
+                    )
+
+    for _, node in nodes.items():
+        node.pop("status")
+
+
+def start_session():
+    """Set up session with user-agreement compliant headers"""
+    headers = {
+        "User-Agent": f"tree-of-life-bot/0.1 ({EMAIL})",
+        "Accept-Encoding": "gzip",
+    }
+    session = requests.Session()
+    session.headers.update(headers)
+    return session
+
+
+def chunks(iterable, size=50):
+    """Iterate through an iterable in batches of size"""
+    it = iter(iterable)
+    while True:
+        batch = list(islice(it, size))
+        if not batch:
             break
-        text = text + s
-    return text
+        yield batch
 
 
-def _batch_request_text(
-    session,
-    nodes: pd.DataFrame,
-    batch: dict[str, int],
-) -> pd.DataFrame:
-    """
-    Make a request to the Wikipedia API to update the text for the nodes in
-    the batch
-    """
+def get_qids_from_wikispecies(session, titles):
+    """Call the WikiSpecies API to get WikiData QIDs for a list of titles"""
+    # Make request
+    url = "https://species.wikimedia.org/w/api.php"
+    params = {
+        "action": "query",
+        "prop": "pageprops",
+        "ppprop": "wikibase_item",
+        "format": "json",
+        "redirects": 1,
+        "titles": "|".join(titles),
+    }
+    res = session.get(url, params=params, timeout=20)
+    if res.status_code != 200:
+        raise RuntimeError(f"request returned status code {res.status_code}")
+    sleep(0.1)
+
+    # Extract data
+    data = res.json()
+    pages = data["query"]["pages"]
+    result = {}
+    for page in pages.values():
+        title = page.get("title")
+        qid = page.get("pageprops", {}).get("wikibase_item")
+        if title and qid:
+            result[title] = qid
+
+    return result
+
+
+def get_qids_from_wikidata(session, titles):
+    url = "https://www.wikidata.org/w/api.php"
+    params = {
+        "action": "wbgetentities",
+        "sites": "specieswiki",
+        "props": "labels",
+        "format": "json",
+        "languages": "en",
+        "titles": "|".join(titles),
+    }
+    res = session.get(url, params=params, timeout=20)
+    if res.status_code != 200:
+        raise RuntimeError(f"request returned status code {res.status_code}")
+    sleep(0.1)
+
+    # Extract data
+    data = res.json()
+    result = {}
+    if "entities" in data:
+        for qid, val in data["entities"].items():
+            result[val["labels"]["en"]] = qid
+    return result
+
+
+MANUAL_QIDS = {
+    "Acipenserinae": "Q3604574",
+    "Metasuchia": "Q3307307",
+    "Alligatoroidea": "Q507496",
+    "Globidonta": "Q5571040",
+    "Alpheus digitalis": "Q4474074",
+    "Amblyraja hyperborea": "Q238519",
+    "Amynthas mekongianus": "Q48838660",
+    "Apeltes quadracus": "Q1327089",
+    "Novaeratitae": "Q19598164",
+    "Balanoglossus gigas": "Q2271336",
+    "Cephenemyia": "Q4355273",
+    "Cephenemyia stimulator": "Q9186604",
+    "Cerastoderma edule": "Q21124",
+    "Chionodraco hamatus": "Q2353844",
+    "Cochliomyia hominivorax": "Q526003",
+    "Coenobita perlatus": "Q2702918",
+    "Comaster schlegelii": "Q3457867",
+    "Longirostres": "Q107389342",
+    "Crocodyliformes": "Q3003172",
+    "Cryptochiton": "Q1975340",
+    "Cryptochiton stelleri": "Q1861188",
+    "Culicoides impunctatus": "Q1649781",
+    "Dactylotum": "Q5207820",
+    "Dactylotum bicolor": "Q13565184",
+    "Ensis leei": "Q61697754",
+    "Incirrata": "Q21416552",
+    "Octopodoidea": "Q20817899",
+    "Evadne spinifera": "Q4559342",
+    "Evadne": "Q4575907",
+    "Glossina morsitans": "Q14601424",
+    "Harmonia": "Q141575",
+    "Leiobunum rotundum": "Q2392905",
+    "Leiopathes glaberrima": "Q4004244",
+    "Lissachatina": "Q103781917",
+    "Lissachatina fulica": "Q103781974",
+    "Lutjanus campechanus": "Q1889210",
+    "Macrotermes natalensis": "Q49620889",
+    "Makaira nigricans": "Q882668",
+    "Mallada signatus": "Q4338695",
+    "Megachile rotundata": "Q431061",
+    "Millepora complanata": "Q3321841",
+    "Morus": "Q1651414",
+    "Nemobius sylvestris": "Q386914",
+    "Neocrinus decorus": "Q5009664",
+    "Ommatoiulus moreletii": "Q7090291",
+    "Oryctes": "Q1952376",
+    "Ostracion cubicum": "Q116179159",
+    "Ostrea edulis": "Q729678",
+    "Otobius megnini": "Q10613341",
+    "Pandaka pygmaea": "Q244168",
+    "Pistillifera": "Q108687888",
+    "Panorpoidea": "Q3893387",
+    "Paraleptuca chlorophthalmus": "Q63724514",
+    "Parexocoetus brachypterus": "Q13688923",
+    "Partamona helleri": "Q2044782",
+    "Pedetontus unimaculatus": "Q114342312",
+    "Placopecten": "Q7200412",
+    "Placopecten magellanicus": "Q3016926",
+    "Polyipnus triphanos": "Q2447170",
+    "Porcellana platycheles": "Q3908455",
+    "Radianthus": "Q18606111",
+    "Radianthus magnifica": "Q105888748",
+    "Solenopsis": "Q1075697",
+    "Stenoperla prasina": "Q10678956",
+    "Thromidia": "Q18195568",
+    "Thromidia catalai": "Q3198119",
+    "Trigona crassipes": "Q10828029",
+    "Hieraves": "Q124518532",
+    "Coraciimorphae": "Q19596468",
+    "Eucavitaves": "Q19597157",
+    "Picocoraciae": "Q19598622",
+    "Picodynastornithes": "Q19598624",
+    "Tetrapulmonata": "Q3821682",
+    "Aculeata": "Q1251421",
+    "Proctotrupomorpha": "Q11996284",
+    "Parasitoida": "",
+    "Victoranura": "",
+    "Allodapanura": "",
+    "Agastorophrynia": "",
+    "Athesphatanura": "",
+    "Phthanobatrachia": "",
+    "Neobatrachia": "Q134759",
+    "Natatanura": "Q139240716",
+    "Ranoidea": "Q6525920",
+    "Delphinida": "Q21219068",
+    "Caprinae": "Q189804",
+    "Percomorpha": "Q258278",
+    "Asinus": "Q2305786",
+    "Cephalosomata": "",
+    "Poecilophysidea": "",
+    "Arachnopulmonata": "Q80024044",
+    "Panscorpiones": "",
+    "Elementaves": "Q125268288",
+    "Gruae": "Q19597378",
+    "Gruimorphae": "Q27732132",
+    "Strisores": "Q5198624",
+    "Dorylinae": "Q4037541",
+    "Formicoid": "",
+    "Poneroid": "Q136029847",
+    "Menoidei": "Q100148330",
+    "Centropomoidei": "Q100146133",
+    "Xiphioidea": "Q33189325",
+    "Pelecanes": "Q131446239",
+    "Pelecanimorphae": "Q111752876",
+    "Feraequornithes": "Q119822370",
+    "Echinozoa": "Q2698547",
+    #
+    "Acipenser oxyrinchus": "Q11031462",
+    "Apeltes quadracus": "Q19760858",
+    "Cephenemyia stimulator": "Q4355273",
+    "Cyclopterus lumpus": "Q18001776",
+    "Papilionoidea": "Q11946202",
+    "Dicotyles tajacu": "Q125498219",
+    "Diomedea exulans": "Q138658075",
+    "Diploria labyrinthiformis": "Q2710086",
+    "Dodecolopoda mawsoni": "Q4347891",
+    "Hippotragini": "Q725271",
+    "Istiophoridae": "Q123478185",
+    "Sphenodon punctatus": "Q163283",
+    "Megascapheus bottae": "Q1497037",
+    "Castorimorpha": "Q849836",
+    "Puma lineage": "",
+    "Leopard cat lineage": "",
+    "Episquamata": "Q13518421",
+    "Unidentata": "Q139260769",
+    "Bifurcata": "Q2902081",
+}
+
+
+def add_qids(nodes, force: bool = False):
+    """Match the WikiSpecies entry to a unique WikiData QID"""
+    if (TMP_DIR / "nodes_1.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_1.json", "r") as fp:
+            return json.load(fp)
+
+    session = start_session()
+
+    # Assign a QID to each node
+    nodes = nodes["nodes"]
+    titles = nodes.keys()
+    count = 0
+    n = len(titles)
+    for batch in chunks(titles, size=50):
+        count += len(batch)
+        print(f"{count:4d}/{n}")
+        qid_map = get_qids_from_wikispecies(session, batch)
+
+        # Match the qids to the nodes
+        unmatched_qids = {}
+        for title, qid in qid_map.items():
+            try:
+                nodes[title]["qid"] = qid
+            except:
+                unmatched_qids[title] = qid
+
+        # if len(unmatched_qids) != 0:
+        #     for t, q in unmatched_qids.items():
+        #         print(f"{t}: {q}")
+        #     print()
+        #     for t in batch:
+        #         if "qid" not in nodes[t]:
+        #             print(t)
+        #     raise RuntimeError("unmatched titles/QIDs")
+
+    # Apply manual overwrites
+    for title, qid in MANUAL_QIDS.items():
+        nodes[title]["qid"] = qid
+
+    # Check for any nodes without QIDs
+    missing = []
+    for key, node in nodes.items():
+        if "qid" not in node:
+            missing.append(key)
+    if len(missing) != 0:
+        for t in missing:
+            print(t)
+        raise RuntimeError(
+            f"{len(missing)} missing QIDs. Searching wikidata.org is likely to return an entry which can be added to MANUAL_QIDS"
+        )
+
+    with open(TMP_DIR / "nodes_1.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+
+    return {"nodes": nodes}
+
+
+def get_wikititles_from_qids(session, qids):
+    """Call the WikiData API to get Wikipedia titles for a list of QIDs"""
+    # remove empty strings
+    qids = [q for q in qids if len(q) > 0]
+
+    # Make request
+    url = "https://www.wikidata.org/w/api.php"
+    params = {
+        "action": "wbgetentities",
+        "props": "sitelinks",
+        "sitefilter": "enwiki",
+        "format": "json",
+        "ids": "|".join(qids),
+    }
+    res = session.get(url, params=params, timeout=20)
+    if res.status_code != 200:
+        raise RuntimeError(f"request returned status code {res.status_code}")
+    sleep(0.1)
+
+    # Extract data
+    data = res.json()
+    result = {}
+    for qid, entity in data.get("entities", {}).items():
+        sitelinks = entity.get("sitelinks", {})
+        enwiki = sitelinks.get("enwiki")
+        if enwiki:
+            result[qid] = enwiki["title"]
+
+    return result
+
+
+def get_wikititles_from_latin(session, latin):
+    """Call the Wikipedia API to get Wikipedia titles for a list of Latin names"""
+    # Make request
     url = "https://en.wikipedia.org/w/api.php"
+    params = {
+        "action": "query",
+        "format": "json",
+        "redirects": 1,
+        "titles": "|".join(latin),
+    }
+    res = session.get(url, params=params, timeout=20)
+    if res.status_code != 200:
+        raise RuntimeError(f"request returned status code {res.status_code}")
+    sleep(0.1)
 
-    # text request
-    params_text = {
+    # Extract data
+    data = res.json()
+
+    redirects = data.get("query", {}).get("redirects", {})
+    pages = data.get("query", {}).get("pages", {})
+    result = {}
+    for val in pages.values():
+        if "missing" in val:
+            continue
+        result[val["title"]] = (val["title"], False)
+
+    for redirect in redirects:
+        if "tofragment" in redirect:
+            continue
+        result[redirect["from"]] = (redirect["to"], True)
+    return result
+
+
+MANUAL_WIKITITLES = {"": ""}
+
+
+def add_wikititles(nodes, force: bool = False):
+    """Use the QID to find the Wikipedia page title"""
+    if (TMP_DIR / "nodes_2.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_2.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
+
+    session = start_session()
+
+    # Assign a wikititle to each node
+    node_list = list(nodes.values())
+    count = 0
+    n = len(node_list)
+    for batch in chunks(node_list, size=50):
+        count += len(batch)
+        print(f"{count:4d}/{n}")
+        qids = [node["qid"] for node in batch]
+        wikititle_map = get_wikititles_from_qids(session, qids)
+
+        # Match the wikititles to the nodes
+        for node in batch:
+            if node["qid"] in wikititle_map:
+                nodes[node["sci_name"]]["wikititle"] = wikititle_map[node["qid"]]
+
+    # Try another approach for missing entries
+    missing = []
+    for key, node in nodes.items():
+        if "wikititle" not in node:
+            missing.append(key)
+    count = 0
+    n = len(missing)
+    for batch in chunks(missing, size=50):
+        count += len(batch)
+        print(f"{count:4d}/{n}")
+        wikititle_map = get_wikititles_from_latin(session, batch)
+
+        # Match the wikititles to the nodes
+        for title in missing:
+            if title in wikititle_map:
+                wikititle, is_redirect = wikititle_map[title]
+                nodes[title]["wikititle"] = wikititle
+                if is_redirect:
+                    nodes[title]["is_redirect"] = True
+
+    # Check for any nodes without wikititles
+    missing = []
+    for key, node in nodes.items():
+        if "wikititle" not in node:
+            missing.append(key)
+            print(node["sci_name"])
+    if len(missing) != 0:
+        print(f"WARNING: {len(missing)} missing wikititles")
+
+    # Resolve duplicate wikititles
+    # Group the nodes in lists corresponding to each wikititle
+    wikititles = {}
+    for title, node in nodes.items():
+        if "wikititle" in node:
+            wikititle = node["wikititle"]
+            if wikititle not in wikititles:
+                wikititles[wikititle] = []
+            wikititles[wikititle].append(node)
+    for wikititle, node_list in wikititles.items():
+        if len(node_list) == 1:
+            continue
+
+        num_non_redirect = 0
+        for node in node_list:
+            if not node.get("is_redirect", False):
+                num_non_redirect += 1
+        if num_non_redirect == 1:
+            # Only one was not a redirect, so it is the "rightful" owner
+            for node in node_list:
+                if node.get("is_redirect", False):
+                    node.pop("wikititle")
+            continue
+
+        found = False
+        for node in node_list:
+            # Check if any of them have matching title and sci_name, in which
+            # case it is (probably!) the rightful owner
+            if node["sci_name"] == wikititle:
+                found = True
+                for _node in node_list:
+                    if node["tid"] != _node["tid"]:
+                        node.pop("wikititle")
+                continue
+        if found:
+            continue
+
+        # The only other remaining possibility is that:
+        #     - there are several nodes with matching wikititles
+        #     - all of them are redirects
+        #     - none of them are obviously matching
+        for node in node_list:
+            node.pop("wikititle")
+
+    for title, node in nodes.items():
+        if "is_redirect" in node:
+            node.pop("is_redirect")
+
+    with open(TMP_DIR / "nodes_2.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+
+    return {"nodes": nodes}
+
+
+def get_wikitext_from_wikititles(session, wikititles: list[str]):
+    """Call the Wikipedia API to get Wikipedia intro text for a list of titles"""
+    # Make request
+    url = "https://en.wikipedia.org/w/api.php"
+    params = {
         "action": "query",
         "format": "json",
         "redirects": 1,
         "prop": "extracts",
         "exintro": 1,
         "explaintext": 1,
-        "titles": "|".join(batch.keys()),
+        "titles": "|".join(wikititles),
     }
-    res = session.get(url, params=params_text, timeout=20)
+    res = session.get(url, params=params, timeout=20)
     if res.status_code != 200:
         raise RuntimeError(f"request returned status code {res.status_code}")
-    data_text = res.json()
-    time.sleep(1)
+    sleep(0.1)
 
-    # update batch with replacements
-    if "redirects" in data_text["query"]:
-        for redirect in data_text["query"]["redirects"]:
-            batch[redirect["to"].replace(" ", "_")] = batch[
-                redirect["from"].replace(" ", "_")
-            ]
+    # Extract data
+    data = res.json()
+    if "batchcomplete" not in data:
+        raise RuntimeError("batch not complete, lower batch size")
+    redirects = data.get("query", {}).get("redirects", {})
+    result = {}
+    for _, value in data.get("query", {}).get("pages", {}).items():
+        title = value.get("title")
+        text = value.get("extract")
+        if title and text:
+            result[title] = text
 
-    # add text to rows
-    for _, val in data_text["query"]["pages"].items():
-        key = val["title"].replace(" ", "_")
-        if key in batch:
-            j = batch[key]
-            if "extract" in val:
-                text = val["extract"].replace("\n", " ").replace("\t", " ")
-                nodes.at[j, "text"] = _reformat_wiki_text(text)
-
-    return nodes
+    return result, redirects
 
 
-def _batch_request_img(
-    session,
-    nodes: pd.DataFrame,
-    batch: dict[str, int],
-) -> pd.DataFrame:
-    """
-    Make a request to the Wikipedia API to update the images for the nodes in
-    the batch
-    """
+def add_wikitext(nodes, force: bool = False):
+    """Add text from Wikipedia to each node if it is available"""
+    if (TMP_DIR / "nodes_3.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_3.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
+
+    session = start_session()
+
+    # Get wikitext for each node
+    node_list = list(nodes.values())
+    count = 0
+    n = len(node_list)
+    # use smaller batch sizes because the returns are limited
+    for batch in chunks(node_list, size=20):
+        count += len(batch)
+        print(f"{count:4d}/{n}")
+        wikititles = [node["wikititle"] for node in batch if "wikititle" in node]
+        wikitext_map, redirects = get_wikitext_from_wikititles(session, wikititles)
+
+        # Match the wikitext to the nodes
+        for node in batch:
+            if "wikititle" in node and node["wikititle"] in wikitext_map:
+                nodes[node["sci_name"]]["text"] = wikitext_map[node["wikititle"]]
+
+    # Check for any nodes without text
+    missing = []
+    for key, node in nodes.items():
+        if "text" not in node:
+            missing.append(key)
+    if len(missing) != 0:
+        print(f"WARNING: {len(missing)} missing text")
+
+    with open(TMP_DIR / "nodes_3.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
+
+
+def get_wikiimage_from_wikititles(session, wikititles: list[str]):
+    """Call the Wikipedia API to get Wikipedia images for a list of titles"""
+    # Make request
     url = "https://en.wikipedia.org/w/api.php"
-
-    # image request
-    params_img = {
+    params = {
         "action": "query",
         "format": "json",
         "redirects": 1,
+        "prop": "extracts",
         "prop": "pageimages",
         "pithumbsize": 500,
-        "titles": "|".join(batch.keys()),
+        "titles": "|".join(wikititles),
     }
-    res = session.get(url, params=params_img, timeout=20)
+    res = session.get(url, params=params, timeout=20)
     if res.status_code != 200:
         raise RuntimeError(f"request returned status code {res.status_code}")
-    data_img = res.json()
-    time.sleep(1)
+    sleep(0.1)
 
-    # update batch with replacements
-    if "redirects" in data_img["query"]:
-        for redirect in data_img["query"]["redirects"]:
-            batch[redirect["to"].replace(" ", "_")] = batch[
-                redirect["from"].replace(" ", "_")
-            ]
+    # Extract data
+    data = res.json()
+    if "batchcomplete" not in data:
+        raise RuntimeError("batch not complete, lower batch size")
+    redirects = data.get("query", {}).get("redirects", {})
+    result = {}
+    for _, value in data.get("query", {}).get("pages", {}).items():
+        title = value.get("title")
+        image = value.get("thumbnail", {}).get("source", {})
+        if title and image:
+            result[title] = image
 
-    # add images to rows
-    for _, val in data_img["query"]["pages"].items():
-        key = val["title"].replace(" ", "_")
-        if key in batch:
-            j = batch[key]
-            if "thumbnail" in val:
-                nodes.at[j, "image"] = val["thumbnail"]["source"]
-
-    return nodes
+    return result, redirects
 
 
-def make_wiki_name(row, wiki_names: dict[str, str]) -> str:
-    """Convert from the scientific name to the wiki name"""
-    # make wiki search name
-    wiki_name = row["sci_name"].replace(" ", "_")
+def add_wikiimages(nodes, force: bool = False):
+    """Add text from Wikipedia to each node if it is available"""
+    if (TMP_DIR / "nodes_4.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_4.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
 
-    # override with supplied data
-    if wiki_names.get(str(row["tid"])) is not None:
-        wiki_name = wiki_names[str(row["tid"])]
+    session = start_session()
 
-    return wiki_name
+    # Get wikitext for each node
+    node_list = list(nodes.values())
+    count = 0
+    n = len(node_list)
+    # use smaller batch sizes because the returns are limited
+    for batch in chunks(node_list, size=50):
+        count += len(batch)
+        print(f"{count:4d}/{n}")
+        wikititles = [node["wikititle"] for node in batch if "wikititle" in node]
+        wikiimage_map, redirects = get_wikiimage_from_wikititles(session, wikititles)
+
+        # Match the wikiimage to the nodes
+        for node in batch:
+            if "wikititle" in node and node["wikititle"] in wikiimage_map:
+                nodes[node["sci_name"]]["image"] = wikiimage_map[node["wikititle"]]
+
+    # Check for any nodes without an image
+    missing = []
+    for key, node in nodes.items():
+        if "image" not in node:
+            missing.append(key)
+    if len(missing) != 0:
+        print(f"WARNING: {len(missing)} missing image")
+
+    with open(TMP_DIR / "nodes_4.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
 
 
-def make_wiki_cache(nodes: pd.DataFrame, wiki_names: dict[str, str] | None = None):
-    """Save wiki data to a cache"""
-    if wiki_names is None:
-        wiki_names = {}
-        with open(BASE_DIR / "wiki-names.json", "r") as fp:
-            wiki_names = json.load(fp)
-
-    data = {}
-    for i, row in nodes.iterrows():
-        wiki_name = make_wiki_name(row, wiki_names)
-        data[wiki_name] = [row["text"], row["image"]]
-
-    with open(TMP_DIR / f"wiki-cache.json", "w") as fp:
-        json.dump(data, fp, indent=2)
-
-
-def add_wikidata(
-    nodes: pd.DataFrame,
-    email: str,
-    update: bool = False,
-    reattempt: bool = False,
-    verbose: bool = True,
-    use_cache: bool = True,
-) -> pd.DataFrame:
+def set_root(nodes, root: str, force: bool = False):
     """
-    Tries to add data from Wikipedia for each node.
+    Remove all nodes that do not have the root node (specified as either a QID,
+    Latin name, or wikititle) as an ancestor or are the root node.
+
+    This assumes that all the species used to initialize the node list are
+    descendants of the root node. If this is not the case an error will be
+    raised.
     """
-    if not update and (TMP_DIR / "wiki_nodes.json").is_file():
-        nodes = pd.read_json(TMP_DIR / "wiki_nodes.json")
+    if (TMP_DIR / "nodes_5.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_5.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
 
-        if not reattempt:
-            make_wiki_cache(nodes, None)
-            return nodes
-
-    # add new column for the image url/intro text if they don't already exist
-    if "image" not in nodes.columns:
-        nodes["image"] = ""
-    if "text" not in nodes.columns:
-        nodes["text"] = ""
-
-    # set up session
-    batch_size = 20
-    headers = {
-        "User-Agent": f"tree-of-life-bot/0.1 ({email})",
-        "Accept-Encoding": "gzip",
-    }
-
-    session = requests.Session()
-    session.headers.update(headers)
-
-    # try and open wiki-dict
-    wiki_names = {}
-    with open(BASE_DIR / "wiki-names.json", "r") as fp:
-        wiki_names = json.load(fp)
-
-    wiki_cache = {}
-    if use_cache:
-        with open(TMP_DIR / "wiki-cache.json", "r") as fp:
-            wiki_cache = json.load(fp)
-
-    # for each one try and get Wikipedia data
-    nodes = nodes.reset_index(drop=True)
-    if update or not (TMP_DIR / "wiki_nodes.json").is_file():
-        n = len(nodes)
-        text_batch = {}
-        img_batch = {}
-        missing_entries = {}
-        count = 0
-        for i, row in nodes.iterrows():
-            count += 1
-            if verbose:
-                print(f"{i + 1:4d}/{n} ({row['sci_name']})")
-
-            wiki_name = make_wiki_name(row, wiki_names)
-
-            # Try to use info from the cache where possible, otherwise add them
-            # to the next batch to be requested
-            text, image = wiki_cache.get(wiki_name, ("", ""))
-            if len(text) > 0:
-                nodes.at[i, "text"] = text
-            else:
-                text_batch[wiki_name] = i
-            if len(image) > 0:
-                nodes.at[i, "image"] = image
-            else:
-                img_batch[wiki_name] = i
-
-            # Process the text batch once full
-            if len(text_batch) == batch_size:
-                nodes = _batch_request_text(session, nodes, text_batch)
-
-                # check if any are missing text so we can try again
-                for name, j in text_batch.items():
-                    if nodes.at[j, "text"] == "":
-                        missing_entries[name] = j
-
-                text_batch = {}
-
-            # Process the image batch once full
-            if len(img_batch) == batch_size:
-                nodes = _batch_request_img(session, nodes, img_batch)
-
-                # check if any are missing images so we can try again
-                for name, j in img_batch.items():
-                    if nodes.at[j, "image"] == "":
-                        missing_entries[name] = j
-
-                img_batch = {}
-
-        # Process the text batch once full
-        if len(text_batch) > 0:
-            nodes = _batch_request_text(session, nodes, text_batch)
-
-            # check if any are missing text so we can try again
-            for name, j in text_batch.items():
-                if nodes.at[j, "text"] == "":
-                    missing_entries[name] = j
-
-            text_batch = {}
-
-        # Process the image batch once full
-        if len(img_batch) > 0:
-            nodes = _batch_request_img(session, nodes, img_batch)
-
-            # check if any are missing images so we can try again
-            for name, j in img_batch.items():
-                if nodes.at[j, "image"] == "":
-                    missing_entries[name] = j
-
-            img_batch = {}
+    root_title = None
+    if root[0] == "Q" and root[1].isnumeric():
+        # Root is a QID
+        for node in nodes.values():
+            if node["qid"] == root:
+                root_title = node["sci_name"]
+                break
     else:
-        # Get missing entries from the existing nodes
-        missing_entries = {}
-        for i, row in nodes.iterrows():
-            if (nodes.at[i, "text"] == "") or (nodes.at[i, "image"] == ""):
-                wiki_name = make_wiki_name(row, wiki_names)
-                missing_entries[wiki_name] = i
+        # Root is a sci name or wikititle
+        for node in nodes.values():
+            if node["sci_name"] == root or node["wikititle"] == root:
+                root_title = node["sci_name"]
+                break
 
-    # try missing entries
-    print(f"trying {len(missing_entries)} again")
-    batch_size = 10
-    text_batch = {}
-    img_batch = {}
-    n = len(missing_entries)
-    for i, key in enumerate(missing_entries.keys()):
-        if nodes.at[missing_entries[key], "text"] == "":
-            text_batch[key] = missing_entries[key]
-        if nodes.at[missing_entries[key], "image"] == "":
-            img_batch[key] = missing_entries[key]
+    if root_title is None:
+        raise ValueError(f"Root '{root}' not found")
 
-        # Process the text batch once full
-        if len(text_batch) == batch_size:
-            nodes = _batch_request_text(session, nodes, text_batch)
+    nodes[root_title]["ptid"] = -1
 
-            # check if any are missing text so we can try again
-            for name, j in text_batch.items():
-                if nodes.at[j, "text"] == "":
-                    missing_entries[name] = j
+    # If all leaf nodes are descendants of the root then we can just remove the
+    # nodes above the root node in the (ordered) node dictionary
+    to_remove = []
+    for title in nodes.keys():
+        if title == root_title:
+            break
+        to_remove.append(title)
+    for title in to_remove:
+        print(title)
+        nodes.pop(title)
 
-            text_batch = {}
+    # Assert that the new tree is well defined
+    check_nodes({"nodes": nodes})
 
-        # Process the image batch once full
-        if len(img_batch) == batch_size:
-            nodes = _batch_request_img(session, nodes, img_batch)
-
-            # check if any are missing images so we can try again
-            for name, j in img_batch.items():
-                if nodes.at[j, "image"] == "":
-                    missing_entries[name] = j
-
-            img_batch = {}
-
-    # Process the text batch once full
-    if len(text_batch) > 0:
-        nodes = _batch_request_text(session, nodes, text_batch)
-
-        # check if any are missing text so we can try again
-        for name, j in text_batch.items():
-            if nodes.at[j, "text"] == "":
-                missing_entries[name] = j
-
-        text_batch = {}
-
-    # Process the image batch once full
-    if len(img_batch) > 0:
-        nodes = _batch_request_img(session, nodes, img_batch)
-
-        # check if any are missing images so we can try again
-        for name, j in img_batch.items():
-            if nodes.at[j, "image"] == "":
-                missing_entries[name] = j
-
-        img_batch = {}
-
-    # save as json for human editing
-    nodes.to_json(TMP_DIR / "wiki_nodes.json", orient="records", indent=2)
-
-    make_wiki_cache(nodes, wiki_names)
-
-    return nodes
+    with open(TMP_DIR / "nodes_5.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
 
 
-def apply_overwrites(nodes: pd.DataFrame) -> pd.DataFrame:
-    """Apply overwrites (from `overwrite.json`) to the nodes"""
-    with open(BASE_DIR / "overwrite.json", "r") as fp:
-        overwrites = json.load(fp)
-
-    for overwrite in overwrites:
-        try:
-            node = nodes[nodes["sci_name"] == overwrite["sci_name"]].iloc[0]
-        except Exception as e:
-            print(f"ERROR: {overwrite['sci_name']} not found in nodes")
-            raise e
-
-        for key, val in overwrite.items():
-            if key == "sci_name":
-                continue
-            nodes.at[node.name, key] = val
-
-    return nodes
-
-
-def clean_text(nodes: pd.DataFrame) -> pd.DataFrame:
-    """Performs a second pass, cleaning up mistakes in the wikitext"""
-    replacements = {
-        "..": ".",
-        ". .": ".",
-        ".  .": ".",
-        ".   .": ".",
-        "(;": "(",
-        "(,": "(",
-        "(  ": "(",
-        "( ": "(",
-        "    ": " ",
-        "   ": " ",
-        "  ": " ",
-        '"': "'",
-    }
-
-    for i, node in nodes.iterrows():
-        text = node["text"]
-        for a, b in replacements.items():
-            text = text.replace(a, b)
-        nodes.at[node.name, "text"] = text
-
-    return nodes
-
-
-def remove_chains(nodes: pd.DataFrame) -> pd.DataFrame:
+def check_species_genus(nodes):
     """
-    Remove chains where no branching occurs
-
-    Importantly this operation decouples the link between a node's TID and the
-    one from the NCBI taxonomy database
+    Produce small HTML pages with species/genus pairs for manual checking.
+    If the genus page has no text, continue up to the first node that does.
     """
-    # first pass, count the number of children
-    nodes["nchildren"] = 0
-    for _, node in nodes.iterrows():
-        # increment parent child count
-        nodes.loc[nodes["tid"] == node["ptid"], "nchildren"] += 1
+    # store which pairs we have checked
+    checked_qids = []
+    if (TMP_DIR / "checked_species_genus.json").is_file():
+        with open(TMP_DIR / "checked_species_genus.json", "r") as fp:
+            checked_qids = json.load(fp)
 
-    # track whether this node has been passed over
-    # 0: unchecked, 1: to keep, -1: to remove
-    nodes["status"] = 0
+    out_dir = TMP_DIR / "pairs"
 
-    # Start iterating at the leaves and go upwards
-    species = nodes[nodes["nchildren"] == 0]
-    print(f"removing {len(nodes[nodes['nchildren'] == 1])} singleton nodes... ")
-    for i, sp in species.iterrows():
-        # travel upwards, identifying chains
-        chain = []
-        node = sp
-        while (node["ptid"] != 1) and (node["status"] == 0):
-            nodes.at[node.name, "status"] = 1
+    nodes = nodes["nodes"]
+    count = -1
+    batch_size = 20
 
-            parent = nodes[nodes["tid"] == node["ptid"]].iloc[0]
-            if parent["nchildren"] == 1:
-                # if this node is the only child of its parent then the parent
-                # and the node are part of a chain
-                if len(chain) == 0:
-                    # start of the chain
-                    chain = [node]
-                chain.append(parent)
-            elif len(chain) > 0:
-                # chain has ended and at least two nodes in so can be removed
+    def _escape_html(s: str) -> str:
+        return (
+            str(s)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+        )
 
-                # new node will have the following linking IDs
-                ptid = chain[-1]["ptid"]
-                tid = chain[0]["tid"]
+    def _find_node_by_tid(tid: int):
+        for _node in nodes.values():
+            if _node["tid"] == tid:
+                return _node
+        return None
 
-                # decide which clade will be kept
-                if chain[0]["nchildren"] == 0:
-                    # special chase where chain ends at a leaf/species which
-                    # must be retained
-                    retained = 0
-                else:
-                    # otherwise keep the most derived clade _unless_ there is a
-                    # significant disparity in how much info is available
-                    retained = 0
+    for node in nodes.values():
+        if node["rank"] != "Species":
+            continue
+        count += 1
 
-                    l_cutoff = 200
-                    if (
-                        chain[retained]["image"] == ""
-                        or len(chain[retained]["text"]) < l_cutoff
-                    ):
-                        for j, link in enumerate(chain):
-                            if j != retained:
-                                if (
-                                    link["image"] != ""
-                                    and len(link["text"]) >= l_cutoff
-                                ):
-                                    retained = j
-                                    print(
-                                        f"  using {link['sci_name']} over {chain[0]['sci_name']}"
-                                    )
-                                    break
+        qid = node["qid"]
+        if qid in checked_qids:
+            continue
+        checked_qids.append(qid)
 
-                    if chain[retained]["image"] == "" and chain[retained]["text"] == "":
-                        print(f"  ALL {chain[retained]['sci_name']}")
-                    elif chain[retained]["image"] == "":
-                        print(f"  IMG {chain[retained]['sci_name']}")
-                    elif chain[retained]["text"] == "":
-                        print(f"  TXT {chain[retained]['sci_name']}")
-                    elif len(chain[retained]["text"]) < 100:
-                        print(f"  SHT {chain[retained]['sci_name']}")
+        # Find the parent node
+        ptid = node["ptid"]
+        parent = _find_node_by_tid(ptid)
+        while parent is not None and "text" not in parent:
+            parent = _find_node_by_tid(parent["ptid"])
+        if parent is None:
+            raise ValueError(f"parent for {node['sci_name']} not found")
 
-                for j, link in enumerate(chain):
-                    if j == retained:
-                        # keep this one
-                        nodes.at[link.name, "tid"] = tid
-                        nodes.at[link.name, "nchildren"] = chain[0]["nchildren"]
-                        nodes.at[link.name, "ptid"] = ptid
-                    else:
-                        # mark this for removal
-                        nodes.at[link.name, "status"] = -1
+        # Make a small HTML file containing the node and parent sci_name,
+        # image, and text side-by-side
+        (out_dir / f"{count // batch_size}").mkdir(exist_ok=True, parents=True)
+        file = out_dir / f"{count // batch_size}" / f"{node['tid']}.html"
 
-                chain = []
+        node_name = node["sci_name"]
+        node_text = node.get("text", "")
+        node_image = node.get("image", "")
 
-            # move upwards
-            node = parent
+        parent_name = parent["sci_name"]
+        parent_text = parent.get("text", "")
+        parent_image = parent.get("image", "")
 
-    # remove the nodes that are no longer in the tree
-    nodes.drop(nodes[nodes["status"] == -1].index, inplace=True)
-    nodes.drop(["status"], axis=1, inplace=True)
+        html = f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <title>{_escape_html(node_name)} vs {_escape_html(parent_name)}</title>
+  <style>
+    body {{ font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; }}
+    .grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
+    .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 12px; }}
+    .title {{ font-size: 18px; font-weight: 650; margin: 0 0 10px 0; }}
+    img {{ max-width: 100%; height: auto; border-radius: 6px; margin: 8px 0; }}
+    .meta {{ color: #555; font-size: 12px; margin: 8px 0 0 0; }}
+    pre {{ white-space: pre-wrap; word-wrap: break-word; background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px; }}
+  </style>
+</head>
+<body>
+  <div class=\"grid\">
+    <div class=\"card\">
+      <p class=\"title\">Species: {_escape_html(node_name)}</p>
+      {f'<img src="{_escape_html(node_image)}" alt="{_escape_html(node_name)}" />' if node_image else '<div class="meta">(no image)</div>'}
+      <pre>{_escape_html(node_text)}</pre>
+      <div class=\"meta\">tid={node["tid"]} ptid={node["ptid"]} qid={_escape_html(node.get("qid", ""))} wikititle={_escape_html(node.get("wikititle", ""))}</div>
+    </div>
 
-    # save as json for human editing
-    nodes.to_json(TMP_DIR / "raw_nodes.json", orient="records", indent=2)
+    <div class=\"card\">
+      <p class=\"title\">Parent: {_escape_html(parent_name)} ({_escape_html(parent.get("rank", ""))})</p>
+      {f'<img src="{_escape_html(parent_image)}" alt="{_escape_html(parent_name)}" />' if parent_image else '<div class="meta">(no image)</div>'}
+      <pre>{_escape_html(parent_text)}</pre>
+      <div class=\"meta\">tid={parent["tid"]} ptid={parent["ptid"]} qid={_escape_html(parent.get("qid", ""))} wikititle={_escape_html(parent.get("wikititle", ""))}</div>
+    </div>
+  </div>
+</body>
+</html>
+"""
 
-    print("WARNING: the following clades are significant polytomies")
-    print(nodes.loc[nodes["nchildren"] >= 5, ["sci_name", "com_name", "nchildren"]])
+        with open(file, "w", encoding="utf-8") as fp:
+            fp.write(html)
 
-    return nodes
+    with open(TMP_DIR / "checked_species_genus.json", "w") as fp:
+        json.dump(checked_qids, fp, indent=2)
 
 
-def filter_nodes(nodes: pd.DataFrame, required: str | int) -> pd.DataFrame:
-    """Filter nodes do that all complete sub-chains include the specified node"""
-    # find node TID
+def filter_nodes(nodes: dict, required: str | int) -> dict:
+    """Filter nodes so that all complete sub-chains include the specified node.
+
+    This version operates on the dict-of-dicts structure used elsewhere in this file:
+        {"nodes": {sci_name: {"tid": int, "ptid": int, "sci_name": str, ...}, ...}}
+    or directly on the inner mapping {sci_name: node_dict}.
+
+    Returns the same shape as the input (i.e. wraps in {"nodes": ...} if provided).
+    """
+    wrapped = isinstance(nodes, dict) and "nodes" in nodes
+    node_map = nodes["nodes"] if wrapped else nodes
+
+    # Build lookup tables
+    tid_to_name: dict[int, str] = {}
+    for name, node in node_map.items():
+        tid_to_name[int(node["tid"])] = name
+
+    # Find required TID
     if isinstance(required, int):
         node_tid = required
-        row = nodes.loc[nodes["tid"] == required]
-        if len(row) != 1:
+        if node_tid not in tid_to_name:
             raise ValueError(f"node with TID {required} not found")
     elif isinstance(required, str):
-        row = nodes.loc[nodes["sci_name"] == required]
-        if len(row) == 1:
-            node_tid = row.iloc[0]["tid"]
-        else:
+        if required not in node_map:
             raise ValueError(f"node with name {required} not found")
+        node_tid = int(node_map[required]["tid"])
+    else:
+        raise TypeError("required must be str or int")
 
-    # find the species whose lineages pass through the required one
-    all_species = nodes.loc[nodes["rank"] == "species"]
-    species = []
-    for _, sp in all_species.iterrows():
-        node = sp
-        while node["ptid"] != 1:
-            if node["tid"] == node_tid:
+    # Find species whose lineages pass through the required node
+    all_species = [
+        node
+        for node in node_map.values()
+        if str(node.get("rank", "")).lower() == "species"
+    ]
+
+    species: list[dict] = []
+    for sp in all_species:
+        cur = sp
+        while True:
+            if int(cur["tid"]) == node_tid:
                 species.append(sp)
                 break
-            parent = nodes[nodes["tid"] == node["ptid"]].iloc[0]
-            node = parent
+            ptid = int(cur.get("ptid", -1))
+            if ptid == -1:
+                break
+            parent_name = tid_to_name.get(ptid)
+            if parent_name is None:
+                break
+            cur = node_map[parent_name]
 
-    # filter by those species
-    sub_tids = set()
+    # Collect all ancestors of those species (including species themselves)
+    sub_tids: set[int] = set()
 
-    def recursive_filter(input_tid):
-        """Adds this TID and recurses to the parent"""
+    def recursive_filter(input_tid: int):
+        """Adds this TID and recurses to the parent."""
+        if input_tid in sub_tids:
+            return
         sub_tids.add(input_tid)
-        row = nodes.loc[nodes["tid"] == input_tid]
-        if len(row) > 0:
-            ptid = row["ptid"].iloc[0]
-            if ptid != 1:
-                recursive_filter(ptid)
+        name = tid_to_name.get(input_tid)
+        if name is None:
+            return
+        ptid = int(node_map[name].get("ptid", -1))
+        if ptid != -1:
+            recursive_filter(ptid)
 
     for sp in species:
-        recursive_filter(sp["tid"])
+        recursive_filter(int(sp["tid"]))
 
-    return nodes[nodes["tid"].isin(sub_tids)]
+    filtered = {
+        name: node
+        for name, node in node_map.items()
+        if int(node.get("tid", -999999)) in sub_tids
+    }
+    return {"nodes": filtered} if wrapped else filtered
 
 
 def _group_to_color(group_id):
@@ -844,67 +1648,90 @@ def _group_to_color(group_id):
 
 
 def display_tree(
-    nodes: pd.DataFrame,
+    nodes: dict,
     min_rank: str = "species",
     outfile: Path | str | None = None,
 ):
+    """Create an html graph of the tree.
+
+    Optionally limits the tree to stop at min_rank.
+
+    This version operates on the dict-of-dicts structure used elsewhere in this file:
+        {"nodes": {sci_name: {"tid": int, "ptid": int, "sci_name": str, ...}, ...}}
+    or directly on the inner mapping {sci_name: node_dict}.
     """
-    Create an html graph of the tree.
+    wrapped = isinstance(nodes, dict) and "nodes" in nodes
+    node_map = nodes["nodes"] if wrapped else nodes
 
-    Optionally limits the tree to stop at min_rank
-    """
-    if min_rank != "species":
-        sub_tids = set()
+    # Build lookup tables
+    tid_to_name: dict[int, str] = {}
+    for name, node in node_map.items():
+        tid_to_name[int(node["tid"])] = name
 
-        def recursive_filter(input_tid, reached_rank: bool):
-            """Adds this TID and recurses to the parent"""
-            row = nodes.loc[nodes["tid"] == input_tid]
+    if min_rank.lower() != "species":
+        sub_tids: set[int] = set()
 
-            if any(row["rank"] == min_rank):
+        def recursive_filter(input_tid: int, reached_rank: bool):
+            """Adds this TID and recurses to the parent."""
+            name = tid_to_name.get(input_tid)
+            if name is None:
+                return
+            node = node_map[name]
+
+            if str(node.get("rank", "")).lower() == min_rank.lower():
                 reached_rank = True
 
             if reached_rank:
                 sub_tids.add(input_tid)
 
-            if len(row) > 0:
-                ptid = row["ptid"].iloc[0]
-                if ptid != 1:
-                    recursive_filter(ptid, reached_rank)
+            ptid = int(node.get("ptid", -1))
+            if ptid != -1:
+                recursive_filter(ptid, reached_rank)
 
         # add each species TID and travel up the chain of parents
-        species = nodes.loc[nodes["rank"] == "species"]
-        n = len(species)
-        for i, sp in species.iterrows():
-            recursive_filter(sp["tid"], False)
+        species = [
+            node
+            for node in node_map.values()
+            if str(node.get("rank", "")).lower() == "species"
+        ]
+        for sp in species:
+            recursive_filter(int(sp["tid"]), False)
 
-        nodes = nodes[nodes["tid"].isin(sub_tids)]
+        node_map = {
+            name: node
+            for name, node in node_map.items()
+            if int(node.get("tid", -999999)) in sub_tids
+        }
 
     # create partition
     graph = nx.Graph()
-    for _, row in nodes.iterrows():
-        node_id = row["tid"]
+    for node in node_map.values():
+        node_id = int(node["tid"])
         graph.add_node(node_id)
-        if row.get("ptid"):
-            graph.add_edge(row["ptid"], node_id)
+        ptid = int(node.get("ptid", -1))
+        if ptid != -1:
+            graph.add_edge(ptid, node_id)
     partition = community_louvain.best_partition(graph, resolution=1.0)
 
     # create directed graph
     graph = nx.DiGraph()
-    for _, row in nodes.iterrows():
-        node_id = row["tid"]
-        group = partition[node_id]
-        label = f"{row['sci_name']}\n({row['com_name']})"
-        hover_text = "\n".join(textwrap.wrap(row["text"], width=50))
-        image = row.get("image")
+    for node in node_map.values():
+        node_id = int(node["tid"])
+        group = partition.get(node_id, 0)
+
+        hover_text = "\n".join(textwrap.wrap(node.get("text", "") or "", width=50))
+        image = node.get("image")
 
         # Make label
-        label = row["sci_name"]
-        if isinstance(row["com_name"], str):
-            if len(row["com_name"]) > 0:
-                label = f"{row['com_name']}\n({row['sci_name']})"
-        elif isinstance(row["com_name"], list):
-            if len(row["com_name"][0]) > 0:
-                label = f"{row['com_name'][0]}\n({row['sci_name']})"
+        sci_name = node.get("sci_name") or tid_to_name.get(node_id, str(node_id))
+        label = sci_name
+        com_name = node.get("com_name")
+        if isinstance(com_name, str):
+            if len(com_name) > 0:
+                label = f"{com_name}\n({sci_name})"
+        elif isinstance(com_name, list) and len(com_name) > 0:
+            if isinstance(com_name[0], str) and len(com_name[0]) > 0:
+                label = f"{com_name[0]}\n({sci_name})"
 
         if image is not None:
             # Image node
@@ -942,8 +1769,9 @@ def display_tree(
             )
 
         # Add edge to parent if parent exists
-        if row.get("ptid"):
-            graph.add_edge(row["ptid"], node_id)
+        ptid = int(node.get("ptid", -1))
+        if ptid != -1:
+            graph.add_edge(ptid, node_id)
 
     # Create visualization
     net = Network(
@@ -951,9 +1779,10 @@ def display_tree(
         width="100%",
         directed=True,
         bgcolor="#ffffff",
-        font_color="black",
+        # font_color="black",
     )
-    net.set_options("""
+    net.set_options(
+        """
     {
       "layout": {
         "hierarchical": {
@@ -973,7 +1802,8 @@ def display_tree(
         }
       }
     }
-    """)
+    """
+    )
     net.from_nx(graph)
 
     if outfile is None:
@@ -982,494 +1812,386 @@ def display_tree(
     net.write_html(str(outfile))
 
 
-def clade_to_html(clade: dict, save_dir: Path):
+MANUAL_RETAINS = [
+    "Feliformia",
+]
+
+
+def remove_chains(nodes, force: bool = False):
     """
-    Generates a standalone, styled HTML file for a clade dictionary
-    to facilitate quick visual quality control, including a copy-pasteable
-    JSON template for data cleaning.
+    Ensure that all nodes are either leaves, the root, or have more than one child
     """
-    # Ensure the directory exists
-    save_dir.mkdir(parents=True, exist_ok=True)
+    if (TMP_DIR / "nodes_6.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_6.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
 
-    # Extract data with safe defaults
-    tid = clade.get("tid", "Unknown_TID")
-    sci_name = clade.get("sci_name", "Unknown Scientific Name")
-    rank = clade.get("rank", "unknown")
-    ptid = clade.get("ptid", "N/A")
-    nchildren = clade.get("nchildren", 0)
-    image_url = clade.get("image", "")
-    text_content = clade.get("text", "No descriptive text available.")
+    n0 = len(nodes)
 
-    # Handle the polymorphic 'com_name' field (string, list, or empty)
-    raw_com_name = clade.get("com_name", "")
-    if isinstance(raw_com_name, list):
-        clean_list = [name.strip() for name in raw_com_name if name.strip()]
-        com_name_str = ", ".join(clean_list) if clean_list else "None"
-    elif isinstance(raw_com_name, str) and raw_com_name.strip():
-        com_name_str = raw_com_name.strip()
-    else:
-        com_name_str = "None"
+    # Remap so that the tid is the key and find the TIDs of the species
+    _nodes = {}
+    for node in nodes.values():
+        _nodes[node["tid"]] = node
+    nodes = _nodes
 
-    # Escape quotes in the scientific name to ensure valid JSON in the template box
-    json_safe_sci_name = sci_name.replace('"', '\\"')
+    # Set the status and find the species
+    species_tids = []
+    for node in nodes.values():
+        node["status"] = 0  # not visited
+        if node["rank"] == "Species":
+            species_tids.append(node["tid"])
 
-    # Generate the string snippet for the overwrite box
-    overwrite_template = (
-        f'{{\n  "sci_name": "{json_safe_sci_name}",\n  "text": "",\n  "image": ""\n}}'
-    )
+    # First pass, count the number of children
+    for node in nodes.values():
+        nodes[node["tid"]]["nchildren"] = 0
+    for node in nodes.values():
+        if node["ptid"] == -1:
+            continue
+        nodes[node["ptid"]]["nchildren"] += 1
 
-    # Define the HTML template
-    html_content = f"""<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>QC: {sci_name} ({tid})</title>
-            <style>
-                body {{
-                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                    background-color: #f4f6f9;
-                    color: #333;
-                    margin: 0;
-                    padding: 40px 20px;
-                    display: flex;
-                    justify-content: center;
-                }}
-                .card {{
-                    background: #ffffff;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-                    max-width: 900px;
-                    width: 100%;
-                    padding: 30px;
-                    box-sizing: border-box;
-                }}
-                .header {{
-                    border-bottom: 2px solid #edf2f7;
-                    padding-bottom: 15px;
-                    margin-bottom: 25px;
-                }}
-                .sci-name {{
-                    font-size: 2.2rem;
-                    margin: 0;
-                    color: #1a202c;
-                    font-style: italic;
-                }}
-                .com-name {{
-                    font-size: 1.3rem;
-                    color: #4a5568;
-                    margin: 5px 0 0 0;
-                    font-weight: 500;
-                }}
-                .badge {{
-                    display: inline-block;
-                    background-color: #e2e8f0;
-                    color: #4a5568;
-                    padding: 4px 10px;
-                    border-radius: 20px;
-                    font-size: 0.85rem;
-                    text-transform: uppercase;
-                    font-weight: bold;
-                    letter-spacing: 0.5px;
-                    margin-top: 10px;
-                }}
-                .content {{
-                    display: flex;
-                    gap: 30px;
-                    flex-wrap: wrap;
-                    margin-bottom: 30px;
-                }}
-                .image-container {{
-                    flex: 1 1 350px;
-                    max-width: 100%;
-                    display: flex;
-                    align-items: flex-start;
-                    justify-content: center;
-                    background: #f7fafc;
-                    border-radius: 8px;
-                    padding: 10px;
-                    border: 1px solid #e2e8f0;
-                }}
-                .clade-img {{
-                    max-width: 100%;
-                    max-height: 400px;
-                    border-radius: 6px;
-                    object-fit: contain;
-                }}
-                .no-image {{
-                    color: #a0aec0;
-                    font-style: italic;
-                    padding: 100px 0;
-                    text-align: center;
-                }}
-                .details {{
-                    flex: 1 1 400px;
-                }}
-                .meta-table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 20px;
-                }}
-                .meta-table th, .meta-table td {{
-                    text-align: left;
-                    padding: 8px 12px;
-                    border-bottom: 1px solid #edf2f7;
-                }}
-                .meta-table th {{
-                    color: #718096;
-                    font-weight: 600;
-                    width: 35%;
-                }}
-                .meta-table td {{
-                    color: #2d3748;
-                    font-family: monospace;
-                    font-size: 1rem;
-                }}
-                .text-block {{
-                    background: #f8fafc;
-                    border-left: 4px solid #3182ce;
-                    padding: 15px;
-                    border-radius: 0 8px 8px 0;
-                    line-height: 1.6;
-                    color: #2d3748;
-                    white-space: wrap;
-                }}
-                .overwrite-section {{
-                    border-top: 2px dashed #e2e8f0;
-                    padding-top: 20px;
-                }}
-                .overwrite-title {{
-                    font-size: 1rem;
-                    color: #718096;
-                    margin: 0 0 10px 0;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }}
-                .overwrite-box {{
-                    background: #1e293b;
-                    color: #f8fafc;
-                    font-family: 'Fira Code', 'Courier New', Courier, monospace;
-                    padding: 15px;
-                    border-radius: 8px;
-                    font-size: 0.95rem;
-                    white-space: pre;
-                    overflow-x: auto;
-                    border: 1px solid #0f172a;
-                }}
-            </style>
-        </head>
-        <body>
+    # Go through the tree starting at the species and traveling upwards
+    for sp_tid in species_tids:
+        # Travel upwards identifying chains
+        chain = []
+        node = nodes[sp_tid]
+        while node["ptid"] != -1 and node["status"] == 0:
+            node["status"] = 1  # mark as visited, to be kept
 
-        <div class="card">
-            <div class="header">
-                <h1 class="sci-name">{sci_name}</h1>
-                <p class="com-name">{com_name_str}</p>
-                <span class="badge">{rank}</span>
-            </div>
+            parent = nodes[node["ptid"]]
+            if parent["nchildren"] == 1:
+                # if this node is the only child of its parent then the parent
+                # and the node are part of a chain
+                if len(chain) == 0:
+                    # start of the chain
+                    chain = [node]
+                chain.append(parent)
+            elif len(chain) > 0:
+                # chain has ended and at least two nodes in so can be removed
 
-            <div class="content">
-                <div class="image-container">
-                    {"<img class='clade-img' src='" + image_url + "' alt='Clade Image'>" if image_url else "<div class='no-image'>No Image URL provided</div>"}
-                </div>
+                # decide which clade will be kept
+                if chain[0]["nchildren"] == 0:
+                    # special chase where chain ends at a leaf/species which
+                    # must be retained
+                    retained = 0
+                else:
+                    # otherwise keep the most derived clade _unless_ there is a
+                    # significant disparity in how much info is available
+                    retained = 0
 
-                <div class="details">
-                    <table class="meta-table">
-                        <tr><th>Taxon ID (tid)</th><td>{tid}</td></tr>
-                        <tr><th>Parent ID (ptid)</th><td>{ptid}</td></tr>
-                        <tr><th>Direct Children</th><td>{nchildren}</td></tr>
-                    </table>
+                    l_cutoff = 200
+                    if len(chain[retained].get("text", "")) < l_cutoff:
+                        max_len = 0
+                        for j, link in enumerate(chain):
+                            # choose the clade with the longest text
+                            if len(link.get("text", "")) > max_len:
+                                retained = j
+                                max_len = len(link.get("text", ""))
 
-                    <div class="text-block">
-                        {text_content}
-                    </div>
-                </div>
-            </div>
+                            # keep the clade in the manual override list
+                            if link["sci_name"] in MANUAL_RETAINS:
+                                retained = j
+                                break
 
-            <div class="overwrite-section">
-                <h2 class="overwrite-title">Overwrite JSON Template</h2>
-                <pre class="overwrite-box">{overwrite_template}</pre>
-            </div>
-        </div>
+                # Merge and mark nodes for removal
+                for j, link in enumerate(chain):
+                    if j == retained:
+                        # The coalesced node needs to link to the top and
+                        # bottom of the original chain
+                        link["tid"] = chain[0]["tid"]
+                        link["ptid"] = chain[-1]["ptid"]
+                        link["nchildren"] = chain[0]["nchildren"]
+                    else:
+                        link["status"] = -1
 
-        </body>
-        </html>
-        """
+                chain = []
 
-    # Generate filename and save
-    safe_sci_name = "".join(
-        c for c in sci_name if c.isalnum() or c in (" ", "_", "-")
-    ).replace(" ", "_")
-    filename = f"{tid}_{safe_sci_name}.html"
-    file_path = save_dir / filename
-    file_path.write_text(html_content, encoding="utf-8")
+            # move upwards
+            node = parent
 
+    # Remove nodes, clean up, and remap so the title is the key
+    _nodes = {}
+    for node in nodes.values():
+        if node["status"] == -1:
+            continue
+        node.pop("status")
+        _nodes[node["sci_name"]] = node
+    nodes = _nodes
 
-def _enquote(s):
-    """makes a string suitable for printing as a string in the header"""
-    s = s.translate(
-        str.maketrans(
-            {
-                "\\": r"\\",
-                "%": r"%%",
-                '"': r"\"",
-            }
-        )
-    )
-    return '"' + s + '"'
+    check_nodes({"nodes": nodes})
 
+    print(f"INFO: removed chains, {n0} -> {len(nodes)} nodes")
 
-def _clade_struct_str(clade) -> str:
-    """String representation of a clade for use in a list of c-structs"""
-    # common name and synonyms
-    com_names = clade["com_name"]
-    if isinstance(com_names, list):
-        com_name = com_names[0]
+    for node in nodes.values():
+        if node["nchildren"] > 5:
+            print(f"WARNING: {node['sci_name']} has {node['nchildren']} children")
 
-        if len(com_names) > 1:
-            num_synonyms = len(com_names) - 1
-            synonyms = f'{{"{com_names[1]}"'
-            for name in com_names[2:]:
-                synonyms += f', "{name}"'
-            synonyms += "}"
-        else:
-            num_synonyms = 0
-            synonyms = "{NULL}"
-    else:
-        com_name = com_names
-        num_synonyms = 0
-        synonyms = "{NULL}"
-    if com_name == "":
-        com_name = "NULL"
-    else:
-        com_name = _enquote(com_name)
-
-    RANK_STR = {
-        "no rank": "NO_RANK",
-        "clade": "CLADE",
-        "kingdom": "KINGDOM",
-        "phylum": "PHYLUM",
-        "subphylum": "SUB_PHYLUM",
-        "superclass": "SUPER_CLASS",
-        "class": "CLASS",
-        "subclass": "SUB_CLASS",
-        "infraclass": "INFRA_CLASS",
-        "cohort": "COHORT",
-        "superorder": "SUPER_ORDER",
-        "order": "ORDER",
-        "suborder": "SUB_ORDER",
-        "infraorder": "INFRA_ORDER",
-        "parvorder": "PARV_ORDER",
-        "superfamily": "SUPER_FAMILY",
-        "family": "FAMILY",
-        "subfamily": "SUB_FAMILY",
-        "tribe": "TRIBE",
-        "genus": "GENUS",
-        "species": "SPECIES",
-    }
-    rank = RANK_STR[clade["rank"]]
-
-    text = _enquote(clade["text"])
-
-    image = "NULL"
-
-    lines = [
-        "  {",
-        f"    .tid = {clade['tid']},",
-        f"    .ptid = {clade['ptid']},",
-        f"    .com_name = {com_name},",
-        f"    .sci_name = {_enquote(clade['sci_name'])},",
-        f"    .num_synonyms = {num_synonyms},",
-        f"    .synonyms = {synonyms},",
-        f"    .rank = {rank},",
-        f"    .text = {text},",
-        f"    .image = {image},",
-        "  },",
-    ]
-
-    return "\n".join(lines)
-
-
-def clades_to_c(nodes: pd.DataFrame):
-    """Create a .h and .c file containing all of the clade data from nodes"""
-    nnodes = len(nodes)
-    nspecies = len(nodes[nodes["rank"] == "species"])
-
-    # sort the nodes and find the longest name string
-    clade_list = []
-    name_len = 0
-    long_name = ""
-    for _, clade in nodes.iterrows():
-        clade_list.append(clade)
-
-        if clade["rank"] == "species":
-            if isinstance(clade["com_name"], str):
-                name_len = max(name_len, len(clade["com_name"]))
-                if len(clade["com_name"]) == name_len:
-                    long_name = clade["com_name"]
-            else:
-                name_len = max(name_len, len(clade["com_name"][0]))
-                if len(clade["com_name"][0]) == name_len:
-                    long_name = clade["com_name"][0]
-    print(long_name)
-    clade_list = sorted(
-        clade_list, key=lambda d: d["rank"] + "ZZZZZZ" + str(d["com_name"])
-    )
-
-    # make the header
-    lines = [
-        "#ifndef CLADE_LIST_H",
-        "#define CLADE_LIST_H",
-        "",
-        '#include "clade.h"',
-        "",
-        "/* the number of predefined clades in the list */",
-        f"#define NUM_CLADES ({nnodes})",
-        "",
-        "/* the number of species in the list */",
-        f"#define NUM_SPECIES ({nspecies})",
-        "",
-        "/* the length of the longest species name */",
-        f"#define LEN_SPECIES ({name_len})",
-        "",
-        "/* list of predefined clades (preferably in alphabetical order by com_name) */",
-        "extern const Clade CLADE_LIST[NUM_CLADES];",
-        "",
-        "#endif",
-    ]
-    with open(BASE_DIR / "clade-list.h", "w") as fp:
-        for line in lines:
-            fp.write(line)
-            fp.write("\n")
-
-    # make the implementation
-    with open(BASE_DIR / "clade-list.c", "w") as fp:
-        fp.write('#include "clade-list.h"\n')
-        fp.write("\n")
-        fp.write("const Clade CLADE_LIST[] = {\n")
-        for clade in clade_list:
-            fp.write(_clade_struct_str(clade))
-            fp.write("\n")
-        fp.write("};\n")
-
-
-def download_images(nodes: pd.DataFrame, email: str):
-    (BASE_DIR / "img").mkdir(exist_ok=True)
-    n = len(nodes)
     count = 0
-    for _, clade in nodes.iterrows():
-        count += 1
-        print(f"{count:4d} / {n} {clade['sci_name']}")
+    for node in nodes.values():
+        if "text" not in node:
+            count += 1
+    print(f"INFO: {count} nodes have no text")
 
-        if clade["image"].lower().endswith(".jpg") or clade["image"].lower().endswith(
-            ".jpeg"
-        ):
-            img_file = BASE_DIR / "img" / f"{clade['tid']}.jpg"
-        elif clade["image"].lower().endswith(".png"):
-            img_file = BASE_DIR / "img" / f"{clade['tid']}.png"
-        elif clade["image"].lower().endswith(".gif"):
-            img_file = BASE_DIR / "img" / f"{clade['tid']}.gif"
+    with open(TMP_DIR / "nodes_6.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
+
+
+def reassign_tids(nodes, force: bool = False):
+    """
+    Ensure that tids are increasing through the nodes
+    """
+    if (TMP_DIR / "nodes_7.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_7.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
+
+    # Assert that parents always come before their children in nodes
+    for node in nodes.values():
+        if node["tid"] < node["ptid"]:
+            raise RuntimeError(f"{node['sci_name']} comes before it's parent in nodes")
+
+    node_list = list(nodes.values())
+    for tid, node in enumerate(node_list):
+        old_tid = node["tid"]
+        node["tid"] = tid
+        for node in node_list[tid + 1 :]:
+            if node["ptid"] == old_tid:
+                node["ptid"] = tid
+
+    with open(TMP_DIR / "nodes_7.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
+
+
+def clean_wikitext(text: str, num_chars: int | None = None) -> str:
+    """
+    Clean common Wikipedia plaintext extraction artifacts and optionally
+    truncate to complete sentences within num_chars.
+    """
+
+    # Standardise quotes
+    text = text.replace('"', "'")
+
+    # Wikipedia-specific artifacts
+
+    # "(; hominoids)" -> "(hominoids)"
+    text = re.sub(r"\(\s*;\s*([^)]*?)\)", r"(\1)", text)
+
+    # "(, foo)" -> "(foo)"
+    text = re.sub(r"\(\s*,\s*([^)]*?)\)", r"(\1)", text)
+
+    # "(;)" or "( ; )" -> ""
+    text = re.sub(r"\(\s*;\s*\)", "", text)
+
+    # Double semicolons inside parentheses
+    # "(foo; ; bar)" -> "(foo; bar)"
+    text = re.sub(r";\s*;", "; ", text)
+
+    # Empty parentheses
+    text = re.sub(r"\(\s*\)", "", text)
+
+    # Collapse repeated periods
+    text = re.sub(r"\.\s*\.\s*", ".", text)
+
+    # Remove excess whitespace after opening parenthesis
+    text = re.sub(r"\(\s+", "(", text)
+
+    # Remove whitespace before punctuation
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+
+    # Collapse all whitespace
+    text = re.sub(r"\s+", " ", text)
+
+    text = text.strip()
+
+    if num_chars is not None and len(text) > num_chars:
+        # Find sentence endings
+        sentence_ends = [
+            m.end() for m in re.finditer(r"(?<=[.!?])(?:['\")\]]*)\s+", text)
+        ]
+
+        # Last sentence end within limit
+        valid = [pos for pos in sentence_ends if pos <= num_chars]
+
+        if valid:
+            text = text[: valid[-1]].strip()
         else:
-            raise ValueError(f"image format not recognised for {clade['image']}")
+            # No complete sentence within limit.
+            # Fallback: cut at first sentence after limit if available.
+            next_end = next((p for p in sentence_ends if p > num_chars), None)
 
-        # prefer pngs
-        png_file = img_file.with_suffix("").with_suffix(".png")
-        if png_file.is_file():
+            if next_end:
+                text = text[:next_end].strip()
+            else:
+                text = text[:num_chars].rstrip()
+
+    return text
+
+
+def clean_text(nodes, force: bool = False):
+    """Attempts to automatically clean the wikitext for each node"""
+    if (TMP_DIR / "nodes_8.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_8.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
+
+    for node in nodes.values():
+        if "text" in node:
+            node["text"] = clean_wikitext(node["text"], num_chars=600)
+
+    with open(TMP_DIR / "nodes_8.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
+
+
+def apply_overwrites(nodes, force: bool = False):
+    """Applies overwrite info (typically text and images) to the nodes"""
+    if (TMP_DIR / "nodes_9.json").is_file() and not force:
+        with open(TMP_DIR / "nodes_9.json", "r") as fp:
+            return json.load(fp)
+    nodes = nodes["nodes"]
+
+    with open(BASE_DIR / "overwrite.json", "r") as fp:
+        overwrites = json.load(fp)
+
+    for sci_name, overwrite in overwrites.items():
+        if sci_name not in nodes:
             continue
+        for key, val in overwrite.items():
+            nodes[sci_name][key] = val
 
-        # don't download it if we've already got it
-        if img_file.is_file():
-            image = Image.open(img_file)
-            image.save(str(png_file), optimize=True, quality=100)
-            img_file.unlink()
+    with open(TMP_DIR / "nodes_9.json", "w") as fp:
+        json.dump({"nodes": nodes}, fp, indent=2)
+    return {"nodes": nodes}
+
+
+def check_nodes_final(nodes):
+    """
+    Produce small HTML pages with species/genus pairs for manual checking.
+    If the genus page has no text, continue up to the first node that does.
+    """
+    # store which pairs we have checked
+    checked_qids = []
+    if (TMP_DIR / "checked_nodes.json").is_file():
+        with open(TMP_DIR / "checked_nodes.json", "r") as fp:
+            checked_qids = json.load(fp)
+
+    out_dir = TMP_DIR / "nodes"
+
+    nodes = nodes["nodes"]
+    count = -1
+    batch_size = 20
+    missing_text = 0
+    missing_image = 0
+
+    def _escape_html(s: str) -> str:
+        return (
+            str(s)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+        )
+
+    for node in nodes.values():
+        qid = node["qid"]
+        if qid in checked_qids and qid != "":
             continue
+        checked_qids.append(qid)
 
-        # download the image
-        try:
-            response = requests.get(
-                clade["image"],
-                stream=True,
-                timeout=10,
-                headers={
-                    "User-Agent": f"tree-of-life-bot/0.1 ({email})",
-                },
-            )
-            time.sleep(5)
+        count += 1
 
-            if response.status_code != 200:
-                raise RuntimeError(f"code {response.status_code}")
+        node_name = node["sci_name"]
+        node_text = node.get("text", "")
+        node_image = node.get("image", "")
+        node_rank = node.get("rank", "clade")
 
-            image = Image.open(response.raw).convert("RGB")
-            image.save(str(png_file), optimize=True, quality=100)
-        except RuntimeError as e:
-            print(f"failed {clade['sci_name']}")
-            raise e
+        if node_text == "":
+            missing_text += 1
 
+        if node_image == "":
+            missing_image += 1
 
-def main():
-    # fetch taxonomy data from NCBI
-    if not TAXDUMP_DIR.exists():
-        r = requests.get(URL)
-        z = zipfile.ZipFile(io.BytesIO(r.content))
-        z.extractall(TAXDUMP_DIR)
+        html = f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <title>{_escape_html(node_name)}</title>
+  <style>
+    body {{ font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; }}
+    .grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
+    .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 12px; }}
+    .title {{ font-size: 18px; font-weight: 650; margin: 0 0 10px 0; }}
+    img {{ max-width: 100%; height: auto; border-radius: 6px; margin: 8px 0; }}
+    .meta {{ color: #555; font-size: 12px; margin: 8px 0 0 0; }}
+    pre {{ white-space: pre-wrap; word-wrap: break-word; background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px; }}
+  </style>
+</head>
+<body>
+  <div class=\"grid\">
+    <div class=\"card\">
+      <p class=\"title\">{_escape_html(node_rank)}: {_escape_html(node_name)}</p>
+      {f'<img src="{_escape_html(node_image)}" alt="{_escape_html(node_name)}" />' if node_image else '<div class="meta">(no image)</div>'}
+      <pre>{_escape_html(node_text)}</pre>
+      <div class=\"meta\">tid={node["tid"]} ptid={node["ptid"]} qid={_escape_html(node.get("qid", ""))} wikititle={_escape_html(node.get("wikititle", ""))}</div>
+    </div>
+  </div>
+</body>
+</html>
+"""
 
-    # read data from files
-    nodes = read_nodes()
-    names = read_names()
-    species = generate_species(names=names)
+        # Make a small HTML file containing the node sci_name, image, and text side-by-side
+        (out_dir / f"{count // batch_size}").mkdir(exist_ok=True, parents=True)
+        file = out_dir / f"{count // batch_size}" / f"{node['tid']}.html"
+        with open(file, "w", encoding="utf-8") as fp:
+            fp.write(html)
 
-    # filter the data to only include the subtree with the species as leaves
-    nodes, names = filter_graph(
-        nodes=nodes,
-        names=names,
-        species=species,
-        root="Metazoa",
-    )
+    if missing_text > 0:
+        for node in nodes.values():
+            if node.get("text", "") == "":
+                print(f"  {node['sci_name']}")
+        print(f"WARNING: {missing_text} missing text entries")
+    if missing_image > 0:
+        for node in nodes.values():
+            if node.get("image", "") == "":
+                print(f"  {node['sci_name']}")
+        print(f"WARNING: {missing_image} missing image entries")
 
-    # give all nodes a scientific name and try to add common name/names
-    nodes = name_nodes(nodes=nodes, names=names, species=species, verbose=False)
-
-    # add data from Wikipedia to the nodes
-    load_dotenv()
-    email = os.getenv("EMAIL")
-    nodes = add_wikidata(nodes, email=email)
-
-    # clean up the tree and apply manual overwrites
-    nodes = apply_overwrites(nodes)
-    nodes = remove_chains(nodes)
-    nodes = clean_text(nodes)
-
-    clades_to_c(nodes)
-    download_images(nodes, email=email)
-
-    # check if there are new clades we have not checked
-    for i, node in nodes.iterrows():
-        if (node["rank"] == "species") and (node["com_name"] == ""):
-            print(node["sci_name"])
-
-    # # check if there are new clades we have not checked
-    # covered = []
-    # with open(TMP_DIR / "covered.txt", "r") as fp:
-    #     for line in fp.readlines():
-    #         covered.append(line.strip())
-    # count = 0
-    # batch_size = 10
-    # for i, node in nodes.iterrows():
-    #     if node["sci_name"] not in covered:
-    #         print(node["sci_name"])
-    #         clade_to_html(node, TMP_DIR / "clades" / f"{count // batch_size:03d}")
-    #         count += 1
-
-    # sci_names = [
-    #     "Clitellata",
-    # ]
-    # for name in sci_names:
-    #     display_tree(filter_nodes(nodes, name), outfile=TMP_DIR / f"tree-{name}.html")
-
-    # show the graph
-    # display_tree(nodes, min_rank="order")
-    # display_tree(nodes)
+    with open(TMP_DIR / "checked_nodes.json", "w") as fp:
+        json.dump(checked_qids, fp, indent=2)
 
 
 if __name__ == "__main__":
-    main()
+    with open(Path(__file__).parent / "species.json", "r") as fp:
+        species = json.load(fp)
+
+    page_data = parse_articles(XML_PATH)
+
+    nodes = make_nodes(species, page_data, ensure_eukaryota=False)
+    check_nodes(nodes)
+    nodes = add_qids(nodes)
+    nodes = add_wikititles(nodes)
+    nodes = add_wikitext(nodes)
+    nodes = add_wikiimages(nodes)
+    nodes = set_root(nodes, "Animalia")
+    check_species_genus(nodes)
+    nodes = remove_chains(nodes)
+    nodes = reassign_tids(nodes)
+    nodes = clean_text(nodes)
+    nodes = apply_overwrites(nodes)
+    check_nodes_final(nodes)
+
+    display_names = []
+    for node in nodes["nodes"].values():
+        if node["nchildren"] >= 5 or node["sci_name"] in display_names:
+            print(node["sci_name"])
+            display_tree(
+                filter_nodes(nodes, node["ptid"]),
+                outfile=TMP_DIR
+                / f"tree_{node['nchildren']:02d}_{node['sci_name']}.html",
+            )
+    display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
+    print()
+
+    print("force polytomy text to be fairly helpful, esp. ones with 5 or more children")

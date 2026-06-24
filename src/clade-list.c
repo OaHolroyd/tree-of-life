@@ -5240,7 +5240,7 @@ const Clade CLADE_LIST[] = {
   {
     .tid = 36229,
     .ptid = 9528,
-    .com_name = "cbaboon",
+    .com_name = "baboon",
     .sci_name = "Papio ursinus",
     .num_synonyms = 1,
     .synonyms = {"baboon"},
