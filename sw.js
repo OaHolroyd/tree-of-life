@@ -1,4 +1,4 @@
-const CACHE_NAME = "cladogram-v1";
+const CACHE_NAME = "tol-v1";
 
 // 1. Compile the explicit inventory list of EVERY asset file your game uses
 const ASSETS_TO_CACHE = [

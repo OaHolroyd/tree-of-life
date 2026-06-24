@@ -11,7 +11,6 @@ import {
 // ====================================
 //   CONSTANTS AND APP STATE
 // ====================================
-lkdnsdsand TODO: check focus issues with settings modal
 const AVAILABLE_ROOT_TIDS = [0, 2, 3, 5, 10];
 const IMAGE_ROTATION_PERIOD = 1000;
 
@@ -323,6 +322,12 @@ function toggleModalState(targetModalElement, shouldShow) {
   }
 }
 
+function blurGuessInput() {
+  if (document.activeElement === guessInput) {
+    guessInput.blur();
+  }
+}
+
 function populateSettingsStats() {
   // Pull data from local storage, fallback to empty defaults if a brand new profile
   const stats = JSON.parse(localStorage.getItem("clade_game_stats")) || {
@@ -421,28 +426,17 @@ function loadAndApplySettings() {
 function activateCladeMobileSheet() {
   console.log("activateCladeMobileSheet");
 
-  // Force document body to clear out old active focus elements safely
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur();
-  }
+  blurGuessInput();
 
   // Inject state configuration layout modifier flag properties
   document.body.classList.add("clade-card-active");
-
-  // Crucial iOS Hack: A micro-timeout forces WebKit to redraw layout layers,
-  // snapping the touch engine back to reality before the user starts swiping.
-  setTimeout(() => {
-    if (cladeCard) {
-      cladeCard.style.display = "none";
-      cladeCard.offsetHeight; // Triggers a forced structural hardware reflow
-      cladeCard.style.display = "flex";
-    }
-  }, 355);
+  cladeCard.classList.add("expanded");
 }
 
 function deactivateCladeMobileSheet() {
   console.log("deactivateCladeMobileSheet");
   document.body.classList.remove("clade-card-active");
+  cladeCard.classList.remove("expanded");
 }
 
 // ====================================
@@ -496,11 +490,6 @@ guessInput.addEventListener("keydown", (e) => {
       hideDropdown();
       break;
   }
-});
-
-// Force coordinates to snap back to origin point when keyboard closes
-guessInput.addEventListener("blur", () => {
-  window.scrollTo(0, 0);
 });
 
 // Dismiss the menu if the user clicks anywhere outside the input interface
@@ -569,10 +558,8 @@ cardHeader.addEventListener("touchend", (e) => {
   if (Math.abs(totalDelta) > 65) {
     if (totalDelta > 0) {
       deactivateCladeMobileSheet();
-      cladeCard.classList.remove("expanded"); // Swiped down to collapse
     } else {
       activateCladeMobileSheet();
-      cladeCard.classList.add("expanded"); // Swiped up to cover tree
     }
   }
 
@@ -581,22 +568,17 @@ cardHeader.addEventListener("touchend", (e) => {
 
 cardHeader.addEventListener("click", (e) => {
   if (window.innerWidth <= 600 && e.target.tagName !== "BUTTON") {
-    cladeCard.classList.toggle("expanded");
-
     if (cladeCard.classList.contains("expanded")) {
-      activateCladeMobileSheet();
-    } else {
       deactivateCladeMobileSheet();
+    } else {
+      activateCladeMobileSheet();
     }
   }
 });
 
 // Automatically blur the input and close the keyboard if the clade sheet is scrolled
 cladeScroll.addEventListener("scroll", () => {
-  if (document.activeElement === guessInput) {
-    guessInput.blur();
-    cladeScroll.focus();
-  }
+  blurGuessInput();
 });
 
 // 1. Open Button Interaction Registrations
@@ -715,9 +697,7 @@ restartBtn.addEventListener("click", () => {
 
 // Automatically blur the input and close the keyboard if the tree is scrolled
 rightPanel.addEventListener("scroll", () => {
-  if (document.activeElement === guessInput) {
-    guessInput.blur();
-  }
+  blurGuessInput();
 });
 
 // --- Global Initialization Pipeline Loop ---
@@ -737,7 +717,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker
-        .register("/sw.js")
+        .register(new URL("../sw.js", import.meta.url))
         .then((registration) => {
           console.log(
             "ServiceWorker successfully registered with scope footprint: ",
