@@ -786,6 +786,12 @@
     "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Cephenemya_stimulator.jpg/500px-Cephenemya_stimulator.jpg",
     "text": "Cephenemyia stimulator, commonly known as the roe deer botfly, is a parasitic fly widespread across the Palearctic realm of Europe. Belonging to the family Oestridae, this large, bee-mimicking fly relies on the roe deer (Capreolus capreolus) as its primary host. Females reproduce viviparously, directly ejecting larvae into the deer’s nostrils, which then migrate to mature within the pharyngeal and nasal cavities - a myiasis that frequently causes severe respiratory distress, secondary infections, or even suffocation in heavily infested animals."
   },
+  "Conus geographus": {
+    "text": "Conus geographus, popularly called the geography cone, geographer cone, or geographic cone, is a species of predatory cone snail. It lives in reefs of the tropical Indo-Pacific and hunts small fish. While all cone snails hunt and kill prey using venom, the venom of Conus geographus is potent enough to kill humans. C. geographus is a piscivore that dwells in sediment of shallow reefs, preying on small fish. Like other cone snails, it fires a harpoon-like, venom-tipped modified tooth into its prey; the harpoon is attached to the body by a proboscis, and the prey is pulled inside for ingestion."
+  },
+  "Hyaenidae": {
+    "text": "Hyenas or hyaenas (from Ancient Greek ὕαινα, hýaina) are feliform carnivoran mammals belonging to the family Hyaenidae. With just four extant species (each in its own genus), it is the fifth-smallest family in the order Carnivora and one of the smallest in the class Mammalia. Despite their low diversity, hyenas are unique and vital components of most African ecosystems."
+  },
   "Polyphaga (Coleoptera)": { "sci_name": "Polyphaga" },
   "Euthyneura (Mollusca)": { "sci_name": "Euthyneura" },
   "Ensifera (Orthoptera)": { "sci_name": "Ensifera" },

@@ -1014,6 +1014,9 @@ MANUAL_QIDS = {
     "Episquamata": "Q13518421",
     "Unidentata": "Q139260769",
     "Bifurcata": "Q2902081",
+    "Conus geographus": "Q1780734",
+    "Haliotis corrugata": "Q3096257",
+    "Terebratalia transversa": "Q3268212",
 }
 
 
@@ -1477,11 +1480,12 @@ def check_species_genus(nodes):
     for node in nodes.values():
         if node["rank"] != "Species":
             continue
-        count += 1
 
         qid = node["qid"]
         if qid in checked_qids:
             continue
+
+        count += 1
         checked_qids.append(qid)
 
         # Find the parent node
@@ -1929,7 +1933,6 @@ def remove_chains(nodes, force: bool = False):
     for node in nodes.values():
         if "text" not in node:
             count += 1
-    print(f"INFO: {count} nodes have no text")
 
     with open(TMP_DIR / "nodes_6.json", "w") as fp:
         json.dump({"nodes": nodes}, fp, indent=2)
@@ -2162,6 +2165,94 @@ def check_nodes_final(nodes):
         json.dump(checked_qids, fp, indent=2)
 
 
+def list_species(nodes):
+    nodes = nodes["nodes"]
+
+    children_by_ptid = {}
+    roots = []
+    for node in nodes.values():
+        ptid = node["ptid"]
+        if ptid == -1:
+            roots.append(node)
+        else:
+            children_by_ptid.setdefault(ptid, []).append(node)
+
+    for children in children_by_ptid.values():
+        children.sort(key=lambda node: node["tid"], reverse=True)
+    roots.sort(key=lambda node: node["tid"])
+
+    def walk(node):
+        if node["nchildren"] == 0:
+            print(f'  ["{node["com_name"][0]}", {node["tid"]}],')
+            return
+
+        for child in children_by_ptid.get(node["tid"], []):
+            walk(child)
+
+    for root in roots:
+        walk(root)
+
+
+def limit_species(nodes, species_tids: list[int]):
+    nodes = nodes["nodes"]
+
+    # strip out all nodes in the tree apart from the minimum subset required
+    # by the specified species TIDs (plus the original root)
+    nodes_by_tid = {node["tid"]: node for node in nodes.values()}
+
+    root_tids = {node["tid"] for node in nodes.values() if node["ptid"] == -1}
+    retained_tids = set(root_tids)
+
+    for species_tid in species_tids:
+        if species_tid not in nodes_by_tid:
+            raise ValueError(f"species TID {species_tid} not found")
+
+        tid = species_tid
+        while tid != -1:
+            retained_tids.add(tid)
+            tid = nodes_by_tid[tid]["ptid"]
+
+    filtered_nodes = {
+        name: deepcopy(node)
+        for name, node in nodes.items()
+        if node["tid"] in retained_tids
+    }
+
+    for node in filtered_nodes.values():
+        node["nchildren"] = 0
+
+    filtered_nodes_by_tid = {node["tid"]: node for node in filtered_nodes.values()}
+    for node in filtered_nodes.values():
+        ptid = node["ptid"]
+        if ptid != -1 and ptid in retained_tids:
+            filtered_nodes_by_tid[ptid]["nchildren"] += 1
+
+    kept_tids = {
+        node["tid"]
+        for node in filtered_nodes.values()
+        if node["ptid"] == -1 or node["nchildren"] != 1
+    }
+
+    compressed_nodes = {
+        name: node for name, node in filtered_nodes.items() if node["tid"] in kept_tids
+    }
+    compressed_nodes_by_tid = {node["tid"]: node for node in compressed_nodes.values()}
+
+    for node in compressed_nodes.values():
+        ptid = node["ptid"]
+        while ptid != -1 and ptid not in kept_tids:
+            ptid = filtered_nodes_by_tid[ptid]["ptid"]
+        node["ptid"] = ptid
+        node["nchildren"] = 0
+
+    for node in compressed_nodes.values():
+        ptid = node["ptid"]
+        if ptid != -1:
+            compressed_nodes_by_tid[ptid]["nchildren"] += 1
+
+    return {"nodes": compressed_nodes}
+
+
 if __name__ == "__main__":
     with open(Path(__file__).parent / "species.json", "r") as fp:
         species = json.load(fp)
@@ -2182,7 +2273,13 @@ if __name__ == "__main__":
     nodes = apply_overwrites(nodes)
     check_nodes_final(nodes)
 
-    display_names = []
+    # list_species(nodes)
+    # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
+    # nodes = limit_species(nodes, [900, 499, 1324, 744])
+    # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
+    # exit(1)
+
+    display_names = ["Ovis", "Turdus"]
     for node in nodes["nodes"].values():
         if node["nchildren"] >= 5 or node["sci_name"] in display_names:
             print(node["sci_name"])

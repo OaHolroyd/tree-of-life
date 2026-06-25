@@ -228,6 +228,10 @@
     "scientific": "Ara ararauna"
   },
   {
+    "common": ["arapaima"],
+    "scientific": "Arapaima gigas"
+  },
+  {
     "common": ["giant African millipede"],
     "scientific": "Archispirostreptus gigas"
   },
@@ -760,6 +764,10 @@
     "scientific": "Conraua goliath"
   },
   {
+    "common": ["cone snail"],
+    "scientific": "Conus geographus"
+  },
+  {
     "common": ["black vulture"],
     "scientific": "Coragyps atratus"
   },
@@ -968,10 +976,6 @@
     "scientific": "Dicotyles tajacu"
   },
   {
-    "common": ["drongo"],
-    "scientific": "Dicrurus forficatus"
-  },
-  {
     "common": ["Virginia opossum"],
     "scientific": "Didelphis virginiana"
   },
@@ -1004,7 +1008,7 @@
     "scientific": "Dodecolopoda mawsoni"
   },
   {
-    "common": ["Humbolt squid", "jumbo squid"],
+    "common": ["Humboldt squid", "jumbo squid"],
     "scientific": "Dosidicus gigas"
   },
   {
@@ -1340,7 +1344,7 @@
     "scientific": "Goliathus goliatus"
   },
   {
-    "common": ["eastern  gorilla"],
+    "common": ["eastern gorilla"],
     "scientific": "Gorilla beringei"
   },
   {
@@ -1382,6 +1386,10 @@
   {
     "common": ["bald eagle"],
     "scientific": "Haliaeetus leucocephalus"
+  },
+  {
+    "common": ["pink abalone"],
+    "scientific": "Haliotis corrugata"
   },
   {
     "common": ["blue-ringed octopus"],
@@ -1498,6 +1506,10 @@
   {
     "common": ["Amazon river dolphin"],
     "scientific": "Inia geoffrensis"
+  },
+  {
+    "common": ["cookiecutter shark"],
+    "scientific": "Isistius brasiliensis"
   },
   {
     "common": ["sailfish"],
@@ -1948,10 +1960,6 @@
     "scientific": "Mustela erminea"
   },
   {
-    "common": ["ferret"],
-    "scientific": "Mustela furo"
-  },
-  {
     "common": ["mink"],
     "scientific": "Mustela lutreola"
   },
@@ -2212,10 +2220,6 @@
     "scientific": "Ovis canadensis"
   },
   {
-    "common": ["mouflon"],
-    "scientific": "Ovis gmelini"
-  },
-  {
     "common": ["taipan"],
     "scientific": "Oxyuranus scutellatus"
   },
@@ -2314,10 +2318,6 @@
   {
     "common": ["stingless bee"],
     "scientific": "Partamona helleri"
-  },
-  {
-    "common": ["great tit"],
-    "scientific": "Parus major"
   },
   {
     "common": ["house sparrow"],
@@ -2468,6 +2468,10 @@
     "scientific": "Platanista gangetica"
   },
   {
+    "common": ["New Guinea flatworm"],
+    "scientific": "Platydemus manokwari"
+  },
+  {
     "common": ["snow bunting"],
     "scientific": "Plectrophenax nivalis"
   },
@@ -2544,7 +2548,7 @@
     "scientific": "Procavia capensis"
   },
   {
-    "common": ["racoon"],
+    "common": ["raccoon"],
     "scientific": "Procyon lotor"
   },
   {
@@ -2552,7 +2556,11 @@
     "scientific": "Propithecus candidus"
   },
   {
-    "common": ["flatworm"],
+    "common": ["aardwolf"],
+    "scientific": "Proteles cristatus"
+  },
+  {
+    "common": ["Persian carpet flatworm"],
     "scientific": "Pseudobiceros bedfordi"
   },
   {
@@ -2644,7 +2652,7 @@
     "scientific": "Rattus rattus"
   },
   {
-    "common": ["assasin bug"],
+    "common": ["assassin bug"],
     "scientific": "Reduvius personatus"
   },
   {
@@ -2666,6 +2674,10 @@
   {
     "common": ["Indian rhinoceros"],
     "scientific": "Rhinoceros unicornis"
+  },
+  {
+    "common": ["greater horseshoe bat"],
+    "scientific": "Rhinolophus ferrumequinum"
   },
   {
     "common": ["golden snub-nosed monkey"],
@@ -2940,6 +2952,10 @@
     "scientific": "Tenrec ecaudatus"
   },
   {
+    "common": ["lampshell"],
+    "scientific": "Terebratalia transversa"
+  },
+  {
     "common": ["box turtle"],
     "scientific": "Terrapene carolina"
   },
@@ -2990,6 +3006,10 @@
   {
     "common": ["tarantula"],
     "scientific": "Tliltocatl vagans"
+  },
+  {
+    "common": ["false gharial"],
+    "scientific": "Tomistoma schlegelii"
   },
   {
     "common": ["torpedo ray", "electric ray"],
@@ -3146,6 +3166,10 @@
   {
     "common": ["red fox"],
     "scientific": "Vulpes vulpes"
+  },
+  {
+    "common": ["fennec fox"],
+    "scientific": "Vulpes zerda"
   },
   {
     "common": ["condor"],
