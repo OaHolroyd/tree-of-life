@@ -90,7 +90,7 @@ const LARGE_SPECIES_TIDS = [
   ["leaf barnacle", 1182],
   ["mantis shrimp", 1059],
   ["sand flea", 1295],
-  ["woodlouse", 1065],
+  [["woodlouse", "pillbug"], 1065],
   ["tongue-eating louse", 611],
   ["giant isopod", 359],
   ["krill", 747],

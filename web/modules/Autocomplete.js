@@ -13,20 +13,35 @@ export function getSuggestions(query, previousGuesses, options, limit = 10) {
 
   query = query.toLowerCase();
 
+  /**
+   * Score a given word/pair of words
+   * @param {Array[str | Array[str], int]} word - either a [name, TID] pair or a [[name0, name1, ...], TID] pair
+   * @returns [name, score]
+   */
   function scoreWord(word) {
+    // handle cases where word is actually a list of possible words
+    if (word[0] instanceof Array) {
+      const scores = word[0].map((w) => scoreWord([w, word[1]])[1]);
+      const imax = scores.reduce(
+        (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
+        0,
+      );
+      return [word[0][imax], scores[imax]];
+    }
+
     if (previousGuesses.includes(word[1])) {
-      return -Infinity;
+      return [word[0], -Infinity];
     }
 
     const lower = word[0].toLowerCase();
 
     if (lower.startsWith(query)) {
-      return 10000 - lower.length;
+      return [word[0], 10000 - lower.length];
     }
 
     const contains = lower.indexOf(query);
     if (contains !== -1) {
-      return 5000 - contains - lower.length;
+      return [word[0], 5000 - contains - lower.length];
     }
 
     let score = 0;
@@ -37,7 +52,7 @@ export function getSuggestions(query, previousGuesses, options, limit = 10) {
       const idx = lower.indexOf(c, pos);
 
       if (idx === -1) {
-        return -Infinity;
+        return [word[0], -Infinity];
       }
 
       score += 10;
@@ -53,24 +68,21 @@ export function getSuggestions(query, previousGuesses, options, limit = 10) {
 
     score -= lower.length;
 
-    return score;
+    return [word[0], score];
   }
 
   const scored = options
-    .map((word) => ({
-      word,
-      score: scoreWord(word),
-    }))
-    .filter((x) => x.score > -Infinity)
-    .sort((a, b) => b.score - a.score);
+    .map((word) => scoreWord(word))
+    .filter((x) => x[1] > -Infinity)
+    .sort((a, b) => b[1] - a[1]);
 
   // split into suggestions we will definitely return and ones we'll
   // only include if we need to bump up to the limit
-  const guaranteed = scored.filter((x) => x.score > 4000);
-  const others = scored.filter((x) => x.score <= 4000);
+  const guaranteed = scored.filter((x) => x[1] > 4000);
+  const others = scored.filter((x) => x[1] <= 4000);
 
   return [
     ...guaranteed,
     ...others.slice(0, Math.max(0, limit - guaranteed.length)),
-  ].map((x) => x.word[0]);
+  ].map((x) => x[0]);
 }
