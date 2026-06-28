@@ -2,8 +2,8 @@ import { CLADE_LIST, CladeState } from "../data/clades.js";
 import { SPECIES_LISTS } from "../data/species.js";
 import { loadGameStats, saveGameStats } from "./Storage.js";
 
-const NUM_GUESSES = 20;
 const NUM_CLADES = CLADE_LIST.length;
+const NUM_GUESSES = [18, 22, 25];
 
 export const GameState = Object.freeze({
   PLAYING: 0,
@@ -24,7 +24,7 @@ export class Game {
     this.size = size;
     this.answer = tid;
     this.tree = CLADE_LIST;
-    this.guessesRemaining = NUM_GUESSES;
+    this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.state = GameState.PLAYING; // 0: playing, 1: won, 2: lost
     this.subtree = [];
@@ -39,11 +39,19 @@ export class Game {
    * Reset the game to a blank state (all nodes hidden and off-chain)
    */
   reset() {
+    // reset the nodes
     for (let i = 0; i < NUM_CLADES; i++) {
       this.tree[i].state = CladeState.OFF;
       this.tree[i].onChain = false;
       this.tree[i].sub_ptid = this.tree[i].ptid;
     }
+
+    // update the common names of species
+    SPECIES_LISTS[this.size].forEach((entry) => {
+      let name = entry[0];
+      let tid = entry[1];
+      this.tree[tid].com_name = name;
+    });
   }
 
   /**
@@ -62,7 +70,7 @@ export class Game {
    * @param {int} root - taxon ID (ie the position in CLADE_DATABASE) of the root node
    * @param {int} size - size of the species list (0/1/2, small/medium/large)
    */
-  restart(tid, root = 0, size = 1) {
+  restart(tid = -1, root = 0, size = 1) {
     this.hint_cost = 3;
     this.root = root;
     this.size = size;
@@ -75,7 +83,7 @@ export class Game {
     console.log(`RESTART (${tid}: ${this.tree[tid].com_name})`);
 
     this.answer = tid;
-    this.guessesRemaining = NUM_GUESSES;
+    this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.state = GameState.PLAYING;
 
@@ -156,7 +164,7 @@ export class Game {
    * @returns how many turns the player has taken
    */
   getTurnsTaken() {
-    return NUM_GUESSES - this.guessesRemaining;
+    return NUM_GUESSES[this.size] - this.guessesRemaining;
   }
 
   /**

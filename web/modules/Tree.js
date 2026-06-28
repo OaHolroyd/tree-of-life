@@ -116,7 +116,7 @@ export class Tree {
     this.nodes.forEach((node) => {
       if (!node.spawned) {
         let name = node.sci_name;
-        if (node.rank === "species") {
+        if (node.rank === "Species") {
           name = node.com_name;
         }
         if (node.state == CladeState.ANSWER) {
@@ -127,6 +127,9 @@ export class Tree {
         div.className = "tree-node";
         div.id = `node-${node.tid}`;
         div.innerHTML = `<div class="node-sci">${name}</div>`;
+        if (node.rank === "Species") {
+          div.innerHTML = `<div class="node-com">${name}</div>`;
+        }
 
         // Route internal click event outward to the main orchestrator callback
         div.addEventListener("click", () => {

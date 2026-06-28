@@ -9,6 +9,7 @@ from copy import deepcopy
 import xml.etree.ElementTree as ET
 
 from dotenv import load_dotenv
+import numpy as np
 from itertools import islice
 import mwparserfromhell
 
@@ -690,6 +691,10 @@ def apply_redirects(nodes, page_data):
             "Caprinae",
             "Percomorpha",
             "Asinus",
+            "Lithobates catesbeianus",
+            "Mesotriton",
+            "Mesotriton alpestris",
+            "Megascapheus bottae",
         ]:
             continue
 
@@ -887,6 +892,10 @@ def get_qids_from_wikidata(session, titles):
     return result
 
 
+# All nodes must have a QID, and sometimes we fail to find them automatically
+# (or we find the wrong one) and so some must be set manually. Some nodes don't
+# have a QID so must have a fake one generated. Fake QIDs are marked with a
+# leading underscore.
 MANUAL_QIDS = {
     "Acipenserinae": "Q3604574",
     "Metasuchia": "Q3307307",
@@ -895,7 +904,6 @@ MANUAL_QIDS = {
     "Alpheus digitalis": "Q4474074",
     "Amblyraja hyperborea": "Q238519",
     "Amynthas mekongianus": "Q48838660",
-    "Apeltes quadracus": "Q1327089",
     "Novaeratitae": "Q19598164",
     "Balanoglossus gigas": "Q2271336",
     "Cephenemyia": "Q4355273",
@@ -963,12 +971,12 @@ MANUAL_QIDS = {
     "Tetrapulmonata": "Q3821682",
     "Aculeata": "Q1251421",
     "Proctotrupomorpha": "Q11996284",
-    "Parasitoida": "",
-    "Victoranura": "",
-    "Allodapanura": "",
-    "Agastorophrynia": "",
-    "Athesphatanura": "",
-    "Phthanobatrachia": "",
+    "Parasitoida": "_Q0000",
+    "Victoranura": "_Q0001",
+    "Allodapanura": "_Q0002",
+    "Agastorophrynia": "_Q0003",
+    "Athesphatanura": "_Q0004",
+    "Phthanobatrachia": "_Q0005",
     "Neobatrachia": "Q134759",
     "Natatanura": "Q139240716",
     "Ranoidea": "Q6525920",
@@ -976,16 +984,16 @@ MANUAL_QIDS = {
     "Caprinae": "Q189804",
     "Percomorpha": "Q258278",
     "Asinus": "Q2305786",
-    "Cephalosomata": "",
-    "Poecilophysidea": "",
+    "Cephalosomata": "_Q0006",
+    "Poecilophysidea": "_Q0007",
     "Arachnopulmonata": "Q80024044",
-    "Panscorpiones": "",
+    "Panscorpiones": "_Q0008",
     "Elementaves": "Q125268288",
     "Gruae": "Q19597378",
     "Gruimorphae": "Q27732132",
     "Strisores": "Q5198624",
     "Dorylinae": "Q4037541",
-    "Formicoid": "",
+    "Formicoid": "_Q0009",
     "Poneroid": "Q136029847",
     "Menoidei": "Q100148330",
     "Centropomoidei": "Q100146133",
@@ -996,7 +1004,6 @@ MANUAL_QIDS = {
     "Echinozoa": "Q2698547",
     #
     "Acipenser oxyrinchus": "Q11031462",
-    "Apeltes quadracus": "Q19760858",
     "Cephenemyia stimulator": "Q4355273",
     "Cyclopterus lumpus": "Q18001776",
     "Papilionoidea": "Q11946202",
@@ -1009,8 +1016,8 @@ MANUAL_QIDS = {
     "Sphenodon punctatus": "Q163283",
     "Megascapheus bottae": "Q1497037",
     "Castorimorpha": "Q849836",
-    "Puma lineage": "",
-    "Leopard cat lineage": "",
+    "Puma lineage": "_Q0010",
+    "Leopard cat lineage": "_Q0011",
     "Episquamata": "Q13518421",
     "Unidentata": "Q139260769",
     "Bifurcata": "Q2902081",
@@ -1079,8 +1086,8 @@ def add_qids(nodes, force: bool = False):
 
 def get_wikititles_from_qids(session, qids):
     """Call the WikiData API to get Wikipedia titles for a list of QIDs"""
-    # remove empty strings
-    qids = [q for q in qids if len(q) > 0]
+    # remove artificial QIDs which have a leading underscore
+    qids = [q for q in qids if not q.startswith("_")]
 
     # Make request
     url = "https://www.wikidata.org/w/api.php"
@@ -1818,6 +1825,7 @@ def display_tree(
 
 MANUAL_RETAINS = [
     "Feliformia",
+    "Actinopterygii",
 ]
 
 
@@ -2068,6 +2076,16 @@ def apply_overwrites(nodes, force: bool = False):
     return {"nodes": nodes}
 
 
+def _escape_html(s: str) -> str:
+    return (
+        str(s)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
+
+
 def check_nodes_final(nodes):
     """
     Produce small HTML pages with species/genus pairs for manual checking.
@@ -2087,18 +2105,9 @@ def check_nodes_final(nodes):
     missing_text = 0
     missing_image = 0
 
-    def _escape_html(s: str) -> str:
-        return (
-            str(s)
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace('"', "&quot;")
-        )
-
     for node in nodes.values():
         qid = node["qid"]
-        if qid in checked_qids and qid != "":
+        if qid in checked_qids:
             continue
         checked_qids.append(qid)
 
@@ -2165,7 +2174,8 @@ def check_nodes_final(nodes):
         json.dump(checked_qids, fp, indent=2)
 
 
-def list_species(nodes):
+def walk_tree(nodes, node_fn):
+    """Walk the tree and call node_fn on each node"""
     nodes = nodes["nodes"]
 
     children_by_ptid = {}
@@ -2182,8 +2192,9 @@ def list_species(nodes):
     roots.sort(key=lambda node: node["tid"])
 
     def walk(node):
+        node_fn(node)
+
         if node["nchildren"] == 0:
-            print(f'  ["{node["com_name"][0]}", {node["tid"]}],')
             return
 
         for child in children_by_ptid.get(node["tid"], []):
@@ -2191,6 +2202,14 @@ def list_species(nodes):
 
     for root in roots:
         walk(root)
+
+
+def list_species(nodes):
+    def print_species(node):
+        if node["nchildren"] == 0:
+            print(f'  ["{node["com_name"][0]}", {node["tid"]}],')
+
+    walk_tree(nodes, print_species)
 
 
 def limit_species(nodes, species_tids: list[int]):
@@ -2253,8 +2272,123 @@ def limit_species(nodes, species_tids: list[int]):
     return {"nodes": compressed_nodes}
 
 
+def compute_stats(nodes):
+    nodes = nodes["nodes"]
+
+    # index nodes by TID to make traversal easier
+    nodes = {node["tid"]: node for node in nodes.values()}
+
+    species_tids = [node["tid"] for node in nodes.values() if node["nchildren"] == 0]
+    print(
+        f"NUM SPECIES: {len(species_tids)} ({20 * np.log(len(species_tids)) / np.log(336)})"
+    )
+
+    # work out average/max depth of a species
+    max_tid = 0
+    max_depth = 0
+    total_depth = 0
+    for _tid in species_tids:
+        tid = _tid
+        depth = 0
+        while _tid != 0:
+            _tid = nodes[_tid]["ptid"]
+            depth += 1
+        total_depth += depth
+        if depth > max_depth:
+            max_depth = depth
+            max_tid = tid
+    avg_depth = total_depth / len(species_tids)
+    print(f"MAX DEPTH: {max_depth} ({nodes[max_tid]['com_name'][0]})")
+    print(f"AVG DEPTH: {avg_depth}")
+    print()
+
+
+def make_js_files(nodes):
+    """Make the JS files for the web app"""
+    # species.js
+    with open(BASE_DIR / "species.json", "r") as fp:
+        species = json.load(fp)
+    species_levels = {}
+    for sp in species:
+        species_levels[sp["scientific"]] = sp["level"]
+
+    with open(TMP_DIR / "species.js", "w") as fp:
+        sizes = ["LARGE", "MEDIUM", "SMALL"]
+        for i, size in enumerate(sizes):
+            fp.write(f"const {size}_SPECIES_TIDS = [\n")
+
+            def print_species(node):
+                if node["nchildren"] == 0 and species_levels[node["sci_name"]] >= i:
+                    fp.write(f'  ["{node["com_name"][0]}", {node["tid"]}],\n')
+
+            walk_tree(nodes, print_species)
+
+            fp.write("];\n")
+        fp.write("\n")
+        fp.write(f"export const SPECIES_LISTS = [\n")
+        for size in reversed(sizes):
+            fp.write(f"  {size}_SPECIES_TIDS,\n")
+        fp.write("];\n")
+
+    # clades.js
+    with open(TMP_DIR / "clades.js", "w") as fp:
+        fp.write("""export const CladeState = Object.freeze({
+  ANSWER: 0,
+  OFF: 1,
+  HIDDEN: 2,
+  VISIBLE: 3,
+});
+
+export class Clade {
+  constructor(tid, ptid, sci_name, com_name, text, image, rank) {
+    this.tid = tid;
+    this.ptid = ptid;
+    this.sci_name = sci_name;
+    this.com_name = com_name;
+    this.text = text;
+    this.image = image;
+    this.rank = rank;
+    this.sub_ptid = ptid;
+    this.onChain = false;
+    this.state = CladeState.OFF;
+  }
+
+  clone() {
+    let clone = new Clade(
+      this.tid,
+      this.ptid,
+      this.sci_name,
+      this.com_name,
+      this.text,
+      this.image,
+      this.rank,
+    );
+    clone.sub_ptid = this.sub_ptid;
+    clone.onChain = this.onChain;
+    clone.state = this.state;
+    return clone;
+  }
+}
+
+export const CLADE_LIST = [
+""")
+
+        for node in nodes["nodes"].values():
+            fp.write(f"  new Clade(\n")
+            fp.write(f"    {node['tid']},\n")
+            fp.write(f"    {node['ptid'] if node['ptid'] != -1 else 'null'},\n")
+            fp.write(f'    "{node["sci_name"]}",\n')
+            fp.write(f'    "{node.get("com_name", [""])[0]}",\n')
+            fp.write(f'    "{_escape_html(node["text"])}",\n')
+            fp.write(f'    "{node["image"]}",\n')
+            fp.write(f'    "{node["rank"]}",\n')
+            fp.write(f"  ),\n")
+
+        fp.write("];\n")
+
+
 if __name__ == "__main__":
-    with open(Path(__file__).parent / "species.json", "r") as fp:
+    with open(BASE_DIR / "species.json", "r") as fp:
         species = json.load(fp)
 
     page_data = parse_articles(XML_PATH)
@@ -2273,13 +2407,29 @@ if __name__ == "__main__":
     nodes = apply_overwrites(nodes)
     check_nodes_final(nodes)
 
+    make_js_files(nodes)
+
+    species_tids = {
+        node["sci_name"]: node["tid"]
+        for node in nodes["nodes"].values()
+        if node["nchildren"] == 0
+    }
+    for i in [0, 1, 2]:
+        tids = []
+        for sp in species:
+            if sp["level"] >= i:
+                tids.append(species_tids[sp["scientific"]])
+
+        nodes = limit_species(nodes, tids)
+        compute_stats(nodes)
+
     # list_species(nodes)
     # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
     # nodes = limit_species(nodes, [900, 499, 1324, 744])
     # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
     # exit(1)
 
-    display_names = ["Ovis", "Turdus"]
+    display_names = []
     for node in nodes["nodes"].values():
         if node["nchildren"] >= 5 or node["sci_name"] in display_names:
             print(node["sci_name"])

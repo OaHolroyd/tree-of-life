@@ -1,3202 +1,4002 @@
 [
   {
     "common": ["rifleman"],
-    "scientific": "Acanthisitta chloris"
+    "scientific": "Acanthisitta chloris",
+    "level": 0
   },
   {
     "common": ["death adder"],
-    "scientific": "Acanthophis antarcticus"
+    "scientific": "Acanthophis antarcticus",
+    "level": 0
   },
   {
     "common": ["sparrowhawk"],
-    "scientific": "Accipiter nisus"
+    "scientific": "Accipiter nisus",
+    "level": 2
   },
   {
     "common": ["cheetah"],
-    "scientific": "Acinonyx jubatus"
+    "scientific": "Acinonyx jubatus",
+    "level": 2
   },
   {
     "common": ["sturgeon"],
-    "scientific": "Acipenser oxyrinchus"
+    "scientific": "Acipenser oxyrinchus",
+    "level": 1
   },
   {
     "common": ["table coral"],
-    "scientific": "Acropora clathrata"
+    "scientific": "Acropora clathrata",
+    "level": 1
   },
   {
     "common": ["staghorn coral"],
-    "scientific": "Acropora pulchra"
+    "scientific": "Acropora pulchra",
+    "level": 0
   },
   {
     "common": ["sea cucumber"],
-    "scientific": "Actinopyga echinites"
+    "scientific": "Actinopyga echinites",
+    "level": 2
   },
   {
     "common": ["mosquito"],
-    "scientific": "Aedes aegypti"
+    "scientific": "Aedes aegypti",
+    "level": 2
   },
   {
     "common": ["impala"],
-    "scientific": "Aepyceros melampus"
+    "scientific": "Aepyceros melampus",
+    "level": 1
   },
   {
     "common": ["red-eyed tree frog"],
-    "scientific": "Agalychnis callidryas"
+    "scientific": "Agalychnis callidryas",
+    "level": 1
   },
   {
     "common": ["copperhead"],
-    "scientific": "Agkistrodon contortrix"
+    "scientific": "Agkistrodon contortrix",
+    "level": 1
   },
   {
     "common": ["giant panda"],
-    "scientific": "Ailuropoda melanoleuca"
+    "scientific": "Ailuropoda melanoleuca",
+    "level": 2
   },
   {
     "common": ["cuscus"],
-    "scientific": "Ailurops ursinus"
+    "scientific": "Ailurops ursinus",
+    "level": 0
   },
   {
     "common": ["red panda"],
-    "scientific": "Ailurus fulgens"
+    "scientific": "Ailurus fulgens",
+    "level": 2
   },
   {
     "common": ["mandarin duck"],
-    "scientific": "Aix galericulata"
+    "scientific": "Aix galericulata",
+    "level": 2
   },
   {
     "common": ["lark"],
-    "scientific": "Alauda arvensis"
+    "scientific": "Alauda arvensis",
+    "level": 1
   },
   {
     "common": ["razorbill"],
-    "scientific": "Alca torda"
+    "scientific": "Alca torda",
+    "level": 0
   },
   {
     "common": ["kingfisher"],
-    "scientific": "Alcedo atthis"
+    "scientific": "Alcedo atthis",
+    "level": 1
   },
   {
     "common": ["hartebeest"],
-    "scientific": "Alcelaphus buselaphus"
+    "scientific": "Alcelaphus buselaphus",
+    "level": 0
   },
   {
     "common": ["moose"],
-    "scientific": "Alces alces"
+    "scientific": "Alces alces",
+    "level": 2
   },
   {
     "common": ["alligator"],
-    "scientific": "Alligator mississippiensis"
+    "scientific": "Alligator mississippiensis",
+    "level": 2
   },
   {
     "common": ["thresher shark"],
-    "scientific": "Alopias pelagicus"
+    "scientific": "Alopias pelagicus",
+    "level": 0
   },
   {
     "common": ["howler monkey"],
-    "scientific": "Alouatta palliata"
+    "scientific": "Alouatta palliata",
+    "level": 2
   },
   {
     "common": ["pistol shrimp"],
-    "scientific": "Alpheus digitalis"
+    "scientific": "Alpheus digitalis",
+    "level": 2
   },
   {
     "common": ["skate"],
-    "scientific": "Amblyraja hyperborea"
+    "scientific": "Amblyraja hyperborea",
+    "level": 1
   },
   {
     "common": ["marine iguana"],
-    "scientific": "Amblyrhynchus cristatus"
+    "scientific": "Amblyrhynchus cristatus",
+    "level": 1
   },
   {
     "common": ["golden mole"],
-    "scientific": "Amblysomus hottentotus"
+    "scientific": "Amblysomus hottentotus",
+    "level": 0
   },
   {
     "common": ["axolotl"],
-    "scientific": "Ambystoma mexicanum"
+    "scientific": "Ambystoma mexicanum",
+    "level": 2
   },
   {
     "common": ["clownfish"],
-    "scientific": "Amphiprion ocellaris"
+    "scientific": "Amphiprion ocellaris",
+    "level": 2
   },
   {
     "common": ["Mekong giant earthworm"],
-    "scientific": "Amynthas mekongianus"
+    "scientific": "Amynthas mekongianus",
+    "level": 0
   },
   {
     "common": ["wolffish"],
-    "scientific": "Anarhichas lupus"
+    "scientific": "Anarhichas lupus",
+    "level": 1
   },
   {
     "common": ["teal"],
-    "scientific": "Anas crecca"
+    "scientific": "Anas crecca",
+    "level": 0
   },
   {
     "common": ["mallard"],
-    "scientific": "Anas platyrhynchos"
+    "scientific": "Anas platyrhynchos",
+    "level": 1
   },
   {
     "common": ["hookworm"],
-    "scientific": "Ancylostoma caninum"
+    "scientific": "Ancylostoma caninum",
+    "level": 1
   },
   {
     "common": ["Chinese giant salamander"],
-    "scientific": "Andrias davidianus"
+    "scientific": "Andrias davidianus",
+    "level": 0
   },
   {
     "common": ["Mexican blind lizard"],
-    "scientific": "Anelytropsis papillosus"
+    "scientific": "Anelytropsis papillosus",
+    "level": 0
   },
   {
     "common": ["European eel"],
-    "scientific": "Anguilla anguilla"
+    "scientific": "Anguilla anguilla",
+    "level": 1
   },
   {
     "common": ["slow worm"],
-    "scientific": "Anguis fragilis"
+    "scientific": "Anguis fragilis",
+    "level": 1
   },
   {
     "common": ["darter", "snakebird"],
-    "scientific": "Anhinga anhinga"
+    "scientific": "Anhinga anhinga",
+    "level": 0
   },
   {
     "common": ["green anole"],
-    "scientific": "Anolis carolinensis"
+    "scientific": "Anolis carolinensis",
+    "level": 0
   },
   {
     "common": ["fangtooth"],
-    "scientific": "Anoplogaster cornuta"
+    "scientific": "Anoplogaster cornuta",
+    "level": 1
   },
   {
     "common": ["greylag goose"],
-    "scientific": "Anser anser"
+    "scientific": "Anser anser",
+    "level": 0
   },
   {
     "common": ["weevil"],
-    "scientific": "Anthonomus grandis"
+    "scientific": "Anthonomus grandis",
+    "level": 1
   },
   {
     "common": ["springbok"],
-    "scientific": "Antidorcas marsupialis"
+    "scientific": "Antidorcas marsupialis",
+    "level": 1
   },
   {
     "common": ["pronghorn"],
-    "scientific": "Antilocapra americana"
+    "scientific": "Antilocapra americana",
+    "level": 1
   },
   {
     "common": ["softshell turtle"],
-    "scientific": "Apalone ferox"
+    "scientific": "Apalone ferox",
+    "level": 0
   },
   {
     "common": ["stickleback"],
-    "scientific": "Apeltes quadracus"
+    "scientific": "Gasterosteus aculeatus",
+    "level": 1
   },
   {
     "common": ["aphid", "greenfly"],
-    "scientific": "Aphis gossypii"
+    "scientific": "Aphis gossypii",
+    "level": 1
   },
   {
     "common": ["honey bee"],
-    "scientific": "Apis mellifera"
+    "scientific": "Apis mellifera",
+    "level": 2
   },
   {
     "common": ["tube sponge"],
-    "scientific": "Aplysina fistularis"
+    "scientific": "Aplysina fistularis",
+    "level": 2
   },
   {
     "common": ["emperor penguin"],
-    "scientific": "Aptenodytes forsteri"
+    "scientific": "Aptenodytes forsteri",
+    "level": 2
   },
   {
     "common": ["knifefish"],
-    "scientific": "Apteronotus albifrons"
+    "scientific": "Apteronotus albifrons",
+    "level": 1
   },
   {
     "common": ["kiwi"],
-    "scientific": "Apteryx mantelli"
+    "scientific": "Apteryx mantelli",
+    "level": 2
   },
   {
     "common": ["swift"],
-    "scientific": "Apus apus"
+    "scientific": "Apus apus",
+    "level": 2
   },
   {
     "common": ["golden eagle"],
-    "scientific": "Aquila chrysaetos"
+    "scientific": "Aquila chrysaetos",
+    "level": 1
   },
   {
     "common": ["macaw"],
-    "scientific": "Ara ararauna"
+    "scientific": "Ara ararauna",
+    "level": 2
   },
   {
     "common": ["arapaima"],
-    "scientific": "Arapaima gigas"
+    "scientific": "Arapaima gigas",
+    "level": 0
   },
   {
     "common": ["giant African millipede"],
-    "scientific": "Archispirostreptus gigas"
+    "scientific": "Archispirostreptus gigas",
+    "level": 0
   },
   {
     "common": ["giant squid"],
-    "scientific": "Architeuthis dux"
+    "scientific": "Architeuthis dux",
+    "level": 2
   },
   {
     "common": ["fur seal"],
-    "scientific": "Arctocephalus gazella"
+    "scientific": "Arctocephalus gazella",
+    "level": 0
   },
   {
     "common": ["heron"],
-    "scientific": "Ardea cinerea"
+    "scientific": "Ardea cinerea",
+    "level": 2
   },
   {
     "common": ["argonaut", "paper nautilus"],
-    "scientific": "Argonauta argo"
+    "scientific": "Argonauta argo",
+    "level": 0
   },
   {
     "common": ["slug"],
-    "scientific": "Ariolimax columbianus"
+    "scientific": "Ariolimax columbianus",
+    "level": 2
   },
   {
     "common": ["pufferfish"],
-    "scientific": "Arothron meleagris"
+    "scientific": "Arothron meleagris",
+    "level": 2
   },
   {
     "common": ["brine shrimp"],
-    "scientific": "Artemia salina"
+    "scientific": "Artemia salina",
+    "level": 1
   },
   {
     "common": ["robberfly"],
-    "scientific": "Asilus crabroniformis"
+    "scientific": "Asilus crabroniformis",
+    "level": 0
   },
   {
     "common": ["whiptail"],
-    "scientific": "Aspidoscelis neomexicanus"
+    "scientific": "Aspidoscelis neomexicanus",
+    "level": 0
   },
   {
     "common": ["common sea star"],
-    "scientific": "Asterias rubens"
+    "scientific": "Asterias rubens",
+    "level": 0
   },
   {
     "common": ["goshawk"],
-    "scientific": "Astur gentilis"
+    "scientific": "Astur gentilis",
+    "level": 0
   },
   {
     "common": ["spider monkey"],
-    "scientific": "Ateles marginatus"
+    "scientific": "Ateles marginatus",
+    "level": 1
   },
   {
     "common": ["burrowing owl"],
-    "scientific": "Athene cunicularia"
+    "scientific": "Athene cunicularia",
+    "level": 0
   },
   {
     "common": ["leaf-cutter ant"],
-    "scientific": "Atta cephalotes"
+    "scientific": "Atta cephalotes",
+    "level": 2
   },
   {
     "common": ["Atlas moth"],
-    "scientific": "Attacus atlas"
+    "scientific": "Attacus atlas",
+    "level": 2
   },
   {
     "common": ["moon jellyfish"],
-    "scientific": "Aurelia aurita"
+    "scientific": "Aurelia aurita",
+    "level": 1
   },
   {
     "common": ["crayfish"],
-    "scientific": "Austropotamobius pallipes"
+    "scientific": "Austropotamobius pallipes",
+    "level": 1
   },
   {
     "common": ["sand fly"],
-    "scientific": "Austrosimulium australense"
+    "scientific": "Austrosimulium australense",
+    "level": 0
   },
   {
     "common": ["chital", "spotted deer"],
-    "scientific": "Axis axis"
+    "scientific": "Axis axis",
+    "level": 0
   },
   {
     "common": ["tufted titmouse"],
-    "scientific": "Baeolophus bicolor"
+    "scientific": "Baeolophus bicolor",
+    "level": 0
   },
   {
     "common": ["bowhead whale"],
-    "scientific": "Balaena mysticetus"
+    "scientific": "Balaena mysticetus",
+    "level": 0
   },
   {
     "common": ["shoebill"],
-    "scientific": "Balaeniceps rex"
+    "scientific": "Balaeniceps rex",
+    "level": 0
   },
   {
     "common": ["minke whale"],
-    "scientific": "Balaenoptera bonaerensis"
+    "scientific": "Balaenoptera bonaerensis",
+    "level": 1
   },
   {
     "common": ["blue whale"],
-    "scientific": "Balaenoptera musculus"
+    "scientific": "Balaenoptera musculus",
+    "level": 2
   },
   {
     "common": ["acorn worm"],
-    "scientific": "Balanoglossus gigas"
+    "scientific": "Balanoglossus gigas",
+    "level": 0
   },
   {
     "common": ["crane"],
-    "scientific": "Balearica regulorum"
+    "scientific": "Balearica regulorum",
+    "level": 2
   },
   {
     "common": ["triggerfish"],
-    "scientific": "Balistes vetula"
+    "scientific": "Balistes vetula",
+    "level": 0
   },
   {
     "common": ["basilisk"],
-    "scientific": "Basiliscus basiliscus"
+    "scientific": "Basiliscus basiliscus",
+    "level": 1
   },
   {
     "common": ["giant isopod"],
-    "scientific": "Bathynomus giganteus"
+    "scientific": "Bathynomus giganteus",
+    "level": 1
   },
   {
     "common": ["stingray"],
-    "scientific": "Bathytoshia brevicaudata"
+    "scientific": "Bathytoshia brevicaudata",
+    "level": 2
   },
   {
     "common": ["betta", "Siamese fighting fish"],
-    "scientific": "Betta splendens"
+    "scientific": "Betta splendens",
+    "level": 1
   },
   {
     "common": ["gall wasp"],
-    "scientific": "Biorhiza pallida"
+    "scientific": "Biorhiza pallida",
+    "level": 0
   },
   {
     "common": ["coconut crab"],
-    "scientific": "Birgus latro"
+    "scientific": "Birgus latro",
+    "level": 2
   },
   {
     "common": ["puff adder"],
-    "scientific": "Bitis arietans"
+    "scientific": "Bitis arietans",
+    "level": 0
   },
   {
     "common": ["worm lizard"],
-    "scientific": "Blanus cinereus"
+    "scientific": "Blanus cinereus",
+    "level": 0
   },
   {
     "common": ["fig wasp"],
-    "scientific": "Blastophaga psenes"
+    "scientific": "Blastophaga psenes",
+    "level": 1
   },
   {
     "common": ["boa constrictor"],
-    "scientific": "Boa constrictor"
+    "scientific": "Boa constrictor",
+    "level": 2
   },
   {
     "common": ["parrotfish"],
-    "scientific": "Bolbometopon muricatum"
+    "scientific": "Bolbometopon muricatum",
+    "level": 1
   },
   {
     "common": ["red-tailed bumblebee"],
-    "scientific": "Bombus lapidarius"
+    "scientific": "Bombus lapidarius",
+    "level": 2
   },
   {
     "common": ["waxwing"],
-    "scientific": "Bombycilla cedrorum"
+    "scientific": "Bombycilla cedrorum",
+    "level": 0
   },
   {
     "common": ["silkworm"],
-    "scientific": "Bombyx mori"
+    "scientific": "Bombyx mori",
+    "level": 2
   },
   {
     "common": ["American bison", "buffalo"],
-    "scientific": "Bos bison"
+    "scientific": "Bos bison",
+    "level": 2
   },
   {
     "common": ["gaur"],
-    "scientific": "Bos gaurus"
+    "scientific": "Bos gaurus",
+    "level": 0
   },
   {
     "common": ["yak"],
-    "scientific": "Bos mutus"
+    "scientific": "Bos mutus",
+    "level": 2
   },
   {
     "common": ["cattle"],
-    "scientific": "Bos taurus"
+    "scientific": "Bos taurus",
+    "level": 2
   },
   {
     "common": ["bittern"],
-    "scientific": "Botaurus stellaris"
+    "scientific": "Botaurus stellaris",
+    "level": 0
   },
   {
     "common": ["flounder"],
-    "scientific": "Bothus mancus"
+    "scientific": "Bothus mancus",
+    "level": 0
   },
   {
     "common": ["bombardier beetle"],
-    "scientific": "Brachinus fumans"
+    "scientific": "Brachinus fumans",
+    "level": 1
   },
   {
     "common": ["three-toed sloth"],
-    "scientific": "Bradypus variegatus"
+    "scientific": "Bradypus variegatus",
+    "level": 0
   },
   {
     "common": ["lancelet"],
-    "scientific": "Branchiostoma lanceolatum"
+    "scientific": "Branchiostoma lanceolatum",
+    "level": 0
   },
   {
     "common": ["Canada goose"],
-    "scientific": "Branta canadensis"
+    "scientific": "Branta canadensis",
+    "level": 2
   },
   {
     "common": ["nano-chameleon"],
-    "scientific": "Brookesia nana"
+    "scientific": "Brookesia nana",
+    "level": 0
   },
   {
     "common": ["clover mite", "red spider mite"],
-    "scientific": "Bryobia praetiosa"
+    "scientific": "Bryobia praetiosa",
+    "level": 0
   },
   {
     "common": ["water buffalo"],
-    "scientific": "Bubalus arnee"
+    "scientific": "Bubalus arnee",
+    "level": 2
   },
   {
     "common": ["eagle-owl"],
-    "scientific": "Bubo bubo"
+    "scientific": "Bubo bubo",
+    "level": 0
   },
   {
     "common": ["snowy owl"],
-    "scientific": "Bubo scandiacus"
+    "scientific": "Bubo scandiacus",
+    "level": 2
   },
   {
     "common": ["hornbill"],
-    "scientific": "Buceros bicornis"
+    "scientific": "Buceros bicornis",
+    "level": 1
   },
   {
     "common": ["buzzard"],
-    "scientific": "Buteo buteo"
+    "scientific": "Buteo buteo",
+    "level": 1
   },
   {
     "common": ["cockatoo"],
-    "scientific": "Cacatua galerita"
+    "scientific": "Cacatua galerita",
+    "level": 2
   },
   {
     "common": ["shrew opossum"],
-    "scientific": "Caenolestes caniventer"
+    "scientific": "Caenolestes caniventer",
+    "level": 0
   },
   {
     "common": ["caiman"],
-    "scientific": "Caiman crocodilus"
+    "scientific": "Caiman crocodilus",
+    "level": 2
   },
   {
     "common": ["bluebottle"],
-    "scientific": "Calliphora vomitoria"
+    "scientific": "Calliphora vomitoria",
+    "level": 1
   },
   {
     "common": ["marmoset"],
-    "scientific": "Callithrix jacchus"
+    "scientific": "Callithrix jacchus",
+    "level": 0
   },
   {
     "common": ["damselfly", "demoiselle"],
-    "scientific": "Calopteryx splendens"
+    "scientific": "Calopteryx splendens",
+    "level": 1
   },
   {
     "common": ["Bactrian camel"],
-    "scientific": "Camelus bactrianus"
+    "scientific": "Camelus bactrianus",
+    "level": 2
   },
   {
     "common": ["dromedary"],
-    "scientific": "Camelus dromedarius"
+    "scientific": "Camelus dromedarius",
+    "level": 1
   },
   {
     "common": ["golden jackal"],
-    "scientific": "Canis aureus"
+    "scientific": "Canis aureus",
+    "level": 2
   },
   {
     "common": ["coyote"],
-    "scientific": "Canis latrans"
+    "scientific": "Canis latrans",
+    "level": 2
   },
   {
     "common": ["grey wolf", "dog", "dingo"],
-    "scientific": "Canis lupus"
+    "scientific": "Canis lupus",
+    "level": 2
   },
   {
     "common": ["domestic goat"],
-    "scientific": "Capra hircus"
+    "scientific": "Capra hircus",
+    "level": 2
   },
   {
     "common": ["ibex", "steinbock"],
-    "scientific": "Capra ibex"
+    "scientific": "Capra ibex",
+    "level": 2
   },
   {
     "common": ["roe deer"],
-    "scientific": "Capreolus capreolus"
+    "scientific": "Capreolus capreolus",
+    "level": 0
   },
   {
     "common": ["nightjar"],
-    "scientific": "Caprimulgus europaeus"
+    "scientific": "Caprimulgus europaeus",
+    "level": 1
   },
   {
     "common": ["goldfish"],
-    "scientific": "Carassius auratus"
+    "scientific": "Carassius auratus",
+    "level": 2
   },
   {
     "common": ["stick insect"],
-    "scientific": "Carausius morosus"
+    "scientific": "Carausius morosus",
+    "level": 2
   },
   {
     "common": ["bull shark"],
-    "scientific": "Carcharhinus leucas"
+    "scientific": "Carcharhinus leucas",
+    "level": 0
   },
   {
     "common": ["great white shark"],
-    "scientific": "Carcharodon carcharias"
+    "scientific": "Carcharodon carcharias",
+    "level": 2
   },
   {
     "common": ["cardinal"],
-    "scientific": "Cardinalis cardinalis"
+    "scientific": "Cardinalis cardinalis",
+    "level": 1
   },
   {
     "common": ["goldfinch"],
-    "scientific": "Carduelis carduelis"
+    "scientific": "Carduelis carduelis",
+    "level": 0
   },
   {
     "common": ["loggerhead turtle"],
-    "scientific": "Caretta caretta"
+    "scientific": "Caretta caretta",
+    "level": 0
   },
   {
     "common": ["seriema"],
-    "scientific": "Cariama cristata"
+    "scientific": "Cariama cristata",
+    "level": 0
   },
   {
     "common": ["tarsier"],
-    "scientific": "Carlito syrichta"
+    "scientific": "Carlito syrichta",
+    "level": 0
   },
   {
     "common": ["beaver"],
-    "scientific": "Castor fiber"
+    "scientific": "Castor fiber",
+    "level": 2
   },
   {
     "common": ["cassowary"],
-    "scientific": "Casuarius casuarius"
+    "scientific": "Casuarius casuarius",
+    "level": 1
   },
   {
     "common": ["turkey vulture"],
-    "scientific": "Cathartes aura"
+    "scientific": "Cathartes aura",
+    "level": 2
   },
   {
     "common": ["guinea pig"],
-    "scientific": "Cavia porcellus"
+    "scientific": "Cavia porcellus",
+    "level": 2
   },
   {
     "common": ["capuchin"],
-    "scientific": "Cebus olivaceus"
+    "scientific": "Cebus olivaceus",
+    "level": 2
   },
   {
     "common": ["bark scorpion"],
-    "scientific": "Centruroides sculpturatus"
+    "scientific": "Centruroides sculpturatus",
+    "level": 2
   },
   {
     "common": ["deer botfly"],
-    "scientific": "Cephenemyia stimulator"
+    "scientific": "Cephenemyia stimulator",
+    "level": 0
   },
   {
     "common": ["cockle"],
-    "scientific": "Cerastoderma edule"
+    "scientific": "Cerastoderma edule",
+    "level": 0
   },
   {
     "common": ["white rhinoceros"],
-    "scientific": "Ceratotherium simum"
+    "scientific": "Ceratotherium simum",
+    "level": 1
   },
   {
     "common": ["tube anemone"],
-    "scientific": "Cerianthus membranaceus"
+    "scientific": "Cerianthus membranaceus",
+    "level": 1
   },
   {
     "common": ["treecreeper"],
-    "scientific": "Certhia familiaris"
+    "scientific": "Certhia familiaris",
+    "level": 0
   },
   {
     "common": ["elk"],
-    "scientific": "Cervus canadensis"
+    "scientific": "Cervus canadensis",
+    "level": 1
   },
   {
     "common": ["red deer"],
-    "scientific": "Cervus elaphus"
+    "scientific": "Cervus elaphus",
+    "level": 2
   },
   {
     "common": ["sika deer"],
-    "scientific": "Cervus nippon"
+    "scientific": "Cervus nippon",
+    "level": 0
   },
   {
     "common": ["basking shark"],
-    "scientific": "Cetorhinus maximus"
+    "scientific": "Cetorhinus maximus",
+    "level": 1
   },
   {
     "common": ["plover"],
-    "scientific": "Charadrius hiaticula"
+    "scientific": "Charadrius hiaticula",
+    "level": 0
   },
   {
     "common": ["viperfish"],
-    "scientific": "Chauliodus danae"
+    "scientific": "Chauliodus danae",
+    "level": 0
   },
   {
     "common": ["pseudoscorpion"],
-    "scientific": "Chelifer cancroides"
+    "scientific": "Chelifer cancroides",
+    "level": 0
   },
   {
     "common": ["long-necked turtle", "snake-necked turtle"],
-    "scientific": "Chelodina longicollis"
+    "scientific": "Chelodina longicollis",
+    "level": 0
   },
   {
     "common": ["Gal\u00e1pagos tortoise"],
-    "scientific": "Chelonoidis niger"
+    "scientific": "Chelonoidis niger",
+    "level": 2
   },
   {
     "common": ["chimaera"],
-    "scientific": "Chimaera phantasma"
+    "scientific": "Chimaera phantasma",
+    "level": 0
   },
   {
     "common": ["long-tailed chinchilla"],
-    "scientific": "Chinchilla laniger"
+    "scientific": "Chinchilla laniger",
+    "level": 2
   },
   {
     "common": ["icefish"],
-    "scientific": "Chionodraco hamatus"
+    "scientific": "Chionodraco hamatus",
+    "level": 0
   },
   {
     "common": ["box jelly", "sea wasp"],
-    "scientific": "Chironex fleckeri"
+    "scientific": "Chironex fleckeri",
+    "level": 1
   },
   {
     "common": ["frilled dragon", "frilled lizard"],
-    "scientific": "Chlamydosaurus kingii"
+    "scientific": "Chlamydosaurus kingii",
+    "level": 0
   },
   {
     "common": ["frilled shark"],
-    "scientific": "Chlamydoselachus anguineus"
+    "scientific": "Chlamydoselachus anguineus",
+    "level": 0
   },
   {
     "common": ["pygmy hippopotamus"],
-    "scientific": "Choeropsis liberiensis"
+    "scientific": "Choeropsis liberiensis",
+    "level": 0
   },
   {
     "common": ["two-toed sloth"],
-    "scientific": "Choloepus hoffmanni"
+    "scientific": "Choloepus hoffmanni",
+    "level": 2
   },
   {
     "common": ["Pacific sea nettle"],
-    "scientific": "Chrysaora fuscescens"
+    "scientific": "Chrysaora fuscescens",
+    "level": 0
   },
   {
     "common": ["maned wolf"],
-    "scientific": "Chrysocyon brachyurus"
+    "scientific": "Chrysocyon brachyurus",
+    "level": 1
   },
   {
     "common": ["volcano snail"],
-    "scientific": "Chrysomallon squamiferum"
+    "scientific": "Chrysomallon squamiferum",
+    "level": 1
   },
   {
     "common": ["king bird-of-paradise"],
-    "scientific": "Cicinnurus regius"
+    "scientific": "Cicinnurus regius",
+    "level": 1
   },
   {
     "common": ["bed bug"],
-    "scientific": "Cimex lectularius"
+    "scientific": "Cimex lectularius",
+    "level": 1
   },
   {
     "common": ["sea squirt", "sea vase"],
-    "scientific": "Ciona intestinalis"
+    "scientific": "Ciona intestinalis",
+    "level": 1
   },
   {
     "common": ["hen harrier"],
-    "scientific": "Circus cyaneus"
+    "scientific": "Circus cyaneus",
+    "level": 0
   },
   {
     "common": ["vole"],
-    "scientific": "Clethrionomys glareolus"
+    "scientific": "Clethrionomys glareolus",
+    "level": 1
   },
   {
     "common": ["herring"],
-    "scientific": "Clupea harengus"
+    "scientific": "Clupea harengus",
+    "level": 1
   },
   {
     "common": ["seven-spot ladybird"],
-    "scientific": "Coccinella septempunctata"
+    "scientific": "Coccinella septempunctata",
+    "level": 2
   },
   {
     "common": ["screw-worm"],
-    "scientific": "Cochliomyia hominivorax"
+    "scientific": "Cochliomyia hominivorax",
+    "level": 1
   },
   {
     "common": ["hermit crab"],
-    "scientific": "Coenobita perlatus"
+    "scientific": "Coenobita perlatus",
+    "level": 2
   },
   {
     "common": ["colobus monkey"],
-    "scientific": "Colobus polykomos"
+    "scientific": "Colobus polykomos",
+    "level": 0
   },
   {
     "common": ["jackdaw"],
-    "scientific": "Coloeus monedula"
+    "scientific": "Coloeus monedula",
+    "level": 0
   },
   {
     "common": ["racer snake"],
-    "scientific": "Coluber constrictor"
+    "scientific": "Coluber constrictor",
+    "level": 0
   },
   {
     "common": ["rock dove"],
-    "scientific": "Columba livia"
+    "scientific": "Columba livia",
+    "level": 1
   },
   {
     "common": ["wood pigeon"],
-    "scientific": "Columba palumbus"
+    "scientific": "Columba palumbus",
+    "level": 2
   },
   {
     "common": ["feather star"],
-    "scientific": "Comaster schlegelii"
+    "scientific": "Comaster schlegelii",
+    "level": 0
   },
   {
     "common": ["star-nosed mole"],
-    "scientific": "Condylura cristata"
+    "scientific": "Condylura cristata",
+    "level": 0
   },
   {
     "common": ["European conger"],
-    "scientific": "Conger conger"
+    "scientific": "Conger conger",
+    "level": 1
   },
   {
     "common": ["wildebeest", "gnu"],
-    "scientific": "Connochaetes taurinus"
+    "scientific": "Connochaetes taurinus",
+    "level": 2
   },
   {
     "common": ["Goliath frog"],
-    "scientific": "Conraua goliath"
+    "scientific": "Conraua goliath",
+    "level": 1
   },
   {
     "common": ["cone snail"],
-    "scientific": "Conus geographus"
+    "scientific": "Conus geographus",
+    "level": 1
   },
   {
     "common": ["black vulture"],
-    "scientific": "Coragyps atratus"
+    "scientific": "Coragyps atratus",
+    "level": 0
   },
   {
     "common": ["raven"],
-    "scientific": "Corvus corax"
+    "scientific": "Corvus corax",
+    "level": 2
   },
   {
     "common": ["carrion crow"],
-    "scientific": "Corvus corone"
+    "scientific": "Corvus corone",
+    "level": 2
   },
   {
     "common": ["rook"],
-    "scientific": "Corvus frugilegus"
+    "scientific": "Corvus frugilegus",
+    "level": 1
   },
   {
     "common": ["quail"],
-    "scientific": "Coturnix coturnix"
+    "scientific": "Coturnix coturnix",
+    "level": 1
   },
   {
     "common": ["hamster"],
-    "scientific": "Cricetus cricetus"
+    "scientific": "Cricetus cricetus",
+    "level": 2
   },
   {
     "common": ["canary"],
-    "scientific": "Crithagra flaviventris"
+    "scientific": "Crithagra flaviventris",
+    "level": 2
   },
   {
     "common": ["Nile crocodile"],
-    "scientific": "Crocodylus niloticus"
+    "scientific": "Crocodylus niloticus",
+    "level": 0
   },
   {
     "common": ["saltwater crocodile"],
-    "scientific": "Crocodylus porosus"
+    "scientific": "Crocodylus porosus",
+    "level": 2
   },
   {
     "common": ["hyena"],
-    "scientific": "Crocuta crocuta"
+    "scientific": "Crocuta crocuta",
+    "level": 2
   },
   {
     "common": ["rattlesnake", "sidewinder"],
-    "scientific": "Crotalus cerastes"
+    "scientific": "Crotalus cerastes",
+    "level": 2
   },
   {
     "common": ["chiton"],
-    "scientific": "Cryptochiton stelleri"
+    "scientific": "Cryptochiton stelleri",
+    "level": 0
   },
   {
     "common": ["fossa"],
-    "scientific": "Cryptoprocta ferox"
+    "scientific": "Cryptoprocta ferox",
+    "level": 0
   },
   {
     "common": ["cuckoo"],
-    "scientific": "Cuculus canorus"
+    "scientific": "Cuculus canorus",
+    "level": 2
   },
   {
     "common": ["highland midge"],
-    "scientific": "Culicoides impunctatus"
+    "scientific": "Culicoides impunctatus",
+    "level": 1
   },
   {
     "common": ["lion's mane jellyfish"],
-    "scientific": "Cyanea capillata"
+    "scientific": "Cyanea capillata",
+    "level": 2
   },
   {
     "common": ["blue tit"],
-    "scientific": "Cyanistes caeruleus"
+    "scientific": "Cyanistes caeruleus",
+    "level": 1
   },
   {
     "common": ["blue jay"],
-    "scientific": "Cyanocitta cristata"
+    "scientific": "Cyanocitta cristata",
+    "level": 2
   },
   {
     "common": ["silky anteater"],
-    "scientific": "Cyclopes didactylus"
+    "scientific": "Cyclopes didactylus",
+    "level": 0
   },
   {
     "common": ["lumpfish"],
-    "scientific": "Cyclopterus lumpus"
+    "scientific": "Cyclopterus lumpus",
+    "level": 0
   },
   {
     "common": ["black swan"],
-    "scientific": "Cygnus atratus"
+    "scientific": "Cygnus atratus",
+    "level": 0
   },
   {
     "common": ["mute swan"],
-    "scientific": "Cygnus olor"
+    "scientific": "Cygnus olor",
+    "level": 2
   },
   {
     "common": ["tongue-eating louse"],
-    "scientific": "Cymothoa exigua"
+    "scientific": "Cymothoa exigua",
+    "level": 1
   },
   {
     "common": ["colugo"],
-    "scientific": "Cynocephalus volans"
+    "scientific": "Cynocephalus volans",
+    "level": 0
   },
   {
     "common": ["prairie dog"],
-    "scientific": "Cynomys ludovicianus"
+    "scientific": "Cynomys ludovicianus",
+    "level": 0
   },
   {
     "common": ["flycatcher"],
-    "scientific": "Cyornis tickelliae"
+    "scientific": "Cyornis tickelliae",
+    "level": 0
   },
   {
     "common": ["Amur carp", "koi"],
-    "scientific": "Cyprinus rubrofuscus"
+    "scientific": "Cyprinus rubrofuscus",
+    "level": 2
   },
   {
     "common": ["hooded seal"],
-    "scientific": "Cystophora cristata"
+    "scientific": "Cystophora cristata",
+    "level": 0
   },
   {
     "common": ["laughing kookaburra"],
-    "scientific": "Dacelo novaeguineae"
+    "scientific": "Dacelo novaeguineae",
+    "level": 1
   },
   {
     "common": ["grasshopper"],
-    "scientific": "Dactylotum bicolor"
+    "scientific": "Dactylotum bicolor",
+    "level": 2
   },
   {
     "common": ["fallow deer"],
-    "scientific": "Dama dama"
+    "scientific": "Dama dama",
+    "level": 0
   },
   {
     "common": ["monarch butterfly"],
-    "scientific": "Danaus plexippus"
+    "scientific": "Danaus plexippus",
+    "level": 2
   },
   {
     "common": ["zebrafish"],
-    "scientific": "Danio rerio"
+    "scientific": "Danio rerio",
+    "level": 1
   },
   {
     "common": ["armadillo"],
-    "scientific": "Dasypus novemcinctus"
+    "scientific": "Dasypus novemcinctus",
+    "level": 2
   },
   {
     "common": ["quoll"],
-    "scientific": "Dasyurus maculatus"
+    "scientific": "Dasyurus maculatus",
+    "level": 0
   },
   {
     "common": ["aye-aye"],
-    "scientific": "Daubentonia madagascariensis"
+    "scientific": "Daubentonia madagascariensis",
+    "level": 1
   },
   {
     "common": ["elephant hawk moth"],
-    "scientific": "Deilephila elpenor"
+    "scientific": "Deilephila elpenor",
+    "level": 0
   },
   {
     "common": ["weta"],
-    "scientific": "Deinacrida tibiospina"
+    "scientific": "Deinacrida tibiospina",
+    "level": 1
   },
   {
     "common": ["house martin"],
-    "scientific": "Delichon urbicum"
+    "scientific": "Delichon urbicum",
+    "level": 0
   },
   {
     "common": ["beluga whale"],
-    "scientific": "Delphinapterus leucas"
+    "scientific": "Delphinapterus leucas",
+    "level": 2
   },
   {
     "common": ["common dolphin"],
-    "scientific": "Delphinus delphis"
+    "scientific": "Delphinus delphis",
+    "level": 2
   },
   {
     "common": ["sand dollar", "sea biscuit"],
-    "scientific": "Dendraster excentricus"
+    "scientific": "Dendraster excentricus",
+    "level": 1
   },
   {
     "common": ["black mamba"],
-    "scientific": "Dendroaspis polylepis"
+    "scientific": "Dendroaspis polylepis",
+    "level": 2
   },
   {
     "common": ["poison dart frog"],
-    "scientific": "Dendrobates tinctorius"
+    "scientific": "Dendrobates tinctorius",
+    "level": 2
   },
   {
     "common": ["woodpecker"],
-    "scientific": "Dendrocopos major"
+    "scientific": "Dendrocopos major",
+    "level": 2
   },
   {
     "common": ["tree-kangaroo"],
-    "scientific": "Dendrolagus lumholtzi"
+    "scientific": "Dendrolagus lumholtzi",
+    "level": 0
   },
   {
     "common": ["dust mite"],
-    "scientific": "Dermatophagoides pteronyssinus"
+    "scientific": "Dermatophagoides pteronyssinus",
+    "level": 1
   },
   {
     "common": ["leatherback sea turtle"],
-    "scientific": "Dermochelys coriacea"
+    "scientific": "Dermochelys coriacea",
+    "level": 2
   },
   {
     "common": ["vampire bat"],
-    "scientific": "Desmodus rotundus"
+    "scientific": "Desmodus rotundus",
+    "level": 2
   },
   {
     "common": ["sea bass"],
-    "scientific": "Dicentrarchus labrax"
+    "scientific": "Dicentrarchus labrax",
+    "level": 2
   },
   {
     "common": ["black rhinoceros"],
-    "scientific": "Diceros bicornis"
+    "scientific": "Diceros bicornis",
+    "level": 2
   },
   {
     "common": ["peccary"],
-    "scientific": "Dicotyles tajacu"
+    "scientific": "Dicotyles tajacu",
+    "level": 1
   },
   {
     "common": ["Virginia opossum"],
-    "scientific": "Didelphis virginiana"
+    "scientific": "Didelphis virginiana",
+    "level": 2
   },
   {
     "common": ["albatross"],
-    "scientific": "Diomedea exulans"
+    "scientific": "Diomedea exulans",
+    "level": 2
   },
   {
     "common": ["sea bream"],
-    "scientific": "Diplodus vulgaris"
+    "scientific": "Diplodus vulgaris",
+    "level": 1
   },
   {
     "common": ["brain coral"],
-    "scientific": "Diploria labyrinthiformis"
+    "scientific": "Diploria labyrinthiformis",
+    "level": 2
   },
   {
     "common": ["kangaroo rat"],
-    "scientific": "Dipodomys spectabilis"
+    "scientific": "Dipodomys spectabilis",
+    "level": 0
   },
   {
     "common": ["sawfly"],
-    "scientific": "Diprion pini"
+    "scientific": "Diprion pini",
+    "level": 0
   },
   {
     "common": ["boomslang"],
-    "scientific": "Dispholidus typus"
+    "scientific": "Dispholidus typus",
+    "level": 1
   },
   {
     "common": ["sea spider"],
-    "scientific": "Dodecolopoda mawsoni"
+    "scientific": "Dodecolopoda mawsoni",
+    "level": 0
   },
   {
     "common": ["Humboldt squid", "jumbo squid"],
-    "scientific": "Dosidicus gigas"
+    "scientific": "Dosidicus gigas",
+    "level": 2
   },
   {
     "common": ["Guinea worm"],
-    "scientific": "Dracunculus medinensis"
+    "scientific": "Dracunculus medinensis",
+    "level": 0
   },
   {
     "common": ["emu"],
-    "scientific": "Dromaius novaehollandiae"
+    "scientific": "Dromaius novaehollandiae",
+    "level": 2
   },
   {
     "common": ["fruit fly"],
-    "scientific": "Drosophila melanogaster"
+    "scientific": "Drosophila melanogaster",
+    "level": 2
   },
   {
     "common": ["antbird"],
-    "scientific": "Drymophila ochropyga"
+    "scientific": "Drymophila ochropyga",
+    "level": 0
   },
   {
     "common": ["dugong"],
-    "scientific": "Dugong dugon"
+    "scientific": "Dugong dugon",
+    "level": 1
   },
   {
     "common": ["Hercules beetle"],
-    "scientific": "Dynastes hercules"
+    "scientific": "Dynastes hercules",
+    "level": 2
   },
   {
     "common": ["diving beetle"],
-    "scientific": "Dytiscus latissimus"
+    "scientific": "Dytiscus latissimus",
+    "level": 2
   },
   {
     "common": ["red sea star"],
-    "scientific": "Echinaster sepositus"
+    "scientific": "Echinaster sepositus",
+    "level": 2
   },
   {
     "common": ["sea urchin"],
-    "scientific": "Echinus esculentus"
+    "scientific": "Echinus esculentus",
+    "level": 2
   },
   {
     "common": ["army ant"],
-    "scientific": "Eciton burchellii"
+    "scientific": "Eciton burchellii",
+    "level": 1
   },
   {
     "common": ["egret"],
-    "scientific": "Egretta thula"
+    "scientific": "Egretta thula",
+    "level": 2
   },
   {
     "common": ["electric eel"],
-    "scientific": "Electrophorus electricus"
+    "scientific": "Electrophorus electricus",
+    "level": 1
   },
   {
     "common": ["elephant shrew", "bushveld sengi"],
-    "scientific": "Elephantulus intufi"
+    "scientific": "Elephantulus intufi",
+    "level": 1
   },
   {
     "common": ["Asian elephant"],
-    "scientific": "Elephas maximus"
+    "scientific": "Elephas maximus",
+    "level": 1
   },
   {
     "common": ["yellowhammer"],
-    "scientific": "Emberiza citrinella"
+    "scientific": "Emberiza citrinella",
+    "level": 0
   },
   {
     "common": ["pond turtle"],
-    "scientific": "Emys orbicularis"
+    "scientific": "Emys orbicularis",
+    "level": 0
   },
   {
     "common": ["sea otter"],
-    "scientific": "Enhydra lutris"
+    "scientific": "Enhydra lutris",
+    "level": 2
   },
   {
     "common": ["razor clam"],
-    "scientific": "Ensis leei"
+    "scientific": "Ensis leei",
+    "level": 1
   },
   {
     "common": ["pinworm", "threadworm"],
-    "scientific": "Enterobius vermicularis"
+    "scientific": "Enterobius vermicularis",
+    "level": 1
   },
   {
     "common": ["giant octopus"],
-    "scientific": "Enteroctopus dofleini"
+    "scientific": "Enteroctopus dofleini",
+    "level": 2
   },
   {
     "common": ["grouper"],
-    "scientific": "Epinephelus marginatus"
+    "scientific": "Epinephelus marginatus",
+    "level": 0
   },
   {
     "common": ["hagfish"],
-    "scientific": "Eptatretus stoutii"
+    "scientific": "Eptatretus stoutii",
+    "level": 1
   },
   {
     "common": ["wild ass", "donkey"],
-    "scientific": "Equus africanus"
+    "scientific": "Equus africanus",
+    "level": 2
   },
   {
     "common": ["wild horse"],
-    "scientific": "Equus ferus"
+    "scientific": "Equus ferus",
+    "level": 2
   },
   {
     "common": ["onager"],
-    "scientific": "Equus hemionus"
+    "scientific": "Equus hemionus",
+    "level": 0
   },
   {
     "common": ["kiang"],
-    "scientific": "Equus kiang"
+    "scientific": "Equus kiang",
+    "level": 0
   },
   {
     "common": ["plains zebra"],
-    "scientific": "Equus quagga"
+    "scientific": "Equus quagga",
+    "level": 2
   },
   {
     "common": ["mountain zebra"],
-    "scientific": "Equus zebra"
+    "scientific": "Equus zebra",
+    "level": 0
   },
   {
     "common": ["North American porcupine"],
-    "scientific": "Erethizon dorsatum"
+    "scientific": "Erethizon dorsatum",
+    "level": 0
   },
   {
     "common": ["hedgehog"],
-    "scientific": "Erinaceus europaeus"
+    "scientific": "Erinaceus europaeus",
+    "level": 2
   },
   {
     "common": ["robin"],
-    "scientific": "Erithacus rubecula"
+    "scientific": "Erithacus rubecula",
+    "level": 2
   },
   {
     "common": ["grey whale"],
-    "scientific": "Eschrichtius robustus"
+    "scientific": "Eschrichtius robustus",
+    "level": 0
   },
   {
     "common": ["pike"],
-    "scientific": "Esox lucius"
+    "scientific": "Esox lucius",
+    "level": 2
   },
   {
     "common": ["right whale"],
-    "scientific": "Eubalaena glacialis"
+    "scientific": "Eubalaena glacialis",
+    "level": 0
   },
   {
     "common": ["leopard gecko"],
-    "scientific": "Eublepharis macularius"
+    "scientific": "Eublepharis macularius",
+    "level": 2
   },
   {
     "common": ["ibis"],
-    "scientific": "Eudocimus ruber"
+    "scientific": "Eudocimus ruber",
+    "level": 1
   },
   {
     "common": ["gazelle"],
-    "scientific": "Eudorcas thomsonii"
+    "scientific": "Eudorcas thomsonii",
+    "level": 2
   },
   {
     "common": ["rockhopper penguin"],
-    "scientific": "Eudyptes chrysocome"
+    "scientific": "Eudyptes chrysocome",
+    "level": 0
   },
   {
     "common": ["macaroni penguin"],
-    "scientific": "Eudyptes chrysolophus"
+    "scientific": "Eudyptes chrysolophus",
+    "level": 2
   },
   {
     "common": ["little penguin", "blue penguin"],
-    "scientific": "Eudyptula minor"
+    "scientific": "Eudyptula minor",
+    "level": 0
   },
   {
     "common": ["megapode"],
-    "scientific": "Eulipoa wallacei"
+    "scientific": "Eulipoa wallacei",
+    "level": 0
   },
   {
     "common": ["anaconda"],
-    "scientific": "Eunectes murinus"
+    "scientific": "Eunectes murinus",
+    "level": 2
   },
   {
     "common": ["bobbit worm"],
-    "scientific": "Eunice aphroditois"
+    "scientific": "Eunice aphroditois",
+    "level": 1
   },
   {
     "common": ["hover fly"],
-    "scientific": "Eupeodes volucris"
+    "scientific": "Eupeodes volucris",
+    "level": 0
   },
   {
     "common": ["krill"],
-    "scientific": "Euphausia superba"
+    "scientific": "Euphausia superba",
+    "level": 2
   },
   {
     "common": ["glass sponge"],
-    "scientific": "Euplectella aspergillum"
+    "scientific": "Euplectella aspergillum",
+    "level": 0
   },
   {
     "common": ["antlion"],
-    "scientific": "Euroleon nostras"
+    "scientific": "Euroleon nostras",
+    "level": 0
   },
   {
     "common": ["water flea"],
-    "scientific": "Evadne spinifera"
+    "scientific": "Evadne spinifera",
+    "level": 0
   },
   {
     "common": ["peregrine falcon"],
-    "scientific": "Falco peregrinus"
+    "scientific": "Falco peregrinus",
+    "level": 2
   },
   {
     "common": ["kestrel"],
-    "scientific": "Falco tinnunculus"
+    "scientific": "Falco tinnunculus",
+    "level": 2
   },
   {
     "common": ["domestic cat", "cat"],
-    "scientific": "Felis catus"
+    "scientific": "Felis catus",
+    "level": 2
   },
   {
     "common": ["wildcat"],
-    "scientific": "Felis silvestris"
+    "scientific": "Felis silvestris",
+    "level": 1
   },
   {
     "common": ["earwig"],
-    "scientific": "Forficula auricularia"
+    "scientific": "Forficula auricularia",
+    "level": 2
   },
   {
     "common": ["red wood ant"],
-    "scientific": "Formica rufa"
+    "scientific": "Formica rufa",
+    "level": 0
   },
   {
     "common": ["thrip", "thunderbug"],
-    "scientific": "Frankliniella occidentalis"
+    "scientific": "Frankliniella occidentalis",
+    "level": 0
   },
   {
     "common": ["puffin"],
-    "scientific": "Fratercula arctica"
+    "scientific": "Fratercula arctica",
+    "level": 2
   },
   {
     "common": ["frigatebird"],
-    "scientific": "Fregata magnificens"
+    "scientific": "Fregata magnificens",
+    "level": 0
   },
   {
     "common": ["chaffinch"],
-    "scientific": "Fringilla coelebs"
+    "scientific": "Fringilla coelebs",
+    "level": 0
   },
   {
     "common": ["coot"],
-    "scientific": "Fulica atra"
+    "scientific": "Fulica atra",
+    "level": 1
   },
   {
     "common": ["fulmar"],
-    "scientific": "Fulmarus glacialis"
+    "scientific": "Fulmarus glacialis",
+    "level": 0
   },
   {
     "common": ["cod"],
-    "scientific": "Gadus morhua"
+    "scientific": "Gadus morhua",
+    "level": 2
   },
   {
     "common": ["tiger shark"],
-    "scientific": "Galeocerdo cuvier"
+    "scientific": "Galeocerdo cuvier",
+    "level": 2
   },
   {
     "common": ["snipe"],
-    "scientific": "Gallinago gallinago"
+    "scientific": "Gallinago gallinago",
+    "level": 0
   },
   {
     "common": ["moorhen"],
-    "scientific": "Gallinula chloropus"
+    "scientific": "Gallinula chloropus",
+    "level": 1
   },
   {
     "common": ["rail"],
-    "scientific": "Gallirallus owstoni"
+    "scientific": "Gallirallus owstoni",
+    "level": 0
   },
   {
     "common": ["junglefowl", "chicken"],
-    "scientific": "Gallus gallus"
+    "scientific": "Gallus gallus",
+    "level": 2
   },
   {
-    "common": ["jay"],
-    "scientific": "Garrulus glandarius"
+    "common": ["Eurasian jay"],
+    "scientific": "Garrulus glandarius",
+    "level": 0
   },
   {
     "common": ["loon", "diver"],
-    "scientific": "Gavia immer"
+    "scientific": "Gavia immer",
+    "level": 1
   },
   {
     "common": ["gharial"],
-    "scientific": "Gavialis gangeticus"
+    "scientific": "Gavialis gangeticus",
+    "level": 1
   },
   {
     "common": ["Christmas Island red crab"],
-    "scientific": "Gecarcoidea natalis"
+    "scientific": "Gecarcoidea natalis",
+    "level": 0
   },
   {
     "common": ["roadrunner"],
-    "scientific": "Geococcyx californianus"
+    "scientific": "Geococcyx californianus",
+    "level": 1
   },
   {
     "common": ["vampire finch"],
-    "scientific": "Geospiza septentrionalis"
+    "scientific": "Geospiza septentrionalis",
+    "level": 0
   },
   {
     "common": ["gerbil"],
-    "scientific": "Gerbillus perpallidus"
+    "scientific": "Gerbillus floweri",
+    "level": 2
   },
   {
     "common": ["giraffe"],
-    "scientific": "Giraffa camelopardalis"
+    "scientific": "Giraffa camelopardalis",
+    "level": 2
   },
   {
     "common": ["pygmy owl"],
-    "scientific": "Glaucidium passerinum"
+    "scientific": "Glaucidium passerinum",
+    "level": 0
   },
   {
     "common": ["flying squirrel"],
-    "scientific": "Glaucomys sabrinus"
+    "scientific": "Glaucomys sabrinus",
+    "level": 2
   },
   {
     "common": ["sea slug", "blue dragon"],
-    "scientific": "Glaucus atlanticus"
+    "scientific": "Glaucus atlanticus",
+    "level": 1
   },
   {
     "common": ["dormouse"],
-    "scientific": "Glis glis"
+    "scientific": "Glis glis",
+    "level": 1
   },
   {
     "common": ["pilot whale"],
-    "scientific": "Globicephala melas"
+    "scientific": "Globicephala melas",
+    "level": 0
   },
   {
     "common": ["tsetse fly"],
-    "scientific": "Glossina morsitans"
+    "scientific": "Glossina morsitans",
+    "level": 1
   },
   {
     "common": ["camel spider"],
-    "scientific": "Gluvia dorsalis"
+    "scientific": "Gluvia dorsalis",
+    "level": 1
   },
   {
     "common": ["elephant-nose fish"],
-    "scientific": "Gnathonemus petersii"
+    "scientific": "Gnathonemus petersii",
+    "level": 0
   },
   {
     "common": ["Goliath beetle"],
-    "scientific": "Goliathus goliatus"
+    "scientific": "Goliathus goliatus",
+    "level": 0
   },
   {
     "common": ["eastern gorilla"],
-    "scientific": "Gorilla beringei"
+    "scientific": "Gorilla beringei",
+    "level": 0
   },
   {
     "common": ["western gorilla"],
-    "scientific": "Gorilla gorilla"
+    "scientific": "Gorilla gorilla",
+    "level": 2
   },
   {
     "common": ["leafhopper"],
-    "scientific": "Graphocephala coccinea"
+    "scientific": "Graphocephala coccinea",
+    "level": 0
   },
   {
     "common": ["wolverine"],
-    "scientific": "Gulo gulo"
+    "scientific": "Gulo gulo",
+    "level": 2
   },
   {
     "common": ["shag"],
-    "scientific": "Gulosus aristotelis"
+    "scientific": "Gulosus aristotelis",
+    "level": 0
   },
   {
     "common": ["lammergeier", "bearded vulture"],
-    "scientific": "Gypaetus barbatus"
+    "scientific": "Gypaetus barbatus",
+    "level": 0
   },
   {
     "common": ["griffon vulture"],
-    "scientific": "Gyps fulvus"
+    "scientific": "Gyps fulvus",
+    "level": 0
   },
   {
     "common": ["funnel-web spider"],
-    "scientific": "Hadronyche formidabilis"
+    "scientific": "Hadronyche formidabilis",
+    "level": 0
   },
   {
     "common": ["horse fly"],
-    "scientific": "Haematopota pluvialis"
+    "scientific": "Haematopota pluvialis",
+    "level": 0
   },
   {
     "common": ["white-tailed eagle", "sea eagle"],
-    "scientific": "Haliaeetus albicilla"
+    "scientific": "Haliaeetus albicilla",
+    "level": 0
   },
   {
     "common": ["bald eagle"],
-    "scientific": "Haliaeetus leucocephalus"
+    "scientific": "Haliaeetus leucocephalus",
+    "level": 2
   },
   {
     "common": ["pink abalone"],
-    "scientific": "Haliotis corrugata"
+    "scientific": "Haliotis corrugata",
+    "level": 1
   },
   {
     "common": ["blue-ringed octopus"],
-    "scientific": "Hapalochlaena lunulata"
+    "scientific": "Hapalochlaena lunulata",
+    "level": 2
   },
   {
     "common": ["harlequin ladybird"],
-    "scientific": "Harmonia axyridis"
+    "scientific": "Harmonia axyridis",
+    "level": 0
   },
   {
     "common": ["sun bear"],
-    "scientific": "Helarctos malayanus"
+    "scientific": "Helarctos malayanus",
+    "level": 1
   },
   {
     "common": ["Roman snail"],
-    "scientific": "Helix pomatia"
+    "scientific": "Helix pomatia",
+    "level": 2
   },
   {
     "common": ["Gila monster"],
-    "scientific": "Heloderma suspectum"
+    "scientific": "Heloderma suspectum",
+    "level": 1
   },
   {
     "common": ["spitting cobra"],
-    "scientific": "Hemachatus haemachatus"
+    "scientific": "Hemachatus haemachatus",
+    "level": 0
   },
   {
     "common": ["mongoose"],
-    "scientific": "Herpestes sanguineus"
+    "scientific": "Herpestes sanguineus",
+    "level": 2
   },
   {
     "common": ["naked mole-rat"],
-    "scientific": "Heterocephalus glaber"
+    "scientific": "Heterocephalus glaber",
+    "level": 1
   },
   {
     "common": ["Port Jackson shark"],
-    "scientific": "Heterodontus portusjacksoni"
+    "scientific": "Heterodontus portusjacksoni",
+    "level": 0
   },
   {
     "common": ["huntsman spider"],
-    "scientific": "Heteropoda maxima"
+    "scientific": "Heteropoda maxima",
+    "level": 2
   },
   {
     "common": ["seahorse"],
-    "scientific": "Hippocampus hippocampus"
+    "scientific": "Hippocampus hippocampus",
+    "level": 2
   },
   {
     "common": ["halibut"],
-    "scientific": "Hippoglossus hippoglossus"
+    "scientific": "Hippoglossus hippoglossus",
+    "level": 1
   },
   {
     "common": ["hippopotamus"],
-    "scientific": "Hippopotamus amphibius"
+    "scientific": "Hippopotamus amphibius",
+    "level": 2
   },
   {
     "common": ["sable antelope"],
-    "scientific": "Hippotragus niger"
+    "scientific": "Hippotragus niger",
+    "level": 2
   },
   {
     "common": ["leech"],
-    "scientific": "Hirudo medicinalis"
+    "scientific": "Hirudo medicinalis",
+    "level": 2
   },
   {
     "common": ["swallow"],
-    "scientific": "Hirundo rustica"
+    "scientific": "Hirundo rustica",
+    "level": 2
   },
   {
     "common": ["lobster"],
-    "scientific": "Homarus gammarus"
+    "scientific": "Homarus gammarus",
+    "level": 2
   },
   {
     "common": ["human"],
-    "scientific": "Homo sapiens"
+    "scientific": "Homo sapiens",
+    "level": 2
   },
   {
     "common": ["fresh-water polyp"],
-    "scientific": "Hydra vulgaris"
+    "scientific": "Hydra vulgaris",
+    "level": 1
   },
   {
     "common": ["storm petrel"],
-    "scientific": "Hydrobates pelagicus"
+    "scientific": "Hydrobates pelagicus",
+    "level": 1
   },
   {
     "common": ["capybara"],
-    "scientific": "Hydrochoerus hydrochaeris"
+    "scientific": "Hydrochoerus hydrochaeris",
+    "level": 2
   },
   {
     "common": ["Goliath tigerfish"],
-    "scientific": "Hydrocynus goliath"
+    "scientific": "Hydrocynus goliath",
+    "level": 1
   },
   {
     "common": ["sea snake"],
-    "scientific": "Hydrophis platurus"
+    "scientific": "Hydrophis platurus",
+    "level": 2
   },
   {
     "common": ["leopard seal"],
-    "scientific": "Hydrurga leptonyx"
+    "scientific": "Hydrurga leptonyx",
+    "level": 1
   },
   {
     "common": ["Cape porcupine"],
-    "scientific": "Hystrix africaeaustralis"
+    "scientific": "Hystrix africaeaustralis",
+    "level": 2
   },
   {
     "common": ["ichneumon wasp"],
-    "scientific": "Ichneumon extensorius"
+    "scientific": "Ichneumon extensorius",
+    "level": 0
   },
   {
     "common": ["green iguana"],
-    "scientific": "Iguana iguana"
+    "scientific": "Iguana iguana",
+    "level": 2
   },
   {
     "common": ["brahminy blind snake"],
-    "scientific": "Indotyphlops braminus"
+    "scientific": "Indotyphlops braminus",
+    "level": 0
   },
   {
     "common": ["Amazon river dolphin"],
-    "scientific": "Inia geoffrensis"
+    "scientific": "Inia geoffrensis",
+    "level": 1
   },
   {
     "common": ["cookiecutter shark"],
-    "scientific": "Isistius brasiliensis"
+    "scientific": "Isistius brasiliensis",
+    "level": 0
   },
   {
     "common": ["sailfish"],
-    "scientific": "Istiophorus platypterus"
+    "scientific": "Istiophorus platypterus",
+    "level": 1
   },
   {
     "common": ["mako shark", "blue pointer"],
-    "scientific": "Isurus oxyrinchus"
+    "scientific": "Isurus oxyrinchus",
+    "level": 0
   },
   {
     "common": ["sheep tick"],
-    "scientific": "Ixodes ricinus"
+    "scientific": "Ixodes ricinus",
+    "level": 2
   },
   {
     "common": ["jerboa"],
-    "scientific": "Jaculus jaculus"
+    "scientific": "Jaculus jaculus",
+    "level": 0
   },
   {
     "common": ["digging frog"],
-    "scientific": "Kaloula borealis"
+    "scientific": "Kaloula borealis",
+    "level": 0
   },
   {
     "common": ["waterbuck"],
-    "scientific": "Kobus ellipsiprymnus"
+    "scientific": "Kobus ellipsiprymnus",
+    "level": 0
   },
   {
     "common": ["wrasse"],
-    "scientific": "Labrus mixtus"
+    "scientific": "Labrus mixtus",
+    "level": 1
   },
   {
     "common": ["ptarmigan"],
-    "scientific": "Lagopus muta"
+    "scientific": "Lagopus muta",
+    "level": 0
   },
   {
     "common": ["woolly monkey"],
-    "scientific": "Lagothrix lagothricha"
+    "scientific": "Lagothrix lagothricha",
+    "level": 0
   },
   {
     "common": ["llama"],
-    "scientific": "Lama glama"
+    "scientific": "Lama glama",
+    "level": 2
   },
   {
     "common": ["guanaco"],
-    "scientific": "Lama guanicoe"
+    "scientific": "Lama guanicoe",
+    "level": 0
   },
   {
     "common": ["alpaca"],
-    "scientific": "Lama pacos"
+    "scientific": "Lama pacos",
+    "level": 2
   },
   {
     "common": ["jewel beetle"],
-    "scientific": "Lamprodila rutilans"
+    "scientific": "Lamprodila rutilans",
+    "level": 0
   },
   {
     "common": ["kingsnake"],
-    "scientific": "Lampropeltis californiae"
+    "scientific": "Lampropeltis californiae",
+    "level": 0
   },
   {
     "common": ["glowworm"],
-    "scientific": "Lampyris noctiluca"
+    "scientific": "Lampyris noctiluca",
+    "level": 1
   },
   {
     "common": ["loggerhead shrike"],
-    "scientific": "Lanius ludovicianus"
+    "scientific": "Lanius ludovicianus",
+    "level": 0
   },
   {
     "common": ["gull"],
-    "scientific": "Larus argentatus"
+    "scientific": "Larus argentatus",
+    "level": 2
   },
   {
     "common": ["banded sea krait"],
-    "scientific": "Laticauda colubrina"
+    "scientific": "Laticauda colubrina",
+    "level": 0
   },
   {
     "common": ["coelacanth"],
-    "scientific": "Latimeria chalumnae"
+    "scientific": "Latimeria chalumnae",
+    "level": 2
   },
   {
     "common": ["black widow", "redback spider"],
-    "scientific": "Latrodectus hasselti"
+    "scientific": "Latrodectus hasselti",
+    "level": 2
   },
   {
     "common": ["harvestman"],
-    "scientific": "Leiobunum rotundum"
+    "scientific": "Leiobunum rotundum",
+    "level": 2
   },
   {
     "common": ["black coral"],
-    "scientific": "Leiopathes glaberrima"
+    "scientific": "Leiopathes glaberrima",
+    "level": 0
   },
   {
     "common": ["Hochstetter's frog"],
-    "scientific": "Leiopelma hochstetteri"
+    "scientific": "Leiopelma hochstetteri",
+    "level": 0
   },
   {
     "common": ["deathstalker", "yellow scorpion"],
-    "scientific": "Leiurus quinquestriatus"
+    "scientific": "Leiurus quinquestriatus",
+    "level": 1
   },
   {
     "common": ["lemming"],
-    "scientific": "Lemmus lemmus"
+    "scientific": "Lemmus lemmus",
+    "level": 1
   },
   {
     "common": ["ring-tailed lemur"],
-    "scientific": "Lemur catta"
+    "scientific": "Lemur catta",
+    "level": 2
   },
   {
     "common": ["ocelot"],
-    "scientific": "Leopardus pardalis"
+    "scientific": "Leopardus pardalis",
+    "level": 2
   },
   {
     "common": ["silverfish"],
-    "scientific": "Lepisma saccharinum"
+    "scientific": "Lepisma saccharinum",
+    "level": 2
   },
   {
     "common": ["gar"],
-    "scientific": "Lepisosteus oculatus"
+    "scientific": "Lepisosteus oculatus",
+    "level": 0
   },
   {
     "common": ["serval"],
-    "scientific": "Leptailurus serval"
+    "scientific": "Leptailurus serval",
+    "level": 0
   },
   {
     "common": ["potato beetle"],
-    "scientific": "Leptinotarsa decemlineata"
+    "scientific": "Leptinotarsa decemlineata",
+    "level": 0
   },
   {
     "common": ["stork"],
-    "scientific": "Leptoptilos crumenifer"
+    "scientific": "Leptoptilos crumenifer",
+    "level": 1
   },
   {
     "common": ["hare"],
-    "scientific": "Lepus europaeus"
+    "scientific": "Lepus europaeus",
+    "level": 2
   },
   {
     "common": ["orbweaver"],
-    "scientific": "Leucauge venusta"
+    "scientific": "Leucauge venusta",
+    "level": 2
   },
   {
     "common": ["caddisfly"],
-    "scientific": "Limnephilus flavicornis"
+    "scientific": "Limnephilus flavicornis",
+    "level": 0
   },
   {
     "common": ["horseshoe crab"],
-    "scientific": "Limulus polyphemus"
+    "scientific": "Limulus polyphemus",
+    "level": 1
   },
   {
     "common": ["bootlace worm"],
-    "scientific": "Lineus longissimus"
+    "scientific": "Lineus longissimus",
+    "level": 1
   },
   {
     "common": ["trapdoor spider"],
-    "scientific": "Liphistius malayanus"
+    "scientific": "Liphistius malayanus",
+    "level": 0
   },
   {
     "common": ["giant African land snail"],
-    "scientific": "Lissachatina fulica"
+    "scientific": "Lissachatina fulica",
+    "level": 0
   },
   {
     "common": ["bullfrog"],
-    "scientific": "Lithobates catesbeianus"
+    "scientific": "Lithobates catesbeianus",
+    "level": 2
   },
   {
     "common": ["crabeater seal"],
-    "scientific": "Lobodon carcinophaga"
+    "scientific": "Lobodon carcinophaga",
+    "level": 0
   },
   {
     "common": ["migratory locust"],
-    "scientific": "Locusta migratoria"
+    "scientific": "Locusta migratoria",
+    "level": 2
   },
   {
     "common": ["monkfish", "toadfish"],
-    "scientific": "Lophius piscatorius"
+    "scientific": "Lophius piscatorius",
+    "level": 1
   },
   {
     "common": ["African bush elephant"],
-    "scientific": "Loxodonta africana"
+    "scientific": "Loxodonta africana",
+    "level": 2
   },
   {
     "common": ["African forest elephant"],
-    "scientific": "Loxodonta cyclotis"
+    "scientific": "Loxodonta cyclotis",
+    "level": 0
   },
   {
     "common": ["brown recluse"],
-    "scientific": "Loxosceles reclusa"
+    "scientific": "Loxosceles reclusa",
+    "level": 1
   },
   {
     "common": ["earthworm", "nightcrawler"],
-    "scientific": "Lumbricus terrestris"
+    "scientific": "Lumbricus terrestris",
+    "level": 2
   },
   {
     "common": ["black-backed jackal"],
-    "scientific": "Lupulella mesomelas"
+    "scientific": "Lupulella mesomelas",
+    "level": 0
   },
   {
     "common": ["nightingale"],
-    "scientific": "Luscinia megarhynchos"
+    "scientific": "Luscinia megarhynchos",
+    "level": 2
   },
   {
     "common": ["red snapper"],
-    "scientific": "Lutjanus campechanus"
+    "scientific": "Lutjanus campechanus",
+    "level": 1
   },
   {
     "common": ["river otter"],
-    "scientific": "Lutra lutra"
+    "scientific": "Lutra lutra",
+    "level": 2
   },
   {
     "common": ["wild dog", "painted dog"],
-    "scientific": "Lycaon pictus"
+    "scientific": "Lycaon pictus",
+    "level": 2
   },
   {
     "common": ["lanternfly"],
-    "scientific": "Lycorma delicatula"
+    "scientific": "Lycorma delicatula",
+    "level": 0
   },
   {
     "common": ["Eurasian lynx"],
-    "scientific": "Lynx lynx"
+    "scientific": "Lynx lynx",
+    "level": 2
   },
   {
     "common": ["bobcat"],
-    "scientific": "Lynx rufus"
+    "scientific": "Lynx rufus",
+    "level": 1
   },
   {
     "common": ["grouse"],
-    "scientific": "Lyrurus tetrix"
+    "scientific": "Lyrurus tetrix",
+    "level": 1
   },
   {
     "common": ["macaque"],
-    "scientific": "Macaca fuscata"
+    "scientific": "Macaca fuscata",
+    "level": 2
   },
   {
     "common": ["spider crab"],
-    "scientific": "Macrocheira kaempferi"
+    "scientific": "Macrocheira kaempferi",
+    "level": 1
   },
   {
     "common": ["snapping turtle"],
-    "scientific": "Macrochelys temminckii"
+    "scientific": "Macrochelys temminckii",
+    "level": 2
   },
   {
     "common": ["termite"],
-    "scientific": "Macrotermes natalensis"
+    "scientific": "Macrotermes natalensis",
+    "level": 2
   },
   {
     "common": ["dik-dik"],
-    "scientific": "Madoqua kirkii"
+    "scientific": "Madoqua kirkii",
+    "level": 0
   },
   {
     "common": ["cicada"],
-    "scientific": "Magicicada septendecim"
+    "scientific": "Magicicada septendecim",
+    "level": 2
   },
   {
     "common": ["blue marlin"],
-    "scientific": "Makaira nigricans"
+    "scientific": "Makaira nigricans",
+    "level": 0
   },
   {
     "common": ["terrapin"],
-    "scientific": "Malaclemys terrapin"
+    "scientific": "Malaclemys terrapin",
+    "level": 1
   },
   {
     "common": ["lacewing"],
-    "scientific": "Mallada signatus"
+    "scientific": "Mallada signatus",
+    "level": 1
   },
   {
     "common": ["mandrill"],
-    "scientific": "Mandrillus sphinx"
+    "scientific": "Mandrillus sphinx",
+    "level": 2
   },
   {
     "common": ["pangolin"],
-    "scientific": "Manis crassicaudata"
+    "scientific": "Manis crassicaudata",
+    "level": 2
   },
   {
     "common": ["praying mantis"],
-    "scientific": "Mantis religiosa"
+    "scientific": "Mantis religiosa",
+    "level": 2
   },
   {
     "common": ["peacock spider"],
-    "scientific": "Maratus volans"
+    "scientific": "Maratus volans",
+    "level": 0
   },
   {
     "common": ["marmot"],
-    "scientific": "Marmota marmota"
+    "scientific": "Marmota marmota",
+    "level": 1
   },
   {
     "common": ["groundhog"],
-    "scientific": "Marmota monax"
+    "scientific": "Marmota monax",
+    "level": 2
   },
   {
     "common": ["pine marten"],
-    "scientific": "Martes martes"
+    "scientific": "Martes martes",
+    "level": 1
   },
   {
     "common": ["megamouth shark"],
-    "scientific": "Megachasma pelagios"
+    "scientific": "Megachasma pelagios",
+    "level": 0
   },
   {
     "common": ["leafcutting bee"],
-    "scientific": "Megachile rotundata"
+    "scientific": "Megachile rotundata",
+    "level": 0
   },
   {
     "common": ["humpback whale"],
-    "scientific": "Megaptera novaeangliae"
+    "scientific": "Megaptera novaeangliae",
+    "level": 2
   },
   {
     "common": ["anglerfish"],
-    "scientific": "Melanocetus johnsonii"
+    "scientific": "Melanocetus johnsonii",
+    "level": 2
   },
   {
     "common": ["haddock"],
-    "scientific": "Melanogrammus aeglefinus"
+    "scientific": "Melanogrammus aeglefinus",
+    "level": 1
   },
   {
     "common": ["turkey"],
-    "scientific": "Meleagris gallopavo"
+    "scientific": "Meleagris gallopavo",
+    "level": 2
   },
   {
     "common": ["badger"],
-    "scientific": "Meles meles"
+    "scientific": "Meles meles",
+    "level": 2
   },
   {
     "common": ["bee hummingbird"],
-    "scientific": "Mellisuga helenae"
+    "scientific": "Mellisuga helenae",
+    "level": 2
   },
   {
     "common": ["honey badger"],
-    "scientific": "Mellivora capensis"
+    "scientific": "Mellivora capensis",
+    "level": 1
   },
   {
     "common": ["cockchafer"],
-    "scientific": "Melolontha melolontha"
+    "scientific": "Melolontha melolontha",
+    "level": 0
   },
   {
     "common": ["budgerigar"],
-    "scientific": "Melopsittacus undulatus"
+    "scientific": "Melopsittacus undulatus",
+    "level": 0
   },
   {
     "common": ["sloth bear"],
-    "scientific": "Melursus ursinus"
+    "scientific": "Melursus ursinus",
+    "level": 0
   },
   {
     "common": ["lyrebird"],
-    "scientific": "Menura novaehollandiae"
+    "scientific": "Menura novaehollandiae",
+    "level": 1
   },
   {
     "common": ["skunk"],
-    "scientific": "Mephitis mephitis"
+    "scientific": "Mephitis mephitis",
+    "level": 2
   },
   {
     "common": ["bee-eater"],
-    "scientific": "Merops hirundineus"
+    "scientific": "Merops hirundineus",
+    "level": 0
   },
   {
     "common": ["comb jelly", "sea nut"],
-    "scientific": "Mertensia ovum"
+    "scientific": "Mertensia ovum",
+    "level": 1
   },
   {
     "common": ["spiny tree-rat"],
-    "scientific": "Mesomys hispidus"
+    "scientific": "Mesomys hispidus",
+    "level": 0
   },
   {
     "common": ["colossal squid"],
-    "scientific": "Mesonychoteuthis hamiltoni"
+    "scientific": "Mesonychoteuthis hamiltoni",
+    "level": 1
   },
   {
     "common": ["newt"],
-    "scientific": "Mesotriton alpestris"
+    "scientific": "Mesotriton alpestris",
+    "level": 2
   },
   {
     "common": ["mouse lemur"],
-    "scientific": "Microcebus rufus"
+    "scientific": "Microcebus rufus",
+    "level": 0
   },
   {
     "common": ["coral snake"],
-    "scientific": "Micrurus fulvius"
+    "scientific": "Micrurus fulvius",
+    "level": 0
   },
   {
     "common": ["fire coral"],
-    "scientific": "Millepora complanata"
+    "scientific": "Millepora complanata",
+    "level": 0
   },
   {
     "common": ["tardigrade"],
-    "scientific": "Milnesium tardigradum"
+    "scientific": "Milnesium tardigradum",
+    "level": 2
   },
   {
     "common": ["red kite"],
-    "scientific": "Milvus milvus"
+    "scientific": "Milvus milvus",
+    "level": 2
   },
   {
     "common": ["mockingbird"],
-    "scientific": "Mimus polyglottos"
+    "scientific": "Mimus polyglottos",
+    "level": 2
   },
   {
     "common": ["elephant seal"],
-    "scientific": "Mirounga leonina"
+    "scientific": "Mirounga leonina",
+    "level": 1
   },
   {
     "common": ["goblin shark"],
-    "scientific": "Mitsukurina owstoni"
+    "scientific": "Mitsukurina owstoni",
+    "level": 1
   },
   {
     "common": ["manta ray"],
-    "scientific": "Mobula birostris"
+    "scientific": "Mobula birostris",
+    "level": 2
   },
   {
     "common": ["sunfish"],
-    "scientific": "Mola mola"
+    "scientific": "Mola mola",
+    "level": 1
   },
   {
     "common": ["narwhal"],
-    "scientific": "Monodon monoceros"
+    "scientific": "Monodon monoceros",
+    "level": 2
   },
   {
     "common": ["green tree python"],
-    "scientific": "Morelia viridis"
+    "scientific": "Morelia viridis",
+    "level": 2
   },
   {
     "common": ["gannet"],
-    "scientific": "Morus bassanus"
+    "scientific": "Morus bassanus",
+    "level": 1
   },
   {
     "common": ["musk deer"],
-    "scientific": "Moschus moschiferus"
+    "scientific": "Moschus moschiferus",
+    "level": 1
   },
   {
     "common": ["pied wagtail", "white wagtail"],
-    "scientific": "Motacilla alba"
+    "scientific": "Motacilla alba",
+    "level": 0
   },
   {
     "common": ["squat lobster"],
-    "scientific": "Munidopsis serricornis"
+    "scientific": "Munidopsis serricornis",
+    "level": 1
   },
   {
     "common": ["muntjac"],
-    "scientific": "Muntiacus reevesi"
+    "scientific": "Muntiacus reevesi",
+    "level": 0
   },
   {
     "common": ["moray eel"],
-    "scientific": "Muraena helena"
+    "scientific": "Muraena helena",
+    "level": 2
   },
   {
     "common": ["mouse"],
-    "scientific": "Mus musculus"
+    "scientific": "Mus musculus",
+    "level": 2
   },
   {
     "common": ["housefly"],
-    "scientific": "Musca domestica"
+    "scientific": "Musca domestica",
+    "level": 2
   },
   {
     "common": ["stoat", "ermine"],
-    "scientific": "Mustela erminea"
+    "scientific": "Mustela erminea",
+    "level": 0
   },
   {
     "common": ["mink"],
-    "scientific": "Mustela lutreola"
+    "scientific": "Mustela lutreola",
+    "level": 0
   },
   {
     "common": ["weasel"],
-    "scientific": "Mustela nivalis"
+    "scientific": "Mustela nivalis",
+    "level": 1
   },
   {
     "common": ["polecat"],
-    "scientific": "Mustela putorius"
+    "scientific": "Mustela putorius",
+    "level": 2
   },
   {
     "common": ["giant anteater"],
-    "scientific": "Myrmecophaga tridactyla"
+    "scientific": "Myrmecophaga tridactyla",
+    "level": 2
   },
   {
     "common": ["mussel"],
-    "scientific": "Mytilus edulis"
+    "scientific": "Mytilus edulis",
+    "level": 2
   },
   {
     "common": ["Indian cobra"],
-    "scientific": "Naja naja"
+    "scientific": "Naja naja",
+    "level": 0
   },
   {
     "common": ["proboscis monkey"],
-    "scientific": "Nasalis larvatus"
+    "scientific": "Nasalis larvatus",
+    "level": 1
   },
   {
     "common": ["grass snake"],
-    "scientific": "Natrix natrix"
+    "scientific": "Natrix natrix",
+    "level": 1
   },
   {
     "common": ["nautilus"],
-    "scientific": "Nautilus pompilius"
+    "scientific": "Nautilus pompilius",
+    "level": 1
   },
   {
     "common": ["velvet swimming crab"],
-    "scientific": "Necora puber"
+    "scientific": "Necora puber",
+    "level": 0
   },
   {
     "common": ["cricket"],
-    "scientific": "Nemobius sylvestris"
+    "scientific": "Nemobius sylvestris",
+    "level": 2
   },
   {
     "common": ["lungfish"],
-    "scientific": "Neoceratodus forsteri"
+    "scientific": "Neoceratodus forsteri",
+    "level": 1
   },
   {
     "common": ["sea lily"],
-    "scientific": "Neocrinus decorus"
+    "scientific": "Neocrinus decorus",
+    "level": 1
   },
   {
     "common": ["clouded leopard"],
-    "scientific": "Neofelis nebulosa"
+    "scientific": "Neofelis nebulosa",
+    "level": 0
   },
   {
     "common": ["monk seal"],
-    "scientific": "Neomonachus schauinslandi"
+    "scientific": "Neomonachus schauinslandi",
+    "level": 0
   },
   {
     "common": ["finless porpoise"],
-    "scientific": "Neophocaena asiaeorientalis"
+    "scientific": "Neophocaena asiaeorientalis",
+    "level": 0
   },
   {
     "common": ["Egyptian vulture"],
-    "scientific": "Neophron percnopterus"
+    "scientific": "Neophron percnopterus",
+    "level": 1
   },
   {
     "common": ["kea"],
-    "scientific": "Nestor notabilis"
+    "scientific": "Nestor notabilis",
+    "level": 1
   },
   {
     "common": ["dragonfly"],
-    "scientific": "Neurothemis fluctuans"
+    "scientific": "Neurothemis fluctuans",
+    "level": 2
   },
   {
     "common": ["shield bug", "stink bug"],
-    "scientific": "Nezara viridula"
+    "scientific": "Nezara viridula",
+    "level": 1
   },
   {
     "common": ["gibbon"],
-    "scientific": "Nomascus leucogenys"
+    "scientific": "Nomascus leucogenys",
+    "level": 2
   },
   {
     "common": ["wallaby"],
-    "scientific": "Notamacropus agilis"
+    "scientific": "Notamacropus agilis",
+    "level": 1
   },
   {
     "common": ["marsupial mole"],
-    "scientific": "Notoryctes typhlops"
+    "scientific": "Notoryctes typhlops",
+    "level": 0
   },
   {
     "common": ["curlew"],
-    "scientific": "Numenius arquata"
+    "scientific": "Numenius arquata",
+    "level": 1
   },
   {
     "common": ["guinea fowl"],
-    "scientific": "Numida meleagris"
+    "scientific": "Numida meleagris",
+    "level": 1
   },
   {
     "common": ["raccoon dog"],
-    "scientific": "Nyctereutes viverrinus"
+    "scientific": "Nyctereutes viverrinus",
+    "level": 0
   },
   {
     "common": ["potoo"],
-    "scientific": "Nyctibius griseus"
+    "scientific": "Nyctibius griseus",
+    "level": 0
   },
   {
     "common": ["slow loris"],
-    "scientific": "Nycticebus coucang"
+    "scientific": "Nycticebus coucang",
+    "level": 0
   },
   {
     "common": ["peacock butterfly"],
-    "scientific": "Nymphalis io"
+    "scientific": "Aglais io",
+    "level": 0
   },
   {
     "common": ["cockatiel"],
-    "scientific": "Nymphicus hollandicus"
+    "scientific": "Nymphicus hollandicus",
+    "level": 1
   },
   {
     "common": ["pika"],
-    "scientific": "Ochotona princeps"
+    "scientific": "Ochotona princeps",
+    "level": 0
   },
   {
     "common": ["common octopus"],
-    "scientific": "Octopus vulgaris"
+    "scientific": "Octopus vulgaris",
+    "level": 0
   },
   {
     "common": ["walrus"],
-    "scientific": "Odobenus rosmarus"
+    "scientific": "Odobenus rosmarus",
+    "level": 2
   },
   {
     "common": ["mantis shrimp"],
-    "scientific": "Odontodactylus scyllarus"
+    "scientific": "Odontodactylus scyllarus",
+    "level": 2
   },
   {
     "common": ["okapi"],
-    "scientific": "Okapia johnstoni"
+    "scientific": "Okapia johnstoni",
+    "level": 1
   },
   {
     "common": ["Portuguese millipede"],
-    "scientific": "Ommatoiulus moreletii"
+    "scientific": "Ommatoiulus moreletii",
+    "level": 2
   },
   {
     "common": ["trout"],
-    "scientific": "Oncorhynchus mykiss"
+    "scientific": "Oncorhynchus mykiss",
+    "level": 1
   },
   {
     "common": ["muskrat"],
-    "scientific": "Ondatra zibethicus"
+    "scientific": "Ondatra zibethicus",
+    "level": 0
   },
   {
     "common": ["woodlouse", "pillbug"],
-    "scientific": "Oniscus asellus"
+    "scientific": "Oniscus asellus",
+    "level": 2
   },
   {
     "common": ["velvet worm"],
-    "scientific": "Ooperipatellus viridimaculatus"
+    "scientific": "Ooperipatellus viridimaculatus",
+    "level": 2
   },
   {
     "common": ["king cobra"],
-    "scientific": "Ophiophagus hannah"
+    "scientific": "Ophiophagus hannah",
+    "level": 2
   },
   {
     "common": ["brittle star"],
-    "scientific": "Ophiothrix fragilis"
+    "scientific": "Ophiothrix fragilis",
+    "level": 1
   },
   {
     "common": ["hoatzin"],
-    "scientific": "Opisthocomus hoazin"
+    "scientific": "Opisthocomus hoazin",
+    "level": 1
   },
   {
     "common": ["springtail"],
-    "scientific": "Orchesella cincta"
+    "scientific": "Orchesella cincta",
+    "level": 1
   },
   {
     "common": ["orca", "killer whale"],
-    "scientific": "Orcinus orca"
+    "scientific": "Orcinus orca",
+    "level": 2
   },
   {
     "common": ["mountain goat"],
-    "scientific": "Oreamnos americanus"
+    "scientific": "Oreamnos americanus",
+    "level": 1
   },
   {
     "common": ["wobbegong", "carpet shark"],
-    "scientific": "Orectolobus maculatus"
+    "scientific": "Orectolobus maculatus",
+    "level": 0
   },
   {
     "common": ["golden oriole"],
-    "scientific": "Oriolus oriolus"
+    "scientific": "Oriolus oriolus",
+    "level": 0
   },
   {
     "common": ["platypus"],
-    "scientific": "Ornithorhynchus anatinus"
+    "scientific": "Ornithorhynchus anatinus",
+    "level": 2
   },
   {
     "common": ["aardvark"],
-    "scientific": "Orycteropus afer"
+    "scientific": "Orycteropus afer",
+    "level": 2
   },
   {
     "common": ["rhinoceros beetle"],
-    "scientific": "Oryctes rhinoceros"
+    "scientific": "Oryctes rhinoceros",
+    "level": 1
   },
   {
     "common": ["rabbit"],
-    "scientific": "Oryctolagus cuniculus"
+    "scientific": "Oryctolagus cuniculus",
+    "level": 2
   },
   {
     "common": ["oryx"],
-    "scientific": "Oryx beisa"
+    "scientific": "Oryx beisa",
+    "level": 1
   },
   {
     "common": ["red mason bee"],
-    "scientific": "Osmia bicornis"
+    "scientific": "Osmia bicornis",
+    "level": 0
   },
   {
     "common": ["wallaroo"],
-    "scientific": "Osphranter bernardus"
+    "scientific": "Osphranter bernardus",
+    "level": 0
   },
   {
     "common": ["kangaroo"],
-    "scientific": "Osphranter rufus"
+    "scientific": "Osphranter rufus",
+    "level": 2
   },
   {
     "common": ["dwarf crocodile"],
-    "scientific": "Osteolaemus tetraspis"
+    "scientific": "Osteolaemus tetraspis",
+    "level": 0
   },
   {
     "common": ["boxfish"],
-    "scientific": "Ostracion cubicum"
+    "scientific": "Ostracion cubicum",
+    "level": 0
   },
   {
     "common": ["European flat oyster"],
-    "scientific": "Ostrea edulis"
+    "scientific": "Ostrea edulis",
+    "level": 2
   },
   {
     "common": ["bustard"],
-    "scientific": "Otis tarda"
+    "scientific": "Otis tarda",
+    "level": 0
   },
   {
     "common": ["soft tick"],
-    "scientific": "Otobius megnini"
+    "scientific": "Otobius megnini",
+    "level": 0
   },
   {
     "common": ["Pallas's cat"],
-    "scientific": "Otocolobus manul"
+    "scientific": "Otocolobus manul",
+    "level": 0
   },
   {
     "common": ["muskox"],
-    "scientific": "Ovibos moschatus"
+    "scientific": "Ovibos moschatus",
+    "level": 1
   },
   {
     "common": ["domestic sheep"],
-    "scientific": "Ovis aries"
+    "scientific": "Ovis aries",
+    "level": 2
   },
   {
     "common": ["bighorn sheep"],
-    "scientific": "Ovis canadensis"
+    "scientific": "Ovis canadensis",
+    "level": 0
   },
   {
     "common": ["taipan"],
-    "scientific": "Oxyuranus scutellatus"
+    "scientific": "Oxyuranus scutellatus",
+    "level": 0
   },
   {
     "common": ["bonobo"],
-    "scientific": "Pan paniscus"
+    "scientific": "Pan paniscus",
+    "level": 1
   },
   {
     "common": ["chimpanzee"],
-    "scientific": "Pan troglodytes"
+    "scientific": "Pan troglodytes",
+    "level": 2
   },
   {
     "common": ["crucifix ground beetle"],
-    "scientific": "Panagaeus cruxmajor"
+    "scientific": "Panagaeus cruxmajor",
+    "level": 0
   },
   {
     "common": ["goby"],
-    "scientific": "Pandaka pygmaea"
+    "scientific": "Pandaka pygmaea",
+    "level": 1
   },
   {
     "common": ["emperor scorpion"],
-    "scientific": "Pandinus imperator"
+    "scientific": "Pandinus imperator",
+    "level": 2
   },
   {
     "common": ["osprey"],
-    "scientific": "Pandion haliaetus"
+    "scientific": "Pandion haliaetus",
+    "level": 2
   },
   {
     "common": ["scorpionfly"],
-    "scientific": "Panorpa communis"
+    "scientific": "Panorpa communis",
+    "level": 0
   },
   {
     "common": ["lion"],
-    "scientific": "Panthera leo"
+    "scientific": "Panthera leo",
+    "level": 2
   },
   {
     "common": ["jaguar"],
-    "scientific": "Panthera onca"
+    "scientific": "Panthera onca",
+    "level": 2
   },
   {
     "common": ["leopard"],
-    "scientific": "Panthera pardus"
+    "scientific": "Panthera pardus",
+    "level": 2
   },
   {
     "common": ["tiger"],
-    "scientific": "Panthera tigris"
+    "scientific": "Panthera tigris",
+    "level": 2
   },
   {
     "common": ["snow leopard"],
-    "scientific": "Panthera uncia"
+    "scientific": "Panthera uncia",
+    "level": 0
   },
   {
     "common": ["corn snake", "rat snake"],
-    "scientific": "Pantherophis guttatus"
+    "scientific": "Pantherophis guttatus",
+    "level": 0
   },
   {
     "common": ["spiny lobster"],
-    "scientific": "Panulirus interruptus"
+    "scientific": "Panulirus interruptus",
+    "level": 0
   },
   {
     "common": ["swallowtail"],
-    "scientific": "Papilio machaon"
+    "scientific": "Papilio machaon",
+    "level": 1
   },
   {
     "common": ["baboon"],
-    "scientific": "Papio ursinus"
+    "scientific": "Papio ursinus",
+    "level": 2
   },
   {
     "common": ["regal blue tang"],
-    "scientific": "Paracanthurus hepatus"
+    "scientific": "Paracanthurus hepatus",
+    "level": 0
   },
   {
     "common": ["Gordian worm", "horsehair worm"],
-    "scientific": "Paragordius tricuspidatus"
+    "scientific": "Paragordius tricuspidatus",
+    "level": 1
   },
   {
     "common": ["fiddler crab"],
-    "scientific": "Paraleptuca chlorophthalmus"
+    "scientific": "Paraleptuca chlorophthalmus",
+    "level": 2
   },
   {
     "common": ["red king crab"],
-    "scientific": "Paralithodes camtschaticus"
+    "scientific": "Paralithodes camtschaticus",
+    "level": 0
   },
   {
     "common": ["bullet ant"],
-    "scientific": "Paraponera clavata"
+    "scientific": "Paraponera clavata",
+    "level": 0
   },
   {
     "common": ["wolf spider"],
-    "scientific": "Pardosa amentata"
+    "scientific": "Pardosa amentata",
+    "level": 0
   },
   {
     "common": ["flying fish"],
-    "scientific": "Parexocoetus brachypterus"
+    "scientific": "Parexocoetus brachypterus",
+    "level": 2
   },
   {
     "common": ["stingless bee"],
-    "scientific": "Partamona helleri"
+    "scientific": "Partamona helleri",
+    "level": 0
   },
   {
     "common": ["house sparrow"],
-    "scientific": "Passer domesticus"
+    "scientific": "Passer domesticus",
+    "level": 2
   },
   {
     "common": ["limpet"],
-    "scientific": "Patella vulgata"
+    "scientific": "Patella vulgata",
+    "level": 2
   },
   {
     "common": ["peacock", "peafowl"],
-    "scientific": "Pavo cristatus"
+    "scientific": "Pavo cristatus",
+    "level": 2
   },
   {
     "common": ["bristletail"],
-    "scientific": "Pedetontus unimaculatus"
+    "scientific": "Pedetontus unimaculatus",
+    "level": 0
   },
   {
     "common": ["pelican"],
-    "scientific": "Pelecanus occidentalis"
+    "scientific": "Pelecanus occidentalis",
+    "level": 2
   },
   {
     "common": ["tiger prawn"],
-    "scientific": "Penaeus monodon"
+    "scientific": "Penaeus monodon",
+    "level": 2
   },
   {
     "common": ["tarantula-hawk wasp"],
-    "scientific": "Pepsis grossa"
+    "scientific": "Pepsis grossa",
+    "level": 1
   },
   {
     "common": ["bandicoot"],
-    "scientific": "Perameles gunnii"
+    "scientific": "Perameles gunnii",
+    "level": 0
   },
   {
     "common": ["perch"],
-    "scientific": "Perca fluviatilis"
+    "scientific": "Perca fluviatilis",
+    "level": 2
   },
   {
     "common": ["partridge"],
-    "scientific": "Perdix perdix"
+    "scientific": "Perdix perdix",
+    "level": 1
   },
   {
     "common": ["mudskipper"],
-    "scientific": "Periophthalmus argentilineatus"
+    "scientific": "Periophthalmus argentilineatus",
+    "level": 1
   },
   {
     "common": ["coal tit"],
-    "scientific": "Periparus ater"
+    "scientific": "Periparus ater",
+    "level": 0
   },
   {
     "common": ["cockroach"],
-    "scientific": "Periplaneta americana"
+    "scientific": "Periplaneta americana",
+    "level": 2
   },
   {
     "common": ["sugar glider"],
-    "scientific": "Petaurus breviceps"
+    "scientific": "Petaurus breviceps",
+    "level": 1
   },
   {
     "common": ["lamprey"],
-    "scientific": "Petromyzon marinus"
+    "scientific": "Petromyzon marinus",
+    "level": 2
   },
   {
     "common": ["warthog"],
-    "scientific": "Phacochoerus africanus"
+    "scientific": "Phacochoerus africanus",
+    "level": 2
   },
   {
     "common": ["cormorant"],
-    "scientific": "Phalacrocorax carbo"
+    "scientific": "Phalacrocorax carbo",
+    "level": 1
   },
   {
     "common": ["quetzal"],
-    "scientific": "Pharomachrus auriceps"
+    "scientific": "Pharomachrus auriceps",
+    "level": 0
   },
   {
     "common": ["koala"],
-    "scientific": "Phascolarctos cinereus"
+    "scientific": "Phascolarctos cinereus",
+    "level": 2
   },
   {
     "common": ["common pheasant"],
-    "scientific": "Phasianus colchicus"
+    "scientific": "Phasianus colchicus",
+    "level": 2
   },
   {
     "common": ["jumping spider"],
-    "scientific": "Phidippus audax"
+    "scientific": "Phidippus audax",
+    "level": 1
   },
   {
     "common": ["harbour seal"],
-    "scientific": "Phoca vitulina"
+    "scientific": "Phoca vitulina",
+    "level": 2
   },
   {
     "common": ["New Zealand sea lion"],
-    "scientific": "Phocarctos hookeri"
+    "scientific": "Phocarctos hookeri",
+    "level": 0
   },
   {
     "common": ["harbour porpoise"],
-    "scientific": "Phocoena phocoena"
+    "scientific": "Phocoena phocoena",
+    "level": 2
   },
   {
     "common": ["flamingo"],
-    "scientific": "Phoenicopterus roseus"
+    "scientific": "Phoenicopterus roseus",
+    "level": 2
   },
   {
     "common": ["firefly"],
-    "scientific": "Photinus pyralis"
+    "scientific": "Photinus pyralis",
+    "level": 2
   },
   {
     "common": ["horned lizard"],
-    "scientific": "Phrynosoma coronatum"
+    "scientific": "Phrynosoma coronatum",
+    "level": 0
   },
   {
     "common": ["tailless whipscorpion"],
-    "scientific": "Phrynus longipes"
+    "scientific": "Phrynus longipes",
+    "level": 1
   },
   {
     "common": ["seadragon"],
-    "scientific": "Phyllopteryx taeniolatus"
+    "scientific": "Phyllopteryx taeniolatus",
+    "level": 0
   },
   {
     "common": ["Portuguese man o' war"],
-    "scientific": "Physalia physalis"
+    "scientific": "Physalia physalis",
+    "level": 2
   },
   {
     "common": ["sperm whale"],
-    "scientific": "Physeter macrocephalus"
+    "scientific": "Physeter macrocephalus",
+    "level": 2
   },
   {
     "common": ["magpie"],
-    "scientific": "Pica pica"
+    "scientific": "Pica pica",
+    "level": 2
   },
   {
     "common": ["cabbage white"],
-    "scientific": "Pieris rapae"
+    "scientific": "Pieris rapae",
+    "level": 0
   },
   {
     "common": ["pipistrelle"],
-    "scientific": "Pipistrellus pipistrellus"
+    "scientific": "Pipistrellus pipistrellus",
+    "level": 0
   },
   {
     "common": ["scallop"],
-    "scientific": "Placopecten magellanicus"
+    "scientific": "Placopecten magellanicus",
+    "level": 2
   },
   {
     "common": ["spoonbill"],
-    "scientific": "Platalea alba"
+    "scientific": "Platalea alba",
+    "level": 1
   },
   {
     "common": ["Ganges river dolphin"],
-    "scientific": "Platanista gangetica"
+    "scientific": "Platanista gangetica",
+    "level": 0
   },
   {
     "common": ["New Guinea flatworm"],
-    "scientific": "Platydemus manokwari"
+    "scientific": "Platydemus manokwari",
+    "level": 1
   },
   {
     "common": ["snow bunting"],
-    "scientific": "Plectrophenax nivalis"
+    "scientific": "Plectrophenax nivalis",
+    "level": 0
   },
   {
     "common": ["plaice"],
-    "scientific": "Pleuronectes platessa"
+    "scientific": "Pleuronectes platessa",
+    "level": 2
   },
   {
     "common": ["weaver"],
-    "scientific": "Ploceus jacksoni"
+    "scientific": "Ploceus jacksoni",
+    "level": 0
   },
   {
     "common": ["frogmouth"],
-    "scientific": "Podargus strigoides"
+    "scientific": "Podargus strigoides",
+    "level": 0
   },
   {
     "common": ["grebe"],
-    "scientific": "Podiceps cristatus"
+    "scientific": "Podiceps cristatus",
+    "level": 0
   },
   {
     "common": ["chickadee"],
-    "scientific": "Poecile atricapillus"
+    "scientific": "Poecile atricapillus",
+    "level": 0
   },
   {
     "common": ["guppy", "rainbow fish"],
-    "scientific": "Poecilia reticulata"
+    "scientific": "Poecilia reticulata",
+    "level": 2
   },
   {
     "common": ["bearded dragon"],
-    "scientific": "Pogona barbata"
+    "scientific": "Pogona barbata",
+    "level": 0
   },
   {
     "common": ["barbet"],
-    "scientific": "Pogonornis dubius"
+    "scientific": "Pogonornis dubius",
+    "level": 0
   },
   {
     "common": ["paper wasp"],
-    "scientific": "Polistes dominula"
+    "scientific": "Polistes dominula",
+    "level": 0
   },
   {
     "common": ["leaf barnacle"],
-    "scientific": "Pollicipes polymerus"
+    "scientific": "Pollicipes polymerus",
+    "level": 2
   },
   {
     "common": ["hatchetfish"],
-    "scientific": "Polyipnus triphanos"
+    "scientific": "Polyipnus triphanos",
+    "level": 0
   },
   {
     "common": ["orangutan"],
-    "scientific": "Pongo pygmaeus"
+    "scientific": "Pongo pygmaeus",
+    "level": 2
   },
   {
     "common": ["porcelain crab"],
-    "scientific": "Porcellana platycheles"
+    "scientific": "Porcellana platycheles",
+    "level": 0
   },
   {
     "common": ["takah\u0113"],
-    "scientific": "Porphyrio hochstetteri"
+    "scientific": "Porphyrio hochstetteri",
+    "level": 0
   },
   {
     "common": ["fishing cat"],
-    "scientific": "Prionailurus viverrinus"
+    "scientific": "Prionailurus viverrinus",
+    "level": 1
   },
   {
     "common": ["sawshark"],
-    "scientific": "Pristiophorus japonicus"
+    "scientific": "Pristiophorus japonicus",
+    "level": 0
   },
   {
     "common": ["sawfish"],
-    "scientific": "Pristis pristis"
+    "scientific": "Pristis pristis",
+    "level": 1
   },
   {
     "common": ["rock hyrax"],
-    "scientific": "Procavia capensis"
+    "scientific": "Procavia capensis",
+    "level": 1
   },
   {
     "common": ["raccoon"],
-    "scientific": "Procyon lotor"
+    "scientific": "Procyon lotor",
+    "level": 2
   },
   {
     "common": ["silky sifaka"],
-    "scientific": "Propithecus candidus"
+    "scientific": "Propithecus candidus",
+    "level": 0
   },
   {
     "common": ["aardwolf"],
-    "scientific": "Proteles cristatus"
+    "scientific": "Proteles cristatus",
+    "level": 0
   },
   {
     "common": ["Persian carpet flatworm"],
-    "scientific": "Pseudobiceros bedfordi"
+    "scientific": "Pseudobiceros bedfordi",
+    "level": 0
   },
   {
     "common": ["katydid", "bush cricket"],
-    "scientific": "Pseudophyllus titan"
+    "scientific": "Pseudophyllus titan",
+    "level": 0
   },
   {
     "common": ["false killer whale"],
-    "scientific": "Pseudorca crassidens"
+    "scientific": "Pseudorca crassidens",
+    "level": 0
   },
   {
     "common": ["parakeet"],
-    "scientific": "Psittacula krameri"
+    "scientific": "Psittacula krameri",
+    "level": 2
   },
   {
     "common": ["grey parrot"],
-    "scientific": "Psittacus erithacus"
+    "scientific": "Psittacus erithacus",
+    "level": 2
   },
   {
     "common": ["lionfish"],
-    "scientific": "Pterois volitans"
+    "scientific": "Pterois volitans",
+    "level": 2
   },
   {
     "common": ["angelfish"],
-    "scientific": "Pterophyllum scalare"
+    "scientific": "Pterophyllum scalare",
+    "level": 0
   },
   {
     "common": ["flying fox", "fruit bat"],
-    "scientific": "Pteropus conspicillatus"
+    "scientific": "Pteropus conspicillatus",
+    "level": 2
   },
   {
     "common": ["pubic louse"],
-    "scientific": "Pthirus pubis"
+    "scientific": "Pthirus pubis",
+    "level": 1
   },
   {
     "common": ["sea pen"],
-    "scientific": "Ptilosarcus gurneyi"
+    "scientific": "Ptilosarcus gurneyi",
+    "level": 1
   },
   {
     "common": ["Manx shearwater"],
-    "scientific": "Puffinus puffinus"
+    "scientific": "Puffinus puffinus",
+    "level": 0
   },
   {
     "common": ["leaf insect"],
-    "scientific": "Pulchriphyllium giganteum"
+    "scientific": "Pulchriphyllium giganteum",
+    "level": 1
   },
   {
     "common": ["cougar", "mountain lion", "puma"],
-    "scientific": "Puma concolor"
+    "scientific": "Puma concolor",
+    "level": 2
   },
   {
     "common": ["ringed seal"],
-    "scientific": "Pusa hispida"
+    "scientific": "Pusa hispida",
+    "level": 0
   },
   {
     "common": ["piranha"],
-    "scientific": "Pygocentrus nattereri"
+    "scientific": "Pygocentrus nattereri",
+    "level": 2
   },
   {
     "common": ["Alpine chough"],
-    "scientific": "Pyrrhocorax graculus"
+    "scientific": "Pyrrhocorax graculus",
+    "level": 0
   },
   {
     "common": ["bullfinch"],
-    "scientific": "Pyrrhula pyrrhula"
+    "scientific": "Pyrrhula pyrrhula",
+    "level": 2
   },
   {
     "common": ["Burmese python"],
-    "scientific": "Python bivittatus"
+    "scientific": "Python bivittatus",
+    "level": 0
   },
   {
     "common": ["sea anemone"],
-    "scientific": "Radianthus magnifica"
+    "scientific": "Radianthus magnifica",
+    "level": 2
   },
   {
     "common": ["toucan"],
-    "scientific": "Ramphastos toco"
+    "scientific": "Ramphastos toco",
+    "level": 2
   },
   {
     "common": ["reindeer", "caribou"],
-    "scientific": "Rangifer tarandus"
+    "scientific": "Rangifer tarandus",
+    "level": 2
   },
   {
     "common": ["brown rat"],
-    "scientific": "Rattus norvegicus"
+    "scientific": "Rattus norvegicus",
+    "level": 2
   },
   {
     "common": ["black rat"],
-    "scientific": "Rattus rattus"
+    "scientific": "Rattus rattus",
+    "level": 0
   },
   {
     "common": ["assassin bug"],
-    "scientific": "Reduvius personatus"
+    "scientific": "Reduvius personatus",
+    "level": 0
   },
   {
     "common": ["oarfish"],
-    "scientific": "Regalecus glesne"
+    "scientific": "Regalecus glesne",
+    "level": 1
   },
   {
     "common": ["rhea"],
-    "scientific": "Rhea americana"
+    "scientific": "Rhea americana",
+    "level": 1
   },
   {
     "common": ["whale shark"],
-    "scientific": "Rhincodon typus"
+    "scientific": "Rhincodon typus",
+    "level": 2
   },
   {
     "common": ["cane toad"],
-    "scientific": "Rhinella marina"
+    "scientific": "Rhinella marina",
+    "level": 2
   },
   {
     "common": ["Indian rhinoceros"],
-    "scientific": "Rhinoceros unicornis"
+    "scientific": "Rhinoceros unicornis",
+    "level": 0
   },
   {
     "common": ["greater horseshoe bat"],
-    "scientific": "Rhinolophus ferrumequinum"
+    "scientific": "Rhinolophus ferrumequinum",
+    "level": 1
   },
   {
     "common": ["golden snub-nosed monkey"],
-    "scientific": "Rhinopithecus roxellana"
+    "scientific": "Rhinopithecus roxellana",
+    "level": 0
   },
   {
     "common": ["fantail"],
-    "scientific": "Rhipidura fuliginosa"
+    "scientific": "Rhipidura fuliginosa",
+    "level": 0
   },
   {
     "common": ["mayfly"],
-    "scientific": "Rhithrogena germanica"
+    "scientific": "Rhithrogena germanica",
+    "level": 2
   },
   {
     "common": ["giant tube worm"],
-    "scientific": "Riftia pachyptila"
+    "scientific": "Riftia pachyptila",
+    "level": 0
   },
   {
     "common": ["chamois"],
-    "scientific": "Rupicapra rupicapra"
+    "scientific": "Rupicapra rupicapra",
+    "level": 1
   },
   {
     "common": ["sambar"],
-    "scientific": "Rusa unicolor"
+    "scientific": "Rusa unicolor",
+    "level": 0
   },
   {
     "common": ["secretarybird"],
-    "scientific": "Sagittarius serpentarius"
+    "scientific": "Sagittarius serpentarius",
+    "level": 1
   },
   {
     "common": ["tamarin"],
-    "scientific": "Saguinus imperator"
+    "scientific": "Saguinus imperator",
+    "level": 2
   },
   {
     "common": ["saiga antelope"],
-    "scientific": "Saiga tatarica"
+    "scientific": "Saiga tatarica",
+    "level": 0
   },
   {
     "common": ["squirrel monkey"],
-    "scientific": "Saimiri sciureus"
+    "scientific": "Saimiri sciureus",
+    "level": 0
   },
   {
     "common": ["fire salamander"],
-    "scientific": "Salamandra salamandra"
+    "scientific": "Salamandra salamandra",
+    "level": 2
   },
   {
     "common": ["salmon"],
-    "scientific": "Salmo salar"
+    "scientific": "Salmo salar",
+    "level": 2
   },
   {
     "common": ["Tasmanian devil"],
-    "scientific": "Sarcophilus harrisii"
+    "scientific": "Sarcophilus harrisii",
+    "level": 2
   },
   {
     "common": ["sardine", "pilchard"],
-    "scientific": "Sardina pilchardus"
+    "scientific": "Sardina pilchardus",
+    "level": 2
   },
   {
     "common": ["sacred scarab", "dung beetle"],
-    "scientific": "Scarabaeus sacer"
+    "scientific": "Scarabaeus sacer",
+    "level": 2
   },
   {
     "common": ["common skink"],
-    "scientific": "Scincus scincus"
+    "scientific": "Scincus scincus",
+    "level": 2
   },
   {
     "common": ["grey squirrel"],
-    "scientific": "Sciurus carolinensis"
+    "scientific": "Sciurus carolinensis",
+    "level": 2
   },
   {
     "common": ["red squirrel"],
-    "scientific": "Sciurus vulgaris"
+    "scientific": "Sciurus vulgaris",
+    "level": 0
   },
   {
     "common": ["woodcock"],
-    "scientific": "Scolopax rusticola"
+    "scientific": "Scolopax rusticola",
+    "level": 0
   },
   {
     "common": ["Amazonian giant centipede"],
-    "scientific": "Scolopendra gigantea"
+    "scientific": "Scolopendra gigantea",
+    "level": 1
   },
   {
     "common": ["mackerel"],
-    "scientific": "Scomber scombrus"
+    "scientific": "Scomber scombrus",
+    "level": 2
   },
   {
     "common": ["turbot"],
-    "scientific": "Scophthalmus maximus"
+    "scientific": "Scophthalmus maximus",
+    "level": 0
   },
   {
     "common": ["red scorpionfish"],
-    "scientific": "Scorpaena scrofa"
+    "scientific": "Scorpaena scrofa",
+    "level": 0
   },
   {
     "common": ["house centipede"],
-    "scientific": "Scutigera coleoptrata"
+    "scientific": "Scutigera coleoptrata",
+    "level": 2
   },
   {
     "common": ["standardwing bird-of-paradise"],
-    "scientific": "Semioptera wallacii"
+    "scientific": "Semioptera wallacii",
+    "level": 0
   },
   {
     "common": ["langur"],
-    "scientific": "Semnopithecus entellus"
+    "scientific": "Semnopithecus entellus",
+    "level": 0
   },
   {
     "common": ["cuttlefish"],
-    "scientific": "Sepia officinalis"
+    "scientific": "Sepia officinalis",
+    "level": 2
   },
   {
     "common": ["bowerbird"],
-    "scientific": "Sericulus ardens"
+    "scientific": "Sericulus ardens",
+    "level": 1
   },
   {
     "common": ["quokka"],
-    "scientific": "Setonix brachyurus"
+    "scientific": "Setonix brachyurus",
+    "level": 0
   },
   {
     "common": ["wels catfish"],
-    "scientific": "Silurus glanis"
+    "scientific": "Silurus glanis",
+    "level": 2
   },
   {
     "common": ["caecilian"],
-    "scientific": "Siphonops annulatus"
+    "scientific": "Siphonops annulatus",
+    "level": 0
   },
   {
     "common": ["nuthatch"],
-    "scientific": "Sitta europaea"
+    "scientific": "Sitta europaea",
+    "level": 0
   },
   {
     "common": ["Dover sole"],
-    "scientific": "Solea solea"
+    "scientific": "Solea solea",
+    "level": 0
   },
   {
     "common": ["fire ant"],
-    "scientific": "Solenopsis invicta"
+    "scientific": "Solenopsis invicta",
+    "level": 2
   },
   {
     "common": ["Greenland shark"],
-    "scientific": "Somniosus microcephalus"
+    "scientific": "Somniosus microcephalus",
+    "level": 1
   },
   {
     "common": ["shrew"],
-    "scientific": "Sorex araneus"
+    "scientific": "Sorex araneus",
+    "level": 1
   },
   {
     "common": ["Gal\u00e1pagos penguin"],
-    "scientific": "Spheniscus mendiculus"
+    "scientific": "Spheniscus mendiculus",
+    "level": 0
   },
   {
     "common": ["tuatara"],
-    "scientific": "Sphenodon punctatus"
+    "scientific": "Sphenodon punctatus",
+    "level": 1
   },
   {
     "common": ["barracuda"],
-    "scientific": "Sphyraena barracuda"
+    "scientific": "Sphyraena barracuda",
+    "level": 2
   },
   {
     "common": ["hammerhead"],
-    "scientific": "Sphyrna mokarran"
+    "scientific": "Sphyrna mokarran",
+    "level": 2
   },
   {
     "common": ["siskin"],
-    "scientific": "Spinus spinus"
+    "scientific": "Spinus spinus",
+    "level": 0
   },
   {
     "common": ["Christmas tree worm"],
-    "scientific": "Spirobranchus giganteus"
+    "scientific": "Spirobranchus giganteus",
+    "level": 1
   },
   {
     "common": ["dogfish"],
-    "scientific": "Squalus acanthias"
+    "scientific": "Squalus acanthias",
+    "level": 1
   },
   {
     "common": ["stonefly"],
-    "scientific": "Stenoperla prasina"
+    "scientific": "Stenoperla prasina",
+    "level": 0
   },
   {
     "common": ["skua"],
-    "scientific": "Stercorarius skua"
+    "scientific": "Stercorarius skua",
+    "level": 1
   },
   {
     "common": ["tern"],
-    "scientific": "Sterna hirundo"
+    "scientific": "Sterna hirundo",
+    "level": 0
   },
   {
     "common": ["turtle dove"],
-    "scientific": "Streptopelia turtur"
+    "scientific": "Streptopelia turtur",
+    "level": 2
   },
   {
     "common": ["k\u0101k\u0101p\u014d"],
-    "scientific": "Strigops habroptilus"
+    "scientific": "Strigops habroptilus",
+    "level": 0
   },
   {
     "common": ["tawny owl"],
-    "scientific": "Strix aluco"
+    "scientific": "Strix aluco",
+    "level": 0
   },
   {
     "common": ["ostrich"],
-    "scientific": "Struthio camelus"
+    "scientific": "Struthio camelus",
+    "level": 2
   },
   {
     "common": ["starling"],
-    "scientific": "Sturnus vulgaris"
+    "scientific": "Sturnus vulgaris",
+    "level": 0
   },
   {
     "common": ["blue-footed booby"],
-    "scientific": "Sula nebouxii"
+    "scientific": "Sula nebouxii",
+    "level": 2
   },
   {
     "common": ["meerkat"],
-    "scientific": "Suricata suricatta"
+    "scientific": "Suricata suricatta",
+    "level": 2
   },
   {
     "common": ["wild boar"],
-    "scientific": "Sus scrofa"
+    "scientific": "Sus scrofa",
+    "level": 2
   },
   {
     "common": ["stonefish"],
-    "scientific": "Synanceia verrucosa"
+    "scientific": "Synanceia verrucosa",
+    "level": 1
   },
   {
     "common": ["African buffalo"],
-    "scientific": "Syncerus caffer"
+    "scientific": "Syncerus caffer",
+    "level": 1
   },
   {
     "common": ["pipefish"],
-    "scientific": "Syngnathus abaster"
+    "scientific": "Syngnathus abaster",
+    "level": 0
   },
   {
     "common": ["lizardfish"],
-    "scientific": "Synodus variegatus"
+    "scientific": "Synodus variegatus",
+    "level": 0
   },
   {
     "common": ["echidna"],
-    "scientific": "Tachyglossus aculeatus"
+    "scientific": "Tachyglossus aculeatus",
+    "level": 2
   },
   {
     "common": ["tapeworm"],
-    "scientific": "Taenia solium"
+    "scientific": "Taenia solium",
+    "level": 2
   },
   {
     "common": ["sand flea", "sand hopper"],
-    "scientific": "Talitrus saltator"
+    "scientific": "Talitrus saltator",
+    "level": 0
   },
   {
     "common": ["European mole"],
-    "scientific": "Talpa europaea"
+    "scientific": "Talpa europaea",
+    "level": 2
   },
   {
     "common": ["chipmunk"],
-    "scientific": "Tamias striatus"
+    "scientific": "Tamias striatus",
+    "level": 2
   },
   {
     "common": ["Baird's tapir"],
-    "scientific": "Tapirus bairdii"
+    "scientific": "Tapirus bairdii",
+    "level": 0
   },
   {
     "common": ["Malayan tapir"],
-    "scientific": "Tapirus indicus"
+    "scientific": "Tapirus indicus",
+    "level": 2
   },
   {
     "common": ["turaco"],
-    "scientific": "Tauraco persa"
+    "scientific": "Tauraco persa",
+    "level": 0
   },
   {
     "common": ["mealworm", "mealworm beetle"],
-    "scientific": "Tenebrio molitor"
+    "scientific": "Tenebrio molitor",
+    "level": 0
   },
   {
     "common": ["tenrec"],
-    "scientific": "Tenrec ecaudatus"
+    "scientific": "Tenrec ecaudatus",
+    "level": 1
   },
   {
     "common": ["lampshell"],
-    "scientific": "Terebratalia transversa"
+    "scientific": "Terebratalia transversa",
+    "level": 1
   },
   {
     "common": ["box turtle"],
-    "scientific": "Terrapene carolina"
+    "scientific": "Terrapene carolina",
+    "level": 2
   },
   {
     "common": ["capercaillie"],
-    "scientific": "Tetrao urogallus"
+    "scientific": "Tetrao urogallus",
+    "level": 0
   },
   {
     "common": ["garter snake"],
-    "scientific": "Thamnophis sirtalis"
+    "scientific": "Thamnophis sirtalis",
+    "level": 0
   },
   {
     "common": ["gopher"],
-    "scientific": "Thomomys bottae"
+    "scientific": "Thomomys bottae",
+    "level": 1
   },
   {
     "common": ["heavy starfish"],
-    "scientific": "Thromidia catalai"
+    "scientific": "Thromidia catalai",
+    "level": 1
   },
   {
     "common": ["tuna"],
-    "scientific": "Thunnus albacares"
+    "scientific": "Thunnus albacares",
+    "level": 2
   },
   {
     "common": ["blue-tongued skink"],
-    "scientific": "Tiliqua multifasciata"
+    "scientific": "Tiliqua multifasciata",
+    "level": 0
   },
   {
     "common": ["tinamou"],
-    "scientific": "Tinamotis ingoufi"
+    "scientific": "Tinamotis ingoufi",
+    "level": 0
   },
   {
     "common": ["tench"],
-    "scientific": "Tinca tinca"
+    "scientific": "Tinca tinca",
+    "level": 0
   },
   {
     "common": ["clothes moth"],
-    "scientific": "Tineola bisselliella"
+    "scientific": "Tineola bisselliella",
+    "level": 0
   },
   {
     "common": ["crane fly"],
-    "scientific": "Tipula paludosa"
+    "scientific": "Tipula paludosa",
+    "level": 1
   },
   {
     "common": ["titan beetle"],
-    "scientific": "Titanus giganteus"
+    "scientific": "Titanus giganteus",
+    "level": 0
   },
   {
     "common": ["tarantula"],
-    "scientific": "Tliltocatl vagans"
+    "scientific": "Tliltocatl vagans",
+    "level": 2
   },
   {
     "common": ["false gharial"],
-    "scientific": "Tomistoma schlegelii"
+    "scientific": "Tomistoma schlegelii",
+    "level": 0
   },
   {
     "common": ["torpedo ray", "electric ray"],
-    "scientific": "Torpedo torpedo"
+    "scientific": "Torpedo torpedo",
+    "level": 0
   },
   {
     "common": ["kudu"],
-    "scientific": "Tragelaphus strepsiceros"
+    "scientific": "Tragelaphus strepsiceros",
+    "level": 0
   },
   {
     "common": ["mouse-deer"],
-    "scientific": "Tragulus javanicus"
+    "scientific": "Tragulus javanicus",
+    "level": 0
   },
   {
     "common": ["spectacled bear"],
-    "scientific": "Tremarctos ornatus"
+    "scientific": "Tremarctos ornatus",
+    "level": 0
   },
   {
     "common": ["manatee"],
-    "scientific": "Trichechus manatus"
+    "scientific": "Trichechus manatus",
+    "level": 2
   },
   {
     "common": ["hairy frog"],
-    "scientific": "Trichobatrachus robustus"
+    "scientific": "Astylosternus robustus",
+    "level": 1
   },
   {
     "common": ["possum"],
-    "scientific": "Trichosurus vulpecula"
+    "scientific": "Trichosurus vulpecula",
+    "level": 2
   },
   {
     "common": ["giant clam"],
-    "scientific": "Tridacna gigas"
+    "scientific": "Tridacna gigas",
+    "level": 2
   },
   {
     "common": ["vulture bee"],
-    "scientific": "Trigona crassipes"
+    "scientific": "Trigona crassipes",
+    "level": 0
   },
   {
     "common": ["pit viper"],
-    "scientific": "Trimeresurus salazar"
+    "scientific": "Trimeresurus salazar",
+    "level": 2
   },
   {
     "common": ["Jackson's chameleon"],
-    "scientific": "Trioceros jacksonii"
+    "scientific": "Trioceros jacksonii",
+    "level": 2
   },
   {
     "common": ["wren"],
-    "scientific": "Troglodytes troglodytes"
+    "scientific": "Troglodytes troglodytes",
+    "level": 2
   },
   {
     "common": ["trogon"],
-    "scientific": "Trogon personatus"
+    "scientific": "Trogon personatus",
+    "level": 0
   },
   {
     "common": ["organ pipe coral"],
-    "scientific": "Tubipora musica"
+    "scientific": "Tubipora musica",
+    "level": 0
   },
   {
     "common": ["treeshrew"],
-    "scientific": "Tupaia glis"
+    "scientific": "Tupaia glis",
+    "level": 0
   },
   {
     "common": ["blackbird"],
-    "scientific": "Turdus merula"
+    "scientific": "Turdus merula",
+    "level": 2
   },
   {
     "common": ["song thrush"],
-    "scientific": "Turdus philomelos"
+    "scientific": "Turdus philomelos",
+    "level": 0
   },
   {
     "common": ["ring ouzel"],
-    "scientific": "Turdus torquatus"
+    "scientific": "Turdus torquatus",
+    "level": 0
   },
   {
     "common": ["bottlenose dolphin"],
-    "scientific": "Tursiops truncatus"
+    "scientific": "Tursiops truncatus",
+    "level": 1
   },
   {
     "common": ["barn owl"],
-    "scientific": "Tyto alba"
+    "scientific": "Tyto alba",
+    "level": 1
   },
   {
     "common": ["hoopoe"],
-    "scientific": "Upupa epops"
+    "scientific": "Upupa epops",
+    "level": 0
   },
   {
     "common": ["guillemot", "murre"],
-    "scientific": "Uria aalge"
+    "scientific": "Uria aalge",
+    "level": 0
   },
   {
     "common": ["black bear"],
-    "scientific": "Ursus americanus"
+    "scientific": "Ursus americanus",
+    "level": 2
   },
   {
     "common": ["brown bear"],
-    "scientific": "Ursus arctos"
+    "scientific": "Ursus arctos",
+    "level": 2
   },
   {
     "common": ["polar bear"],
-    "scientific": "Ursus maritimus"
+    "scientific": "Ursus maritimus",
+    "level": 2
   },
   {
     "common": ["Asian black bear"],
-    "scientific": "Ursus thibetanus"
+    "scientific": "Ursus thibetanus",
+    "level": 0
   },
   {
     "common": ["vampire squid"],
-    "scientific": "Vampyroteuthis infernalis"
+    "scientific": "Vampyroteuthis infernalis",
+    "level": 2
   },
   {
     "common": ["candiru", "vampire fish"],
-    "scientific": "Vandellia cirrhosa"
+    "scientific": "Vandellia cirrhosa",
+    "level": 0
   },
   {
     "common": ["lapwing", "peewit"],
-    "scientific": "Vanellus vanellus"
+    "scientific": "Vanellus vanellus",
+    "level": 1
   },
   {
     "common": ["forest monitor"],
-    "scientific": "Varanus bitatawa"
+    "scientific": "Varanus bitatawa",
+    "level": 1
   },
   {
     "common": ["Komodo dragon"],
-    "scientific": "Varanus komodoensis"
+    "scientific": "Varanus komodoensis",
+    "level": 2
   },
   {
     "common": ["ruffed lemur"],
-    "scientific": "Varecia variegata"
+    "scientific": "Varecia variegata",
+    "level": 2
   },
   {
     "common": ["Asian giant hornet"],
-    "scientific": "Vespa mandarinia"
+    "scientific": "Vespa mandarinia",
+    "level": 2
   },
   {
     "common": ["common wasp"],
-    "scientific": "Vespula vulgaris"
+    "scientific": "Vespula vulgaris",
+    "level": 2
   },
   {
     "common": ["European adder"],
-    "scientific": "Vipera berus"
+    "scientific": "Vipera berus",
+    "level": 1
   },
   {
     "common": ["civet"],
-    "scientific": "Viverra zibetha"
+    "scientific": "Viverra zibetha",
+    "level": 1
   },
   {
     "common": ["wombat"],
-    "scientific": "Vombatus ursinus"
+    "scientific": "Vombatus ursinus",
+    "level": 2
   },
   {
     "common": ["arctic fox"],
-    "scientific": "Vulpes lagopus"
+    "scientific": "Vulpes lagopus",
+    "level": 2
   },
   {
     "common": ["red fox"],
-    "scientific": "Vulpes vulpes"
+    "scientific": "Vulpes vulpes",
+    "level": 2
   },
   {
     "common": ["fennec fox"],
-    "scientific": "Vulpes zerda"
+    "scientific": "Vulpes zerda",
+    "level": 0
   },
   {
     "common": ["condor"],
-    "scientific": "Vultur gryphus"
+    "scientific": "Vultur gryphus",
+    "level": 2
   },
   {
     "common": ["rat flea"],
-    "scientific": "Xenopsylla cheopis"
+    "scientific": "Xenopsylla cheopis",
+    "level": 2
   },
   {
     "common": ["sock worm"],
-    "scientific": "Xenoturbella profunda"
+    "scientific": "Xenoturbella profunda",
+    "level": 0
   },
   {
     "common": ["swordfish"],
-    "scientific": "Xiphias gladius"
+    "scientific": "Xiphias gladius",
+    "level": 2
   },
   {
     "common": ["California sea lion"],
-    "scientific": "Zalophus californianus"
+    "scientific": "Zalophus californianus",
+    "level": 2
   },
   {
     "common": ["John Dory"],
-    "scientific": "Zeus faber"
+    "scientific": "Zeus faber",
+    "level": 1
   },
   {
     "common": ["beaked whale"],
-    "scientific": "Ziphius cavirostris"
+    "scientific": "Ziphius cavirostris",
+    "level": 0
   }
 ]

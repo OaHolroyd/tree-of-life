@@ -11,7 +11,18 @@ import {
 // ====================================
 //   CONSTANTS AND APP STATE
 // ====================================
-const AVAILABLE_ROOT_TIDS = [0, 2, 3, 5, 10];
+const AVAILABLE_ROOT_TIDS = [
+  0, // Animalia
+  5, // Vertebrata
+  9, // Tetrapods
+  11, // Sauria
+  14, // Aves
+  38, // Mammalia
+  52, // Actinopterygii TODO: check this
+  65, // Protostomia
+  68, // Arthropoda
+  73, // Insecta
+];
 const IMAGE_ROTATION_PERIOD = 1000;
 
 // clade sheet state

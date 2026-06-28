@@ -773,6 +773,13 @@ body {
   white-space: nowrap;
 }
 
+.node-com {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #f5f5f5;
+  white-space: nowrap;
+}
+
 /* --- Game Over Modal Overlay --- */
 .modal-overlay {
   position: fixed;
