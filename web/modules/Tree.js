@@ -1,7 +1,7 @@
 import { CladeState } from "../data/clades.js";
 
 /**
- * Tree - Pure Rendering & Animation Engine
+ * Tree - Pure Rendering & Animation Engine.
  * Handles particle physics simulation and canvas rendering for the tree UI.
  */
 export class Tree {
@@ -9,13 +9,11 @@ export class Tree {
    * @param {HTMLElement} containerElement - The DOM container (#tree-container)
    */
   constructor(containerElement) {
-    // 1. Cache DOM references and extract Canvas contexts
     this.container = containerElement;
     this.canvas = this.container.querySelector(".tree-canvas");
     this.overlay = this.container.querySelector(".node-overlay");
     this.ctx = this.canvas.getContext("2d");
-
-    // 2. Physics Configuration Constants
+    // Physics layout constants.
     this.SPRING_LENGTH = 60;
     this.K_SPRING = 0.05;
     this.REPULSION = 2000;
@@ -23,20 +21,16 @@ export class Tree {
     this.GRAVITY = 0.2;
     this.MAX_FORCE = 0.5;
 
-    // 3. Internal Tracking Repositories
-    this.nodes = []; // Holds persistent engine properties (x, y, vx, vy, inflation, element)
-    this.nodeClickHandler = null; // Callback hook for when a user selects a node
-
-    // 4. Set canvas pixel dimensions to match initial bounds
+    this.nodes = [];
+    this.nodeClickHandler = null;
     this.resizeCanvas();
 
-    // 5. Kick off the continuous rendering lifecycle loop
-    this.tick = this.tick.bind(this); // Bind to maintain class context inside RAF
+    this.tick = this.tick.bind(this);
     requestAnimationFrame(this.tick);
   }
 
   /**
-   * Reset the tree ready for a new game
+   * Reset the tree ready for a new game.
    */
   reset() {
     this.nodes = [];
@@ -55,26 +49,23 @@ export class Tree {
     const width = this.container.clientWidth;
 
     visibleNodesData.forEach((cladeData) => {
-      // Check if this node is already registered in our active simulation array
       let existingNode = this.nodes.find((n) => n.tid === cladeData.tid);
 
       if (!existingNode) {
         const isRoot = cladeData.sub_ptid === null;
 
-        // Construct the simulation track state for this brand new node
         existingNode = {
           ...cladeData,
           x: isRoot ? width / 2 : width / 2,
           y: isRoot ? 60 : 150,
           vx: 0,
           vy: 0,
-          isRoot: isRoot,
+          isRoot,
           element: null,
           spawned: false,
-          inflation: 0.01, // Soft spawning start
+          inflation: 0.01,
         };
 
-        // Trigger smooth spawn alignment relative to its parent
         if (!isRoot && cladeData.sub_ptid !== null) {
           const parent = this.nodes.find((n) => n.tid === cladeData.sub_ptid);
           const child = this.nodes.find((n) => n.sub_ptid === cladeData.tid);
@@ -100,38 +91,27 @@ export class Tree {
 
         this.nodes.push(existingNode);
       } else {
-        // update the info for this node
         Object.assign(existingNode, cladeData);
+        existingNode.isRoot = existingNode.sub_ptid === null;
       }
     });
 
-    // Sync the HTML elements to match our updated particle engine status
     this.syncNodeDOM();
   }
 
   /**
-   * Safely translates newly registered simulation states into active HTML node elements
+   * Safely translates newly registered simulation states into active HTML node elements.
    */
   syncNodeDOM() {
     this.nodes.forEach((node) => {
-      if (!node.spawned) {
-        let name = node.sci_name;
-        if (node.rank === "Species") {
-          name = node.com_name;
-        }
-        if (node.state == CladeState.ANSWER) {
-          name = "???";
-        }
+      const label = this.getNodeLabel(node);
 
+      if (!node.spawned) {
         const div = document.createElement("div");
         div.className = "tree-node";
         div.id = `node-${node.tid}`;
-        div.innerHTML = `<div class="node-sci">${name}</div>`;
-        if (node.rank === "Species") {
-          div.innerHTML = `<div class="node-com">${name}</div>`;
-        }
+        div.innerHTML = label;
 
-        // Route internal click event outward to the main orchestrator callback
         div.addEventListener("click", () => {
           if (this.nodeClickHandler) this.nodeClickHandler(node.tid);
         });
@@ -140,13 +120,30 @@ export class Tree {
         node.element = div;
         node.spawned = true;
 
-        // Fire smooth CSS scale transition on next rendering pass
         requestAnimationFrame(() => {
           div.style.opacity = "1";
           div.style.transform = "translate(-50%, -50%) scale(1)";
         });
+      } else if (node.element) {
+        node.element.innerHTML = label;
       }
     });
+  }
+
+  getNodeLabel(node) {
+    let name = node.sci_name;
+    let className = "node-sci";
+
+    if (node.rank === "Species") {
+      name = node.com_name;
+      className = "node-com";
+    }
+    if (node.state === CladeState.ANSWER) {
+      name = "???";
+      className = "node-sci";
+    }
+
+    return `<div class="${className}">${name}</div>`;
   }
 
   /**
@@ -158,19 +155,27 @@ export class Tree {
   }
 
   /**
-   * Reveals the name of the answer on it's node
+   * Reveals the name of the answer on its node.
    */
   revealAnswer(answerNode) {
     const answerDiv = document.getElementById(`node-${answerNode.tid}`);
-    answerDiv.innerHTML = `<div class="node-sci">${answerNode.com_name}</div>`;
+    if (answerDiv) {
+      answerDiv.innerHTML = `<div class="node-com">${answerNode.com_name}</div>`;
+    }
   }
 
   /**
-   * Synchronizes canvas rendering buffer allocations to match DOM bounding metrics
+   * Synchronizes canvas rendering buffer allocations to match DOM bounding metrics.
    */
-  resizeCanvas() {
-    this.canvas.width = this.container.clientWidth;
-    this.canvas.height = this.container.clientHeight;
+  resizeCanvas(height = this.container.clientHeight) {
+    const width = this.container.clientWidth;
+    const pixelRatio = window.devicePixelRatio || 1;
+
+    this.canvas.width = Math.max(1, width * pixelRatio);
+    this.canvas.height = Math.max(1, height * pixelRatio);
+    this.canvas.style.width = `${width}px`;
+    this.canvas.style.height = `${height}px`;
+    this.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   }
 
   /**
@@ -181,7 +186,6 @@ export class Tree {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
-    // --- Step 1: Manage Sizing Maturity ---
     this.nodes.forEach((node) => {
       if (node.inflation < 1.0) {
         node.inflation += 0.015;
@@ -189,7 +193,6 @@ export class Tree {
       }
     });
 
-    // --- Step 2: Global Mutual Node Repulsion ---
     for (let i = 0; i < this.nodes.length; i++) {
       for (let j = i + 1; j < this.nodes.length; j++) {
         let dx = this.nodes[j].x - this.nodes[i].x;
@@ -218,7 +221,6 @@ export class Tree {
       }
     }
 
-    // --- Step 3: Branch Connection Spring Forces ---
     this.nodes.forEach((node) => {
       if (node.sub_ptid !== null) {
         const parent = this.nodes.find((n) => n.tid === node.sub_ptid);
@@ -245,11 +247,10 @@ export class Tree {
         }
       }
       if (!node.isRoot) {
-        node.vy += this.GRAVITY * node.inflation; // Apply directional tree gravity
+        node.vy += this.GRAVITY * node.inflation;
       }
     });
 
-    // --- Step 4: Apply Velocities, Check Bounds, Clear Context Canvas ---
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.lineWidth = 1.5;
 
@@ -275,16 +276,14 @@ export class Tree {
         }
       } else {
         node.x = width / 2;
-        node.y = 60; // Keep locked vertically
+        node.y = 60;
       }
 
-      // Reposition the corresponding interactive text container block
       if (node.element) {
         node.element.style.left = `${node.x}px`;
         node.element.style.top = `${node.y}px`;
       }
 
-      // Render Connection Lines via Spline Curves
       if (node.sub_ptid !== null) {
         const parent = this.nodes.find((n) => n.tid === node.sub_ptid);
         if (parent) {
@@ -306,7 +305,6 @@ export class Tree {
       }
     });
 
-    // Continue looping indefinitely
     requestAnimationFrame(this.tick);
   }
 }

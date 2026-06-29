@@ -292,7 +292,6 @@ export class Game {
       has_ended = true;
     }
 
-    console.log(`  "${guess}" is not the answer (${updated_nodes})`);
     return [true, has_ended, Array.from(updated_nodes, (i) => this.tree[i])];
   }
 

@@ -783,6 +783,10 @@ body {
   white-space: nowrap;
 }
 
+.tree-node {
+  box-sizing: border-box;
+}
+
 /* --- Game Over Modal Overlay --- */
 .modal-overlay {
   position: fixed;
@@ -966,6 +970,23 @@ body {
   .tree-container {
     width: 100%;
     height: 100%;
+  }
+
+  .tree-node {
+    max-width: 104px;
+    padding: 4px 6px;
+  }
+
+  .node-sci,
+  .node-com {
+    display: -webkit-box;
+    font-size: 0.72rem;
+    line-height: 1.12;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   /* 1. When the sheet is open, block all touch interactions on the tree panel */
