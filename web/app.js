@@ -1,6 +1,7 @@
 import { CLADE_LIST } from "./data/clades.js";
 import { Game, GameState } from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
+import { Tree2 } from "./modules/Tree2.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
 import {
   loadGameSettings,
@@ -38,7 +39,7 @@ let currentMysteryImageTID = -1;
 // Game and core UI state
 const game = new Game(-1, 0, 1);
 let suggestionList = game.getSpeciesTIDs(true);
-const treeUI = new Tree(document.getElementById("tree-container"));
+const treeUI = new Tree2(document.getElementById("tree-container"));
 
 // ====================================
 //   DOM ELEMENTS
