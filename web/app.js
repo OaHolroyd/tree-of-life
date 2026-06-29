@@ -13,15 +13,15 @@ import {
 // ====================================
 const AVAILABLE_ROOT_TIDS = [
   0, // Animalia
-  5, // Vertebrata
-  9, // Tetrapods
-  11, // Sauria
-  14, // Aves
-  38, // Mammalia
-  52, // Actinopterygii TODO: check this
-  65, // Protostomia
-  68, // Arthropoda
-  73, // Insecta
+  6, // Vertebrata
+  10, // Tetrapods
+  12, // Sauria
+  15, // Aves
+  39, // Mammalia
+  53, // Actinopterygii TODO: check this
+  66, // Protostomia
+  69, // Arthropoda
+  74, // Insecta
 ];
 const IMAGE_ROTATION_PERIOD = 1000;
 
