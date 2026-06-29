@@ -63,6 +63,8 @@ MANUAL_LINKS = [
     {"name": "Musophagiformes", "parent": "Otidimorphae", "rank": "Order"},
     {"name": "Otidiformes", "parent": "Otidimorphae", "rank": "Order"},
     {"name": "Cuculiformes", "parent": "Otidimorphae", "rank": "Order"},
+    {"name": "Castorimorpha", "parent": "Supramyomorpha", "rank": "Infraorder"},
+    {"name": "Sophophora", "parent": "Drosophila (ICZN)", "rank": "Subgenus"},
     #
     {"name": "Otidimorphae", "parent": "Columbaves", "rank": "Clade"},
     {"name": "Columbimorphae", "parent": "Columbaves", "rank": "Clade"},
@@ -74,7 +76,7 @@ MANUAL_LINKS = [
     {"name": "Gruimorphae", "parent": "Gruae", "rank": "Clade"},
     {"name": "Gruae", "parent": "Elementaves", "rank": "Clade"},
     {"name": "Phaethoquornithes", "parent": "Elementaves", "rank": "Clade"},
-    {"name": "Caprimulgimorphae", "parent": "Elementaves", "rank": "Order"},
+    {"name": "Strisores", "parent": "Elementaves", "rank": "Order"},
     {"name": "Eurypygimorphae", "parent": "Phaethoquornithes", "rank": "Clade"},
     {"name": "Aequornithes", "parent": "Phaethoquornithes", "rank": "Clade"},
     {"name": "Phaethoquornithes", "parent": "Elementaves", "rank": "Clade"},
@@ -170,6 +172,7 @@ MANUAL_LINKS = [
     {"name": "Carangiformes", "parent": "Carangaria", "rank": "Order"},
     {"name": "Scorpaenoidei", "parent": "Perciformes", "rank": "Suborder"},
     {"name": "Syngnathiformes", "parent": "Percomorpha", "rank": "Order"},
+    {"name": "Percomorpha", "parent": "Acanthopterygii", "rank": "Subdivision"},
     #
     {"name": "Pelecaniformes", "parent": "Pelecanes", "rank": "Order"},
     {"name": "Suliformes", "parent": "Pelecanes", "rank": "Order"},
@@ -199,11 +202,11 @@ MANUAL_LINKS = [
     {"name": "Bifurcata", "parent": "Squamata", "rank": "Clade"},
 ]
 
-MANUAL_REDIRECTS = [
-    {"old": "Percomorphaceae", "new": "Percomorpha"},
-    {"old": "Caprimulgimorphae", "new": "Strisores"},
-    {"old": "Castorimorphi", "new": "Castorimorpha"},
-]
+MANUAL_REDIRECTS = {
+    "Percomorphaceae": "Percomorpha",
+    "Caprimulgimorphae": "Strisores",
+    "Castorimorphi": "Castorimorpha",
+}
 
 RANK_MAP = {
     "dominium": "Domain",
@@ -378,6 +381,20 @@ RANK_MAP = {
     "type species": "Species",
 }
 
+PREVENT_REDIRECT = [
+    "Crocodyliformes",
+    "Neobatrachia",
+    "Delphinida",
+    "Caprinae",
+    "Percomorpha",
+    "Asinus",
+    "Lithobates catesbeianus",
+    "Mesotriton",
+    "Mesotriton alpestris",
+    "Thomomys",
+    "Thomomys bottae",
+]
+
 
 def parse_articles(xml_path: Path, force: bool = False):
     """
@@ -404,8 +421,7 @@ def parse_articles(xml_path: Path, force: bool = False):
 
     # Iterate over pages and extract the data
     links = []
-    redirects = []
-    names = []
+    redirects = {}
     missing_ranks = set()
     for elem in root:
         if not elem.tag.endswith("page"):
@@ -429,7 +445,7 @@ def parse_articles(xml_path: Path, force: bool = False):
         if eredirect is not None:
             ens = elem.find("{*}ns")
             if ens is not None and ens.text == "0":
-                redirects.append({"old": title, "new": eredirect.get("title")})
+                redirects[title] = eredirect.get("title")
             continue
 
         # Filter out pages we don't care about (eg citations)
@@ -503,29 +519,22 @@ def parse_articles(xml_path: Path, force: bool = False):
                         "rank": rank,
                     }
                 )
-        else:
-            # TODO: find the english vernacular name
-            # TODO: find the clade name
-
-            # Only include things that could be species
-            # TODO: change this later
-            if len(title.strip().split(" ")) == 2:
-                names.append(title)
 
     for link in MANUAL_LINKS:
         links = [l for l in links if l["name"] != link["name"]]
         links.append(link)
 
-    redirects += MANUAL_REDIRECTS
+    redirects = {
+        old: new for old, new in redirects.items() if old not in PREVENT_REDIRECT
+    }
+    redirects |= MANUAL_REDIRECTS
 
     print(f"parse XML: {time() - t0}")
 
     with open(TMP_DIR / "page_data.json", "w") as fp:
-        json.dump(
-            {"links": links, "redirects": redirects, "names": names}, fp, indent=2
-        )
+        json.dump({"links": links, "redirects": redirects}, fp, indent=2)
 
-    return {"links": links, "redirects": redirects, "names": names}
+    return {"links": links, "redirects": redirects}
 
 
 def find_parents_and_rank_and_name(
@@ -555,11 +564,10 @@ def find_parents_and_rank_and_name(
             rank = node["rank"]
 
     if len(parents) == 0 and not has_found:
-        for pair in data["redirects"]:
-            if pair["old"] == node_name:
-                true_name = pair["new"]
-                _parents, rank, _ = find_parents_and_rank_and_name(true_name, data)
-                parents += _parents
+        if node_name in data["redirects"]:
+            true_name = data[node_name]
+            _parents, rank, _ = find_parents_and_rank_and_name(true_name, data)
+            parents += _parents
 
     return parents, rank, true_name
 
@@ -572,7 +580,7 @@ MANUAL_GENUS = {
     "Cynocephalus volans": "Cynocephalus (Cynocephalidae)",
     "Cystophora cristata": "Cystophora (Phocidae)",
     "Dracunculus medinensis": "Dracunculus (Dracunculidae)",
-    "Drosophila melanogaster": "Drosophila (Sophophora)",
+    "Drosophila melanogaster": "Sophophora",
     "Echinus esculentus": "Echinus (Echinidae)",
     "Glaucidium passerinum": "Glaucidium (Strigidae)",
     "Hystrix africaeaustralis": "Hystrix (Hystricidae)",
@@ -600,6 +608,10 @@ def make_chain(
     If ensure_full is set to False then the code will stop if it hits a clade
     it has seen before.
     """
+    should_print = False
+    if node_name == "Drosophila melanogaster":
+        should_print = True
+
     # initialise the chains:
     #    [has_ended, (node_name, rank), (node_name, rank), ..., node_name]
     if re.match(r"[A-Z][a-z]+ [a-z]+", node_name):
@@ -625,6 +637,9 @@ def make_chain(
                 new_chains.append(chain)
                 continue
 
+            if should_print:
+                print(chain[-1])
+
             # find all possible parents, the rank, and apply any redirects
             parents, rank, true_name = find_parents_and_rank_and_name(
                 chain[-1], data, ensure_full or multiple_chains
@@ -641,6 +656,10 @@ def make_chain(
 
             # otherwise make the chain longer
             for parent in parents:
+                # account for redirects
+                parent = data["redirects"].get(parent, parent)
+
+                # extend chain
                 new_chain = deepcopy(chain)
                 new_chain[-1] = (new_chain[-1], rank)
                 new_chain.append(parent)
@@ -680,27 +699,11 @@ def apply_redirects(nodes, page_data):
           and so must be ignored.
     """
     redirects = page_data["redirects"]
-    for redirect in redirects:
-        old = redirect["old"]
-        new = redirect["new"]
-
-        if old in [
-            "Crocodyliformes",
-            "Neobatrachia",
-            "Delphinida",
-            "Caprinae",
-            "Percomorpha",
-            "Asinus",
-            "Lithobates catesbeianus",
-            "Mesotriton",
-            "Mesotriton alpestris",
-            "Megascapheus bottae",
-        ]:
-            continue
-
+    for old, new in redirects.items():
         if old in nodes:
             if new in nodes:
                 # new already exists, just point everything to it
+                # TODO: what if new has a larger TID than old?
                 for i, node in nodes.items():
                     if node["ptid"] == nodes[old]["tid"]:
                         nodes[i]["ptid"] = nodes[new]["tid"]
@@ -1014,7 +1017,7 @@ MANUAL_QIDS = {
     "Hippotragini": "Q725271",
     "Istiophoridae": "Q123478185",
     "Sphenodon punctatus": "Q163283",
-    "Megascapheus bottae": "Q1497037",
+    "Thomomys bottae": "Q1497037",
     "Castorimorpha": "Q849836",
     "Puma lineage": "_Q0010",
     "Leopard cat lineage": "_Q0011",
@@ -1024,6 +1027,9 @@ MANUAL_QIDS = {
     "Conus geographus": "Q1780734",
     "Haliotis corrugata": "Q3096257",
     "Terebratalia transversa": "Q3268212",
+    "Lithobates catesbeianus": "Q159404",
+    "Mesotriton": "_Q0012",
+    "Mesotriton alpestris": "Q282715",
 }
 
 
@@ -2409,6 +2415,18 @@ if __name__ == "__main__":
 
     make_js_files(nodes)
 
+    display_names = []
+    for node in nodes["nodes"].values():
+        if node["nchildren"] >= 5 or node["sci_name"] in display_names:
+            print(node["sci_name"])
+            display_tree(
+                filter_nodes(nodes, node["ptid"]),
+                outfile=TMP_DIR
+                / f"tree_{node['nchildren']:02d}_{node['sci_name']}.html",
+            )
+    display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
+    print()
+
     species_tids = {
         node["sci_name"]: node["tid"]
         for node in nodes["nodes"].values()
@@ -2428,17 +2446,5 @@ if __name__ == "__main__":
     # nodes = limit_species(nodes, [900, 499, 1324, 744])
     # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
     # exit(1)
-
-    display_names = []
-    for node in nodes["nodes"].values():
-        if node["nchildren"] >= 5 or node["sci_name"] in display_names:
-            print(node["sci_name"])
-            display_tree(
-                filter_nodes(nodes, node["ptid"]),
-                outfile=TMP_DIR
-                / f"tree_{node['nchildren']:02d}_{node['sci_name']}.html",
-            )
-    display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
-    print()
 
     print("force polytomy text to be fairly helpful, esp. ones with 5 or more children")
