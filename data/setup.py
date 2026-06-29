@@ -2079,6 +2079,8 @@ def apply_overwrites(nodes, force: bool = False):
         if sci_name not in nodes:
             continue
         for key, val in overwrite.items():
+            if key == "text":
+                val = clean_wikitext(val)
             nodes[sci_name][key] = val
 
     with open(TMP_DIR / "nodes_9.json", "w") as fp:
