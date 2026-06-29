@@ -472,11 +472,11 @@ export const CLADE_LIST = [
   new Clade(
     48,
     47,
-    "Aeluroidea",
+    "Feliformia",
     "",
-    "Aeluroidea, Ailuroidea, or Feloidea is the name of a taxon (infraorder or superfamily) comprising cat-like Carnivora. More specifically the taxon comprises: either cat-like Carnivora in the broader sense, i.e. it is synonymous with Feliformia (more specifically either Feliformia sensu stricto, i.e. crown Feliformia, or Feliformia sensu lato, i.e. Pan-Feliformia); or cat-like Carnivora in the narrower sense, i.e. it comprises only the family Felidae (recently also Prionodontidae) and its closest extinct relatives.",
+    "Feliformia is a suborder within the order Carnivora consisting of 'cat-like' carnivorans, including cats, hyenas, mongooses, viverrids, and related taxa. Feliformia stands in contrast to the other suborder of Carnivora, Caniformia consisting of 'dog-like' carnivorans. The separation of the Carnivora into the broad groups of feliforms and caniforms is widely accepted, as is the assignment of the suborder rank (sometimes superfamily) to Feliformia and Caniformia.",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Suborder_feliformia.JPG/500px-Suborder_feliformia.JPG",
-    "Infraorder",
+    "Suborder",
   ),
   new Clade(
     49,
@@ -517,11 +517,11 @@ export const CLADE_LIST = [
   new Clade(
     53,
     8,
-    "Actinopteri",
+    "Actinopterygii",
     "",
-    "Actinopteri is the sister group of Cladistia (bichirs) in the class Actinopterygii (ray-finned fish). Dating back to the Permian period, the Actinopteri comprise the Chondrostei (sturgeons and paddlefish), the Holostei (bowfins and gars), and the teleosts; in other words, all extant ray-finned fish other than the bichirs. In this clade the lungs have evolved into a swim bladder. Characters of Actinopteri include paired fin structure, a single dorsal fin, fulcra, a large median gular and numerous branchiostegals, ganoid scales, and a valvula cerebelli in the brain.",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Salmo_salar_flipped.jpg/500px-Salmo_salar_flipped.jpg",
-    "None",
+    "Actinopterygii (from Ancient Greek ἀκτίς (aktís) 'ray, beam' and πτέρυξ (ptérux) 'wing, fins'), members of which are known as ray-finned fish or actinopterygians, is a class of bony fish that constitutes nearly 99% of the over 30,000 living species of fish. The vast majority of extant actinopterygian species are teleosts, and by species count they dominate the subphylum Vertebrata, comprising over 50% of all living vertebrates.",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Actinopterygii.jpg/500px-Actinopterygii.jpg",
+    "Class",
   ),
   new Clade(
     54,

@@ -1892,23 +1892,27 @@ def remove_chains(nodes, force: bool = False):
                     # must be retained
                     retained = 0
                 else:
-                    # otherwise keep the most derived clade _unless_ there is a
-                    # significant disparity in how much info is available
-                    retained = 0
+                    retained = -1
 
-                    l_cutoff = 200
-                    if len(chain[retained].get("text", "")) < l_cutoff:
-                        max_len = 0
-                        for j, link in enumerate(chain):
-                            # choose the clade with the longest text
-                            if len(link.get("text", "")) > max_len:
-                                retained = j
-                                max_len = len(link.get("text", ""))
+                    # keep the clade in the manual override list
+                    for j, link in enumerate(chain):
+                        if link["sci_name"] in MANUAL_RETAINS:
+                            retained = j
+                            break
 
-                            # keep the clade in the manual override list
-                            if link["sci_name"] in MANUAL_RETAINS:
-                                retained = j
-                                break
+                    if retained == -1:
+                        # otherwise keep the most derived clade _unless_ there is a
+                        # significant disparity in how much info is available
+                        retained = 0
+
+                        l_cutoff = 200
+                        if len(chain[retained].get("text", "")) < l_cutoff:
+                            max_len = 0
+                            for j, link in enumerate(chain):
+                                # choose the clade with the longest text
+                                if len(link.get("text", "")) > max_len:
+                                    retained = j
+                                    max_len = len(link.get("text", ""))
 
                 # Merge and mark nodes for removal
                 for j, link in enumerate(chain):

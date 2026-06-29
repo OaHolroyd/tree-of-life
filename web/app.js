@@ -18,7 +18,7 @@ const AVAILABLE_ROOT_TIDS = [
   12, // Sauria
   15, // Aves
   39, // Mammalia
-  53, // Actinopterygii TODO: check this
+  53, // Actinopterygii
   66, // Protostomia
   69, // Arthropoda
   74, // Insecta
