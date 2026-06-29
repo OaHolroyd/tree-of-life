@@ -40,7 +40,8 @@ body {
 
 .top {
   display: flex;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
   width: 100%;
 }
 
@@ -376,6 +377,7 @@ body {
 .left-panel {
   width: 350px;
   min-width: 350px; /* Prevents shrinking */
+  min-height: 0;
   background: #1c2025;
   border-right: 1px solid #323842;
   display: flex;
@@ -638,6 +640,7 @@ body {
 /* Add this brand new class to drive the vertical scroll layout */
 .clade-scroll-content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto; /* Enables smooth vertical scrolling */
   overflow-x: hidden; /* Hard blocks horizontal scrolling */
   display: flex;
