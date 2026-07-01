@@ -821,8 +821,9 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 
 /* --- Optimized Small Node Component --- */
 .tree-node {
+  --node-proximity-hue: 60deg;
   position: absolute;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid hsl(var(--node-proximity-hue) 45% 34%);
   border-radius: 4px;
   padding: 6px 10px;
   transform: translate(
@@ -837,42 +838,39 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   font-size: 0.85rem;
   font-weight: 500;
   white-space: nowrap;
+  background: hsl(var(--node-proximity-hue) 38% 21%);
+  color: var(--color-text-primary);
+}
+
+.tree-node:hover {
+  border-color: hsl(var(--node-proximity-hue) 60% 52%);
+  background: hsl(var(--node-proximity-hue) 42% 28%);
 }
 
 .tree-node.selected {
-  box-shadow: 0 0 8px var(--color-glow-accent);
+  border-color: hsl(var(--node-proximity-hue) 70% 58%);
+  background: hsl(var(--node-proximity-hue) 46% 34%);
+  box-shadow: 0 0 8px hsl(var(--node-proximity-hue) 70% 58% / 0.28);
 }
 
-/* TODO differentiate clade/species nodes */
 .clade-node {
-  color: var(--color-text-primary);
-  background: var(--color-surface-panel-alt);
   font-style: italic;
 }
 
-.clade-node:hover {
-  border-color: var(--color-accent);
-  background: var(--color-surface-node-hover);
+body[data-theme="light"] .tree-node {
+  border-color: hsl(var(--node-proximity-hue) 42% 68%);
+  background: hsl(var(--node-proximity-hue) 70% 88%);
 }
 
-.clade-node.selected {
-  border-color: var(--color-accent);
-  background: var(--color-surface-node-selected);
+body[data-theme="light"] .tree-node:hover {
+  border-color: hsl(var(--node-proximity-hue) 55% 58%);
+  background: hsl(var(--node-proximity-hue) 72% 82%);
 }
 
-.species-node {
-  color: var(--color-text-primary);
-  background: var(--color-surface-panel-alt);
-}
-
-.species-node:hover {
-  border-color: var(--color-accent);
-  background: var(--color-surface-node-hover);
-}
-
-.species-node.selected {
-  border-color: var(--color-accent);
-  background: var(--color-surface-node-selected);
+body[data-theme="light"] .tree-node.selected {
+  border-color: hsl(var(--node-proximity-hue) 62% 50%);
+  background: hsl(var(--node-proximity-hue) 74% 76%);
+  box-shadow: 0 0 8px hsl(var(--node-proximity-hue) 62% 50% / 0.2);
 }
 
 .tree-node {
