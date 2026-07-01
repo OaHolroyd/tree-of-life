@@ -4,24 +4,121 @@
 }
 
 :root {
-  /* This forces native user-agent controls (like <select>, scrollbars,
-     and keyboards) to adopt their dark-mode styles by default */
-  color-scheme: dark !important;
+  --native-color-scheme: dark;
+  --color-page-bg: #20232a;
+  --color-app-bg: #282c34;
+  --color-surface-header: #161b22;
+  --color-surface-panel: #1c2025;
+  --color-surface-panel-alt: #21262d;
+  --color-surface-canvas: #0d1117;
+  --color-surface-card-header: #1c2128;
+  --color-surface-node-hover: #262c36;
+  --color-surface-node-selected: #1f293d;
+  --color-surface-active: #313d4f;
+  --color-tree-line-rgb: 48, 54, 61;
+  --color-suggestion-hover-bg: #21262d;
+  --color-suggestion-active-bg: #313d4f;
+  --color-suggestion-active-text: #ffffff;
+  --color-border-default: #30363d;
+  --color-border-muted: #323842;
+  --color-border-strong: #444c56;
+  --color-text-primary: #f0f6fc;
+  --color-text-body: #f5f5f5;
+  --color-text-secondary: #c9d1d9;
+  --color-text-muted: #8b949e;
+  --color-text-contrast: #ffffff;
+  --color-accent: #58a6ff;
+  --color-accent-hover: #79c0ff;
+  --color-accent-active: #1f6feb;
+  --color-accent-visited: #a5d6ff;
+  --color-success: #238636;
+  --color-success-hover: #2ea44f;
+  --color-success-active: #227e3b;
+  --color-success-alt-hover: #2ea043;
+  --color-danger: #da3637;
+  --color-danger-hover: #b82a2b;
+  --color-danger-soft: rgba(218, 54, 55, 0.15);
+  --color-danger-soft-hover: rgba(218, 54, 55, 0.3);
+  --color-danger-border: rgba(218, 54, 55, 0.4);
+  --color-warning: #f2c744;
+  --color-warning-soft: rgba(242, 199, 68, 0.15);
+  --color-warning-soft-hover: rgba(242, 199, 68, 0.3);
+  --color-warning-border: rgba(242, 199, 68, 0.4);
+  --color-count: #ff7b72;
+  --color-button-border: rgba(240, 246, 252, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --color-shadow-soft: rgba(0, 0, 0, 0.2);
+  --color-shadow-medium: rgba(0, 0, 0, 0.3);
+  --color-shadow-strong: rgba(0, 0, 0, 0.4);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.5);
+  --color-glow-accent: rgba(88, 166, 255, 0.3);
+}
+
+body[data-theme="light"] {
+  --native-color-scheme: light;
+  --color-page-bg: #d7dee8;
+  --color-app-bg: #eef3f8;
+  --color-surface-header: #f8fbff;
+  --color-surface-panel: #eef2f7;
+  --color-surface-panel-alt: #ffffff;
+  --color-surface-canvas: #f4f7fb;
+  --color-surface-card-header: #e8eef6;
+  --color-surface-node-hover: #e9f2ff;
+  --color-surface-node-selected: #dbeafe;
+  --color-surface-active: #dcecff;
+  --color-tree-line-rgb: 174, 185, 198;
+  --color-suggestion-hover-bg: #e3edff;
+  --color-suggestion-active-bg: #c3d9ff;
+  --color-suggestion-active-text: #0b3d91;
+  --color-border-default: #c7d1dc;
+  --color-border-muted: #d2dae4;
+  --color-border-strong: #aeb9c6;
+  --color-text-primary: #18212b;
+  --color-text-body: #202833;
+  --color-text-secondary: #334155;
+  --color-text-muted: #526173;
+  --color-text-contrast: #ffffff;
+  --color-accent: #0969da;
+  --color-accent-hover: #218bff;
+  --color-accent-active: #0550ae;
+  --color-accent-visited: #6f42c1;
+  --color-success: #1a7f37;
+  --color-success-hover: #2da44e;
+  --color-success-active: #116329;
+  --color-success-alt-hover: #2c974b;
+  --color-danger: #cf222e;
+  --color-danger-hover: #a40e26;
+  --color-danger-soft: rgba(207, 34, 46, 0.1);
+  --color-danger-soft-hover: rgba(207, 34, 46, 0.18);
+  --color-danger-border: rgba(207, 34, 46, 0.28);
+  --color-warning: #9a6700;
+  --color-warning-soft: rgba(154, 103, 0, 0.12);
+  --color-warning-soft-hover: rgba(154, 103, 0, 0.2);
+  --color-warning-border: rgba(154, 103, 0, 0.28);
+  --color-count: #cf222e;
+  --color-button-border: rgba(27, 31, 36, 0.12);
+  --color-overlay: rgba(15, 23, 42, 0.35);
+  --color-shadow-soft: rgba(15, 23, 42, 0.08);
+  --color-shadow-medium: rgba(15, 23, 42, 0.12);
+  --color-shadow-strong: rgba(15, 23, 42, 0.16);
+  --color-shadow-heavy: rgba(15, 23, 42, 0.18);
+  --color-glow-accent: rgba(9, 105, 218, 0.2);
 }
 
 /* Hard target for your guess input box and select menus */
 input,
 select {
-  color-scheme: dark !important;
+  color-scheme: inherit !important;
 }
 
 /* --- Core Layout Configuration --- */
 body {
   margin: 0;
-  background: #20232a; /* Dark background behind the game canvas bounds */
+  background: var(--color-page-bg);
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #f5f5f5;
+  color: var(--color-text-body);
+  color-scheme: var(--native-color-scheme);
 
   display: flex;
   flex-direction: column;
@@ -35,7 +132,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  background: #282c34;
+  background: var(--color-app-bg);
 }
 
 .top {
@@ -48,8 +145,8 @@ body {
 /* --- App Master Header Styles --- */
 .app-header {
   height: 50px;
-  background-color: #161b22;
-  border-bottom: 1px solid #30363d;
+  background-color: var(--color-surface-header);
+  border-bottom: 1px solid var(--color-border-default);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -62,7 +159,7 @@ body {
 
 .app-title {
   font-size: 1.5rem;
-  color: #f0f6fc;
+  color: var(--color-text-primary);
   margin: 0;
   font-weight: 600;
 
@@ -87,9 +184,9 @@ body {
 }
 
 .nav-icon-btn {
-  background: #21262d;
-  border: 1px solid #30363d;
-  color: #c9d1d9;
+  background: var(--color-surface-panel-alt);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-secondary);
   border-radius: 6px;
   padding: 6px 14px;
   font-size: 0.9rem;
@@ -97,6 +194,12 @@ body {
   transition:
     background-color 0.2s,
     border-color 0.2s;
+}
+
+.nav-icon-btn:hover {
+  background-color: var(--color-border-default);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
 }
 
 /* Swaps out the old google font formatting rule for modern SVG layout logic */
@@ -108,37 +211,27 @@ body {
   display: block;
 }
 
+.theme-toggle-btn .theme-icon {
+  display: none;
+}
+
+body[data-theme="dark"] .theme-toggle-btn .theme-icon-sun,
+body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
+  display: block;
+}
+
 .nav-icon-btn:hover .nav-svg-icon {
   transform: rotate(
     30deg
   ); /* Optional fun micro-interaction: gears slightly rotate on hover */
 }
 
-/*.nav-icon-btn {
-  background: #21262d;
-  border: 1px solid #30363d;
-  color: #c9d1d9;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s;
-}
-
-.nav-icon-btn:hover {
-  background-color: #30363d;
-  border-color: #8b949e;
-  color: #f0f6fc;
-}*/
-
 /* --- Modal Architecture Profiles --- */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #30363d;
+  border-bottom: 1px solid var(--color-border-default);
   padding-bottom: 12px;
   margin-bottom: 16px;
 }
@@ -148,7 +241,7 @@ body {
 #modal-title {
   font-size: 1.4rem !important; /* !important forces the browser to prioritize this size */
   font-weight: 600 !important;
-  color: #f0f6fc !important; /* Change this to #ff0000 temporarily if you want to test it! */
+  color: var(--color-text-primary) !important;
   margin: 0;
   line-height: 1.4;
 }
@@ -156,7 +249,7 @@ body {
 .close-modal-btn {
   background: none;
   border: none;
-  color: #8b949e;
+  color: var(--color-text-muted);
   font-size: 1.75rem;
   cursor: pointer;
   line-height: 1;
@@ -164,24 +257,24 @@ body {
 }
 
 .close-modal-btn:hover {
-  color: #f0f6fc;
+  color: var(--color-text-primary);
 }
 
 /* Variation A: Floating Compact Settings Modal Configuration Profile */
 .modal-content.floating-window {
-  background: #161b22;
-  border: 1px solid #30363d;
+  background: var(--color-surface-header);
+  border: 1px solid var(--color-border-default);
   border-radius: 8px;
   padding: 24px;
   max-width: 460px;
   width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--color-shadow-heavy);
   text-align: left;
 }
 
 /* Variation B: Screen takeover profile panel */
 .modal-content.fullscreen-takeover {
-  background: #0d1117;
+  background: var(--color-surface-canvas);
   max-width: 900px;
   width: 100vw;
   height: 100vh;
@@ -208,7 +301,7 @@ body {
 .stats-dashboard h3,
 .settings-group h3 {
   font-size: 1.05rem;
-  color: #58a6ff; /* Accent blue title */
+  color: var(--color-accent);
   margin: 0 0 12px 0;
 }
 
@@ -220,8 +313,8 @@ body {
 }
 
 .stat-card {
-  background: #21262d;
-  border: 1px solid #30363d;
+  background: var(--color-surface-panel-alt);
+  border: 1px solid var(--color-border-default);
   border-radius: 6px;
   padding: 12px 6px;
   text-align: center;
@@ -233,13 +326,13 @@ body {
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #f0f6fc;
+  color: var(--color-text-primary);
   line-height: 1.2;
 }
 
 .stat-label {
   font-size: 0.75rem;
-  color: #8b949e;
+  color: var(--color-text-muted);
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -247,21 +340,21 @@ body {
 
 .modal-divider {
   border: 0;
-  border-top: 1px solid #30363d;
+  border-top: 1px solid var(--color-border-default);
   margin: 20px 0;
 }
 
 .settings-group p {
   font-size: 0.9rem;
-  color: #8b949e;
+  color: var(--color-text-muted);
   margin: 0 0 12px 0;
   line-height: 1.4;
 }
 
 .danger-btn {
-  background-color: #da3637;
-  color: #f0f6fc;
-  border: 1px solid rgba(240, 246, 252, 0.1);
+  background-color: var(--color-danger);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-button-border);
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
@@ -270,7 +363,7 @@ body {
 }
 
 .danger-btn:hover {
-  background-color: #b82a2b;
+  background-color: var(--color-danger-hover);
 }
 
 /* --- Individual Setting Component Wrapper --- */
@@ -284,7 +377,7 @@ body {
 .setting-label {
   font-size: 0.85rem;
   /*font-weight: 600;*/
-  color: #8b949e;
+  color: var(--color-text-muted);
   /*text-transform: uppercase;*/
   letter-spacing: 0.5px;
 }
@@ -292,8 +385,8 @@ body {
 /* --- Segmented Radio Buttons Style --- */
 .segmented-control {
   display: flex;
-  background: #0d1117;
-  border: 1px solid #30363d;
+  background: var(--color-surface-canvas);
+  border: 1px solid var(--color-border-default);
   border-radius: 6px;
   overflow: hidden;
   padding: 2px;
@@ -308,7 +401,7 @@ body {
   text-align: center;
   padding: 8px 12px;
   font-size: 0.9rem;
-  color: #c9d1d9;
+  color: var(--color-text-secondary);
   cursor: pointer;
   border-radius: 4px;
   transition:
@@ -317,17 +410,17 @@ body {
 }
 
 .segmented-control input[type="radio"]:checked + label {
-  background: #21262d;
-  color: #58a6ff;
+  background: var(--color-surface-panel-alt);
+  color: var(--color-accent);
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px var(--color-shadow-medium);
 }
 
 /* --- Custom Dropdown Menu Style --- */
 .custom-select {
-  background: #0d1117;
-  border: 1px solid #30363d;
-  color: #f0f6fc;
+  background: var(--color-surface-canvas);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-primary);
   border-radius: 6px;
   padding: 10px;
   font-size: 0.95rem;
@@ -339,7 +432,7 @@ body {
 }
 
 .custom-select:focus {
-  border-color: #58a6ff;
+  border-color: var(--color-accent);
 }
 
 /* --- Action Control Layout Footprint --- */
@@ -351,9 +444,9 @@ body {
 }
 
 .secondary-btn {
-  background-color: #21262d;
-  color: #c9d1d9;
-  border: 1px solid rgba(240, 246, 252, 0.1);
+  background-color: var(--color-surface-panel-alt);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-button-border);
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
@@ -362,9 +455,9 @@ body {
 }
 
 .secondary-btn:hover {
-  background-color: #30363d;
-  border-color: #8b949e;
-  color: #f0f6fc;
+  background-color: var(--color-border-default);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
 }
 
 /* Ensure the danger button matches the new layout width profile precisely */
@@ -378,8 +471,8 @@ body {
   width: 350px;
   min-width: 350px; /* Prevents shrinking */
   min-height: 0;
-  background: #1c2025;
-  border-right: 1px solid #323842;
+  background: var(--color-surface-panel);
+  border-right: 1px solid var(--color-border-muted);
   display: flex;
   flex-direction: column; /* Stacks controls neatly above the info card */
   box-sizing: border-box;
@@ -388,8 +481,8 @@ body {
 /* Controls Header Container */
 .controls-section {
   padding: 20px;
-  background: #21262d;
-  border-bottom: 1px solid #323842;
+  background: var(--color-surface-panel-alt);
+  border-bottom: 1px solid var(--color-border-muted);
 }
 
 /* Add this to style the new wrapper and button layout */
@@ -410,16 +503,16 @@ body {
   width: 100%; /* CRITICAL: This makes the input fill the wide wrapper completely */
   padding: 12px;
   border-radius: 6px;
-  border: 1px solid #444c56;
-  background: #0d1117;
-  color: #f5f5f5;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-canvas);
+  color: var(--color-text-body);
   font-size: 1rem;
   box-sizing: border-box;
   outline: none;
 }
 
 .guess-input:focus {
-  border-color: #58a6ff;
+  border-color: var(--color-accent);
 }
 
 /* The floating suggestion panel */
@@ -431,11 +524,11 @@ body {
   max-height: 200px; /* Limits size to force scrollbars if many matches */
   overflow-y: auto; /* Vertical scroll enabled */
   overflow-x: hidden;
-  background: #1c2025;
-  border: 1px solid #444c56;
+  background: var(--color-surface-panel);
+  border: 1px solid var(--color-border-strong);
   border-radius: 6px;
   margin-top: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px var(--color-shadow-medium);
   z-index: 10; /* Keeps it layered above images and text */
   box-sizing: border-box;
 }
@@ -446,17 +539,17 @@ body {
 }
 
 .suggestions-dropdown::-webkit-scrollbar-track {
-  background: #1c2025; /* Matches the input background for a dark profile */
+  background: var(--color-surface-panel);
   border-radius: 0 6px 6px 0; /* Smoothly rounds the corners matching the container */
 }
 
 .suggestions-dropdown::-webkit-scrollbar-thumb {
-  background-color: #323842; /* The same dark grey color used on your clade info panel */
+  background-color: var(--color-border-muted);
   border-radius: 3px;
 }
 
 .suggestions-dropdown::-webkit-scrollbar-thumb:hover {
-  background-color: #444c56; /* Slightly brightens up the thumb when hovered over */
+  background-color: var(--color-border-strong);
 }
 
 /* State utility class to hide the dropdown when empty */
@@ -468,7 +561,7 @@ body {
 .suggestion-item {
   padding: 10px 12px;
   cursor: pointer;
-  color: #c9d1d9;
+  color: var(--color-text-secondary);
   font-size: 0.95rem;
   white-space: nowrap;
   overflow: hidden;
@@ -477,23 +570,23 @@ body {
 
 /* Hover state for mouse navigation */
 .suggestion-item:hover {
-  background: #21262d;
-  color: #58a6ff;
+  background: var(--color-suggestion-hover-bg);
+  color: var(--color-accent);
 }
 
 /* Keyboard active state tracked via JavaScript */
 .suggestion-item.active {
-  background: #313d4f;
-  color: #ffffff;
+  background: var(--color-suggestion-active-bg);
+  color: var(--color-suggestion-active-text);
   outline: none;
 }
 
 /* New Button Styling */
 .submit-btn {
   padding: 0 16px;
-  background-color: #238636; /* Clean green button */
-  color: #ffffff;
-  border: 1px solid rgba(240, 246, 252, 0.1);
+  background-color: var(--color-success);
+  color: var(--color-text-contrast);
+  border: 1px solid var(--color-button-border);
   border-radius: 6px;
   font-size: 0.95rem;
   font-weight: 600;
@@ -502,22 +595,22 @@ body {
 }
 
 .submit-btn:hover {
-  background-color: #2ea44f; /* Lighter green on hover */
+  background-color: var(--color-success-hover);
 }
 
 .submit-btn:active {
-  background-color: #227e3b; /* Darker green when clicked */
+  background-color: var(--color-success-active);
 }
 
 .guesses-left-box {
   margin-top: 12px;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #8b949e;
+  color: var(--color-text-muted);
 }
 
 .count-highlight {
-  color: #ff7b72; /* Subtle warning tone for remaining turns */
+  color: var(--color-count);
   font-size: 1.1rem;
 }
 
@@ -556,42 +649,37 @@ body {
 
 /* --- 1. Yellow Hint Button Configuration --- */
 .hint-btn {
-  background-color: rgba(
-    242,
-    199,
-    68,
-    0.15
-  ); /* Muted dark-theme translucent gold */
-  border: 1px solid rgba(242, 199, 68, 0.4);
-  color: #f2c744;
+  background-color: var(--color-warning-soft);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning);
 }
 
 .hint-btn:hover:not(:disabled) {
-  background-color: rgba(242, 199, 68, 0.3);
-  border-color: #f2c744;
+  background-color: var(--color-warning-soft-hover);
+  border-color: var(--color-warning);
 }
 
 /* Disabled State: Grays out cleanly when game.canHint() evaluates false */
 .hint-btn:disabled {
-  background-color: #21262d;
-  border-color: #30363d;
-  color: #8b949e;
+  background-color: var(--color-surface-panel-alt);
+  border-color: var(--color-border-default);
+  color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.5;
 }
 
 /* --- 2. Red Restart Button Configuration --- */
 .restart-btn {
-  background-color: rgba(218, 54, 55, 0.15); /* Muted dark-theme red frame */
-  border: 1px solid rgba(218, 54, 55, 0.4);
-  color: #da3637;
+  background-color: var(--color-danger-soft);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger);
   padding: 0 12px; /* Narrower square padding footprint for standalone icons */
 }
 
 .restart-btn:hover {
-  background-color: rgba(218, 54, 55, 0.3);
-  border-color: #da3637;
-  color: #f0f6fc;
+  background-color: var(--color-danger-soft-hover);
+  border-color: var(--color-danger);
+  color: var(--color-text-primary);
 }
 
 .restart-btn .control-svg-icon {
@@ -621,13 +709,13 @@ body {
   margin: 0;
   font-size: 1.8rem;
   font-style: italic;
-  color: #58a6ff;
+  color: var(--color-accent);
 }
 
 .com-name {
   margin: 4px 0 0 0;
   font-size: 1.1rem;
-  color: #8b949e;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -659,16 +747,16 @@ body {
 }
 
 .clade-scroll-content::-webkit-scrollbar-thumb {
-  background-color: #323842;
+  background-color: var(--color-border-muted);
   border-radius: 3px;
 }
 
 /* 1. Modify the wrapper to let it expand naturally */
 .card-image-wrapper {
   width: 100%;
-  background: #0d1117;
+  background: var(--color-surface-canvas);
   border-radius: 8px;
-  border: 1px solid #323842;
+  border: 1px solid var(--color-border-muted);
   overflow: hidden;
   display: block; /* Changed from flex to block for standard document flow */
   flex-shrink: 0;
@@ -686,13 +774,13 @@ body {
 .card-body-text {
   line-height: 1.6;
   font-size: 0.95rem;
-  color: #c9d1d9;
+  color: var(--color-text-secondary);
 }
 
 /* --- Right Panel UI Layout --- */
 .right-panel {
   flex: 1;
-  background: #0d1117;
+  background: var(--color-surface-canvas);
   overflow-y: auto; /* Allow vertical scrolling if the tree gets deep */
   overflow-x: hidden; /* Lock the horizontal plane to your screen width */
   position: relative;
@@ -703,16 +791,16 @@ body {
 }
 
 .right-panel::-webkit-scrollbar-track {
-  background: #0d1117; /* Matches the view background exactly so it blends in */
+  background: var(--color-surface-canvas);
 }
 
 .right-panel::-webkit-scrollbar-thumb {
-  background-color: #21262d; /* Subtle dark-grey slider thumb */
+  background-color: var(--color-surface-panel-alt);
   border-radius: 4px;
 }
 
 .right-panel::-webkit-scrollbar-thumb:hover {
-  background-color: #30363d; /* Highlights slightly when hovered over */
+  background-color: var(--color-border-default);
 }
 
 .tree-container {
@@ -743,8 +831,8 @@ body {
 /* --- Optimized Small Node Component --- */
 .tree-node {
   position: absolute;
-  background: #21262d;
-  border: 1px solid #30363d;
+  background: var(--color-surface-panel-alt);
+  border: 1px solid var(--color-border-default);
   border-radius: 4px;
   padding: 6px 10px;
   transform: translate(
@@ -754,32 +842,32 @@ body {
   text-align: center;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px var(--color-shadow-soft);
 }
 
 .tree-node:hover {
-  border-color: #58a6ff;
-  background: #262c36;
+  border-color: var(--color-accent);
+  background: var(--color-surface-node-hover);
 }
 
 .tree-node.selected {
-  border-color: #58a6ff;
-  background: #1f293d;
-  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+  border-color: var(--color-accent);
+  background: var(--color-surface-node-selected);
+  box-shadow: 0 0 8px var(--color-glow-accent);
 }
 
 .node-sci {
   font-size: 0.85rem;
   font-weight: 500;
   font-style: italic;
-  color: #f5f5f5;
+  color: var(--color-text-body);
   white-space: nowrap;
 }
 
 .node-com {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #f5f5f5;
+  color: var(--color-text-body);
   white-space: nowrap;
 }
 
@@ -794,7 +882,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.75); /* Darkens the entire game behind it */
+  background: var(--color-overlay);
   z-index: 9999; /* Forces it above all navigation, canvas nodes, and cards */
   display: flex;
   justify-content: center;
@@ -811,33 +899,33 @@ body {
 }
 
 .modal-content {
-  background: #161b22;
-  border: 1px solid #30363d;
+  background: var(--color-surface-header);
+  border: 1px solid var(--color-border-default);
   border-radius: 8px;
   padding: 30px 40px;
   text-align: center;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px var(--color-shadow-heavy);
 }
 
 .modal-content h2 {
   font-size: 1.8rem;
   margin-top: 0;
   margin-bottom: 10px;
-  color: #f0f6fc;
+  color: var(--color-text-primary);
 }
 
 .modal-content p {
-  color: #8b949e;
+  color: var(--color-text-muted);
   font-size: 1rem;
   margin-bottom: 24px;
 }
 
 .restart-button {
-  background-color: #238636;
-  color: #ffffff;
-  border: 1px solid rgba(240, 246, 252, 0.1);
+  background-color: var(--color-success);
+  color: var(--color-text-contrast);
+  border: 1px solid var(--color-button-border);
   border-radius: 6px;
   padding: 10px 20px;
   font-size: 1rem;
@@ -847,7 +935,49 @@ body {
 }
 
 .restart-button:hover {
-  background-color: #2ea043;
+  background-color: var(--color-success-alt-hover);
+}
+
+.pwa-instructions-card {
+  background: var(--color-surface-panel-alt);
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  margin-top: 10px;
+  padding: 16px;
+}
+
+.pwa-install-copy {
+  color: var(--color-text-muted);
+}
+
+.pwa-instructions-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.pwa-instructions-list li {
+  margin-bottom: 10px;
+}
+
+.pwa-instructions-list li:last-child {
+  margin-bottom: 0;
+}
+
+.pwa-inline-icon {
+  width: 20px;
+  height: 20px;
+  margin: 0 4px;
+  vertical-align: middle;
+  display: inline-block;
+  fill: currentColor;
+}
+
+.pwa-install-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
 }
 
 /* ============================================================================
@@ -856,8 +986,7 @@ body {
 
 /* --- Global Link Styling (Targeting FAQ and Modals) --- */
 .modal-content a {
-  /* A soft, bright blue that pops against #161b22 */
-  color: #58a6ff;
+  color: var(--color-accent);
   text-decoration: none;
 
   /* Adds a subtle underline transition for better UX */
@@ -871,19 +1000,17 @@ body {
 }
 
 .modal-content a:hover {
-  /* Slightly brighter on hover for feedback */
-  color: #79c0ff;
-  border-bottom-color: #79c0ff;
+  color: var(--color-accent-hover);
+  border-bottom-color: var(--color-accent-hover);
   text-decoration: none;
 }
 
 .modal-content a:active {
-  color: #1f6feb; /* Darker blue when clicked/tapped */
+  color: var(--color-accent-active);
 }
 
-/* Optional: Styling for 'visited' links if you want them to feel different */
 .modal-content a:visited {
-  color: #a5d6ff;
+  color: var(--color-accent-visited);
 }
 
 * {
@@ -942,14 +1069,14 @@ body {
     height: auto !important; /* Lets content dictate height block profiles */
     flex-shrink: 0;
     border-right: none;
-    border-bottom: 1px solid #323842;
+    border-bottom: 1px solid var(--color-border-muted);
   }
 
   /* 3. Style the input controls to stick firmly to the top of the mobile device */
   .controls-section {
-    background: #161b22;
+    background: var(--color-surface-header);
     padding: 12px 16px;
-    border-bottom: 1px solid #30363d;
+    border-bottom: 1px solid var(--color-border-default);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -1006,12 +1133,12 @@ body {
     /* FIX 1: Make the sheet fill the entire viewport screen height */
     height: calc(100vh - var(--header-height, 100px));
 
-    background: #161b22;
-    border-top: 1px solid #30363d;
+    background: var(--color-surface-header);
+    border-top: 1px solid var(--color-border-default);
     border-left: none; /* Strip legacy desktop borders */
     border-radius: 16px 16px 0 0;
     z-index: 9; /* Float above the canvas lines and node dots */
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 -4px 20px var(--color-shadow-strong);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -1040,7 +1167,7 @@ body {
     padding: 12px 20px;
     cursor: grab;
     position: relative;
-    background: #1c2128;
+    background: var(--color-surface-card-header);
     border-radius: 16px 16px 0 0;
   }
 
@@ -1050,7 +1177,7 @@ body {
     display: block;
     width: 36px;
     height: 4px;
-    background: #30363d;
+    background: var(--color-border-default);
     border-radius: 2px;
     margin: -4px auto 8px auto;
   }

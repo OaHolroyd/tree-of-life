@@ -29,6 +29,14 @@ export class Tree {
     requestAnimationFrame(this.tick);
   }
 
+  getTreeLineColor(opacity) {
+    const treeLineRGB = getComputedStyle(document.body)
+      .getPropertyValue("--color-tree-line-rgb")
+      .trim();
+
+    return `rgba(${treeLineRGB || "48, 54, 61"}, ${opacity})`;
+  }
+
   /**
    * Reset the tree ready for a new game.
    */
@@ -299,7 +307,7 @@ export class Tree {
             parent.y,
           );
 
-          this.ctx.strokeStyle = `rgba(48, 54, 61, ${node.inflation})`;
+          this.ctx.strokeStyle = this.getTreeLineColor(node.inflation);
           this.ctx.stroke();
         }
       }
