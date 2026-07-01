@@ -13,7 +13,9 @@ export class Tree2 {
     this.canvas = this.container.querySelector(".tree-canvas");
     this.overlay = this.container.querySelector(".node-overlay");
     this.ctx = this.canvas.getContext("2d");
+
     // Physics layout constants.
+    this.INFLUENCE_DIST = 300;
     this.SPRING_LENGTH = 60;
     this.K_SPRING = 0.05;
     this.REPULSION = 2000;
@@ -180,7 +182,9 @@ export class Tree2 {
   }
 
   getViewportHeight() {
-    return this.container.parentElement?.clientHeight || this.container.clientHeight;
+    return (
+      this.container.parentElement?.clientHeight || this.container.clientHeight
+    );
   }
 
   getRequiredHeight() {
@@ -207,6 +211,8 @@ export class Tree2 {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
+    // slowly increase the amount of force that a node can experience
+    // this prevents newly created nodes zooming about
     this.nodes.forEach((node) => {
       if (node.inflation < 1.0) {
         node.inflation += 0.015;
@@ -214,28 +220,36 @@ export class Tree2 {
       }
     });
 
+    // compute pairwise interactions
     for (let i = 0; i < this.nodes.length; i++) {
       for (let j = i + 1; j < this.nodes.length; j++) {
+        // work out the gap between the nodes
         let dx = this.nodes[j].x - this.nodes[i].x;
         let dy = this.nodes[j].y - this.nodes[i].y;
         let dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
-        if (dist < 300) {
+        // distant nodes do not influence one another
+        if (dist < this.INFLUENCE_DIST) {
+          // compute total force, accounting for early-time limiting and overall limiting
           let combinedInflation =
             this.nodes[i].inflation * this.nodes[j].inflation;
           let force = (this.REPULSION * combinedInflation) / (dist * dist);
-
           if (force > this.MAX_FORCE) force = this.MAX_FORCE;
 
+          // increase horizontal force
+          // TODO: this is largely to separate labels, could remove if
+          // we computed distance between label edges rather than node
+          // centres
           let fx = 2 * (dx / dist) * force;
           let fy = (dy / dist) * force;
 
-          // correct for vertically distant points
+          // vertically distant points don't influence each other horizontally
           const ady = Math.abs(dy);
           if (ady > 100) {
             fx = 0;
           }
 
+          // apply the forces to each node in opposing directions
           if (!this.nodes[i].isRoot) {
             this.nodes[i].vx -= fx;
             this.nodes[i].vy -= fy;
@@ -248,6 +262,7 @@ export class Tree2 {
       }
     }
 
+    // try to ensure all linked nodes are a distance of SPRING_LENGTH apart
     this.nodes.forEach((node) => {
       if (node.sub_ptid !== null) {
         const parent = this.nodes.find((n) => n.tid === node.sub_ptid);
@@ -281,6 +296,7 @@ export class Tree2 {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.lineWidth = 1.5;
 
+    // move the nodes
     this.nodes.forEach((node) => {
       if (!node.isRoot) {
         node.x += node.vx;
