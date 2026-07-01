@@ -171,6 +171,7 @@ export class Tree2 {
     const width = this.container.clientWidth;
     const pixelRatio = window.devicePixelRatio || 1;
 
+    this.container.style.height = `${height}px`;
     this.canvas.width = Math.max(1, width * pixelRatio);
     this.canvas.height = Math.max(1, height * pixelRatio);
     this.canvas.style.width = `${width}px`;
@@ -178,11 +179,31 @@ export class Tree2 {
     this.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   }
 
+  getViewportHeight() {
+    return this.container.parentElement?.clientHeight || this.container.clientHeight;
+  }
+
+  getRequiredHeight() {
+    const viewportHeight = this.getViewportHeight();
+    const margin = 50;
+    const bottomPadding = 90;
+
+    const predictedBottom = this.nodes.reduce((maxBottom, node) => {
+      const nextY = node.isRoot ? 60 : node.y + node.vy;
+      return Math.max(maxBottom, nextY);
+    }, 60);
+
+    return Math.max(
+      viewportHeight,
+      Math.ceil(predictedBottom + margin + bottomPadding),
+    );
+  }
+
   /**
    * The continuous math update and paint loop. Runs via requestAnimationFrame.
    */
   tick() {
-    this.resizeCanvas();
+    this.resizeCanvas(this.getRequiredHeight());
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
@@ -206,8 +227,14 @@ export class Tree2 {
 
           if (force > this.MAX_FORCE) force = this.MAX_FORCE;
 
-          let fx = (dx / dist) * force;
+          let fx = 2 * (dx / dist) * force;
           let fy = (dy / dist) * force;
+
+          // correct for vertically distant points
+          const ady = Math.abs(dy);
+          if (ady > 100) {
+            fx = 0;
+          }
 
           if (!this.nodes[i].isRoot) {
             this.nodes[i].vx -= fx;
