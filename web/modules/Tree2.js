@@ -66,6 +66,7 @@ export class Tree2 {
           element: null,
           spawned: false,
           inflation: 0.01,
+          target_link: this.SPRING_LENGTH,
         };
 
         if (!isRoot && cladeData.sub_ptid !== null) {
@@ -211,6 +212,38 @@ export class Tree2 {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
+    // divide the total height into bins and count the nodes in the bins
+    // plus the number in nearby bins
+    const rootNode =
+      this.nodes.find((n) => n.sub_ptid === null) || this.nodes[0];
+    const root_node_height = rootNode?.element
+      ? rootNode.element.getBoundingClientRect().height
+      : 0;
+    let bins = Array(Math.ceil(height / root_node_height)).fill(0);
+    this.nodes.forEach((node) => {
+      const bin = Math.floor(node.y / root_node_height);
+      bins[bin - 2] += 1;
+      bins[bin - 1] += 1;
+      bins[bin] += 1;
+      bins[bin + 1] += 1;
+      bins[bin + 2] += 1;
+    });
+
+    // set the desired spring length depending on the bin count
+    this.nodes.forEach((node) => {
+      if (node.inflation < 0.1) {
+        node.target_link = this.SPRING_LENGTH;
+      } else {
+        const bin = Math.floor(node.y / root_node_height);
+        const nbin = bins[bin];
+        if (nbin > 1) {
+          node.target_link = this.SPRING_LENGTH;
+        } else {
+          node.target_link = this.SPRING_LENGTH / 2;
+        }
+      }
+    });
+
     // slowly increase the amount of force that a node can experience
     // this prevents newly created nodes zooming about
     this.nodes.forEach((node) => {
@@ -271,7 +304,7 @@ export class Tree2 {
           let dy = parent.y + 60 - node.y;
           let dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
-          let currentTargetLength = this.SPRING_LENGTH * node.inflation;
+          let currentTargetLength = node.target_link * node.inflation;
           let displacement = dist - currentTargetLength;
           let force = displacement * this.K_SPRING;
 
