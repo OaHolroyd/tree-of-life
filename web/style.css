@@ -822,7 +822,6 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 /* --- Optimized Small Node Component --- */
 .tree-node {
   position: absolute;
-  background: var(--color-surface-panel-alt);
   border: 1px solid var(--color-border-default);
   border-radius: 4px;
   padding: 6px 10px;
@@ -834,32 +833,46 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   cursor: pointer;
   user-select: none;
   box-shadow: 0 2px 4px var(--color-shadow-soft);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.tree-node:hover {
+.tree-node.selected {
+  box-shadow: 0 0 8px var(--color-glow-accent);
+}
+
+/* TODO differentiate clade/species nodes */
+.clade-node {
+  color: var(--color-text-primary);
+  background: var(--color-surface-panel-alt);
+  font-style: italic;
+}
+
+.clade-node:hover {
   border-color: var(--color-accent);
   background: var(--color-surface-node-hover);
 }
 
-.tree-node.selected {
+.clade-node.selected {
   border-color: var(--color-accent);
   background: var(--color-surface-node-selected);
-  box-shadow: 0 0 8px var(--color-glow-accent);
 }
 
-.node-sci {
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-style: italic;
+.species-node {
   color: var(--color-text-primary);
-  white-space: nowrap;
+  background: var(--color-surface-panel-alt);
 }
 
-.node-com {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-  white-space: nowrap;
+.species-node:hover {
+  border-color: var(--color-accent);
+  background: var(--color-surface-node-hover);
+}
+
+.species-node.selected {
+  border-color: var(--color-accent);
+  background: var(--color-surface-node-selected);
 }
 
 .tree-node {

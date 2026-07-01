@@ -116,7 +116,11 @@ export class Tree {
 
       if (!node.spawned) {
         const div = document.createElement("div");
-        div.className = "tree-node";
+        if (node.rank == "Species") {
+          div.className = "tree-node species-node";
+        } else {
+          div.className = "tree-node clade-node";
+        }
         div.id = `node-${node.tid}`;
         div.innerHTML = label;
 
@@ -140,18 +144,15 @@ export class Tree {
 
   getNodeLabel(node) {
     let name = node.sci_name;
-    let className = "node-sci";
 
     if (node.rank === "Species") {
       name = node.com_name;
-      className = "node-com";
     }
     if (node.state === CladeState.ANSWER) {
       name = "???";
-      className = "node-sci";
     }
 
-    return `<div class="${className}">${name}</div>`;
+    return `<div">${name}</div>`;
   }
 
   /**
