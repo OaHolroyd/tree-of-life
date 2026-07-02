@@ -364,7 +364,8 @@ export class Tree2 {
 
           let currentTargetLength = node.target_link * node.inflation;
           let displacement = dist - currentTargetLength;
-          let force = displacement * this.K_SPRING;
+          let ratio = Math.abs(displacement) / (10 * currentTargetLength);
+          let force = displacement * this.K_SPRING * (1 + ratio); // increase the force as we get further from the target
 
           let fx = (dx / dist) * force;
           let fy = (dy / dist) * force;
