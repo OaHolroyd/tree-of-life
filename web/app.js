@@ -79,7 +79,9 @@ const pwaModal = document.getElementById("pwa-prompt-modal");
 const pwaCloseBtn = document.getElementById("close-pwa-prompt-btn");
 const pwaInstructions = document.getElementById("pwa-instructions-container");
 const nativeInstallBtn = document.getElementById("pwa-native-install-btn");
-const themeColorMetaTags = document.querySelectorAll('meta[name="theme-color"]');
+const themeColorMetaTags = document.querySelectorAll(
+  'meta[name="theme-color"]',
+);
 const backgroundColorMetaTag = document.querySelector(
   'meta[name="background-color"]',
 );
@@ -97,6 +99,14 @@ function restartGame(tid = -1) {
   game.restart(tid, game.root, game.size);
 
   suggestionList = game.getSpeciesTIDs(true);
+
+  game.submitGuess("betta");
+  game.submitGuess("perch");
+  game.submitGuess("goby");
+  game.submitGuess("mackerel");
+  game.submitGuess("pipefish");
+  game.submitGuess("clownfish");
+  game.submitGuess("sailfish");
 
   treeUI.reset();
   treeUI.updateTreeLayout(game.getCurrentTree());
