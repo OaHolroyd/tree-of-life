@@ -275,37 +275,31 @@ export class Tree2 {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
-    // divide the total height into bins and count the nodes in the bins
-    // plus the number in nearby bins
-    const rootNode =
-      this.nodes.find((n) => n.sub_ptid === null) || this.nodes[0];
-    const root_node_height = rootNode?.element
-      ? rootNode.element.getBoundingClientRect().height
-      : 0;
-    let bins = Array(Math.ceil(height / root_node_height)).fill(0);
-    this.nodes.forEach((node) => {
-      const bin = Math.floor(node.y / root_node_height);
-      bins[bin - 2] += 1;
-      bins[bin - 1] += 1;
-      bins[bin] += 1;
-      bins[bin + 1] += 1;
-      bins[bin + 2] += 1;
-    });
-
-    // set the desired spring length depending on the bin count
-    this.nodes.forEach((node) => {
-      if (node.inflation < 0.1) {
-        node.target_link = this.SPRING_LENGTH;
-      } else {
-        const bin = Math.floor(node.y / root_node_height);
-        const nbin = bins[bin];
-        if (nbin > 1) {
-          node.target_link = this.SPRING_LENGTH;
-        } else {
-          node.target_link = this.SPRING_LENGTH / 2;
+    // compute how dense the nodes are vertically
+    for (let i = 0; i < this.nodes.length; i++) {
+      this.nodes[i].density = 0.0;
+    }
+    for (let i = 0; i < this.nodes.length; i++) {
+      for (let j = i + 1; j < this.nodes.length; j++) {
+        // work out the vertical distance between the nodes
+        const dy = Math.abs(this.nodes[j].y - this.nodes[i].y);
+        const s = Math.exp(-(dy * dy) / (60 * 60)); // TODO think of another function
+        if (dy > 0) {
+          this.nodes[i].density += s;
+          this.nodes[j].density += s;
         }
       }
-    });
+    }
+
+    // slowly limit/grow the target link length depending on the density of nodes vertically
+    for (let i = 0; i < this.nodes.length; i++) {
+      const target_scale = 0.5 + 0.5 * Math.tanh(this.nodes[i].density);
+      const target_link = this.SPRING_LENGTH * target_scale;
+
+      // apply relaxation to prevent sharp movements
+      this.nodes[i].target_link =
+        0.2 * this.nodes[i].target_link + 0.8 * target_link;
+    }
 
     // slowly increase the amount of force that a node can experience
     // this prevents newly created nodes zooming about
@@ -341,8 +335,9 @@ export class Tree2 {
 
           // vertically distant points don't influence each other horizontally
           const ady = Math.abs(dy);
+          // TODO: play with the distance and falloff
           if (ady > 100) {
-            fx = 0;
+            fx *= Math.exp(1 - ady / 100);
           }
 
           // apply the forces to each node in opposing directions
