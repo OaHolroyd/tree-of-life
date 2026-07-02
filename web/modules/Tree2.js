@@ -27,6 +27,7 @@ export class Tree2 {
     this.FRAME_INTERVAL = 1000 / 30;
 
     this.nodes = [];
+    this.nodeByTid = new Map();
     this.nodeClickHandler = null;
     this.answerTid = null;
     this.treeLineRGB = "48, 54, 61";
@@ -141,10 +142,31 @@ export class Tree2 {
    */
   reset() {
     this.nodes = [];
+    this.nodeByTid.clear();
     this.answerTid = null;
     this.overlay.innerHTML = "";
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.resizeCanvas();
+  }
+
+  rebuildDerivedData() {
+    this.nodeByTid.clear();
+
+    this.nodes.forEach((node) => {
+      node.nchildren = 1;
+      node.parentNode = null;
+      this.nodeByTid.set(node.tid, node);
+    });
+
+    this.nodes.forEach((node) => {
+      if (node.sub_ptid !== null) {
+        const parentNode = this.nodeByTid.get(node.sub_ptid) || null;
+        node.parentNode = parentNode;
+        if (parentNode) {
+          parentNode.nchildren += 1;
+        }
+      }
+    });
   }
 
   /**
@@ -215,6 +237,7 @@ export class Tree2 {
       this.nodes.push(existingNode);
     });
 
+    this.rebuildDerivedData();
     this.syncNodeDOM();
     this.updateNodeProximityStyles();
   }
@@ -507,44 +530,30 @@ export class Tree2 {
       }
     }
 
-    // count direct children
-    this.nodes.forEach((node) => {
-      node.nchildren = 0;
-      node.nchildren = 1;
-    });
-    this.nodes.forEach((node) => {
-      if (node.sub_ptid !== null) {
-        const parent = this.nodes.find((n) => n.tid === node.sub_ptid);
-        if (parent) parent.nchildren += 1;
-      }
-    });
-
     // try to ensure all linked nodes are a distance of SPRING_LENGTH apart
     this.nodes.forEach((node) => {
-      if (node.sub_ptid !== null) {
-        const parent = this.nodes.find((n) => n.tid === node.sub_ptid);
-        if (parent) {
-          let dx = parent.x - node.x;
-          let dy = parent.y + 60 - node.y;
-          let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      if (node.parentNode) {
+        const parent = node.parentNode;
+        let dx = parent.x - node.x;
+        let dy = parent.y + 60 - node.y;
+        let dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
-          let currentTargetLength =
-            (node.target_link * node.inflation * (parent.nchildren + 1)) / 4;
-          let displacement = dist - currentTargetLength;
-          let ratio = Math.abs(displacement) / (10 * currentTargetLength);
-          let force = displacement * this.K_SPRING * (1 + ratio); // increase the force as we get further from the target
+        let currentTargetLength =
+          (node.target_link * node.inflation * (parent.nchildren + 1)) / 4;
+        let displacement = dist - currentTargetLength;
+        let ratio = Math.abs(displacement) / (10 * currentTargetLength);
+        let force = displacement * this.K_SPRING * (1 + ratio); // increase the force as we get further from the target
 
-          let fx = (dx / dist) * force;
-          let fy = (dy / dist) * force;
+        let fx = (dx / dist) * force;
+        let fy = (dy / dist) * force;
 
-          if (!node.isRoot) {
-            node.vx += fx;
-            node.vy += fy;
-          }
-          if (!parent.isRoot) {
-            parent.vx -= fx;
-            parent.vy -= fy;
-          }
+        if (!node.isRoot) {
+          node.vx += fx;
+          node.vy += fy;
+        }
+        if (!parent.isRoot) {
+          parent.vx -= fx;
+          parent.vy -= fy;
         }
       }
 
