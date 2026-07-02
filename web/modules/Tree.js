@@ -14,7 +14,9 @@ export class Tree {
     this.overlay = this.container.querySelector(".node-overlay");
     this.ctx = this.canvas.getContext("2d");
     // Physics layout constants.
-    this.SPRING_LENGTH = 60;
+    this.DESKTOP_SPRING_LENGTH = 60;
+    this.MOBILE_SPRING_LENGTH = 40;
+    this.SPRING_LENGTH = this.DESKTOP_SPRING_LENGTH;
     this.K_SPRING = 0.05;
     this.REPULSION = 2000;
     this.FRICTION = 0.82;
@@ -28,6 +30,83 @@ export class Tree {
 
     this.tick = this.tick.bind(this);
     requestAnimationFrame(this.tick);
+  }
+
+  updateSpringLength() {
+    this.SPRING_LENGTH =
+      window.innerWidth <= 600
+        ? this.MOBILE_SPRING_LENGTH
+        : this.DESKTOP_SPRING_LENGTH;
+  }
+
+  measureLabelTextWidth(labelElement, text) {
+    const computedStyle = getComputedStyle(labelElement);
+    this.ctx.save();
+    this.ctx.font =
+      computedStyle.font ||
+      `${computedStyle.fontStyle} ${computedStyle.fontWeight} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+    const width = this.ctx.measureText(text).width;
+    this.ctx.restore();
+    return width;
+  }
+
+  updateNodeLabelWidth(nodeElement) {
+    const labelElement = nodeElement.querySelector(".tree-node-label");
+    if (!labelElement) return;
+
+    labelElement.style.width = "";
+
+    const maxWidth = 92;
+    const maxLines = 3;
+    const labelText = labelElement.textContent?.trim() || "";
+    const words = labelText.split(/\s+/).filter(Boolean);
+
+    if (words.length < 2) return;
+
+    const lineWidths = (lines) =>
+      Math.max(
+        ...lines.map((line) => this.measureLabelTextWidth(labelElement, line)),
+      );
+
+    let bestTwoLineWidth = Infinity;
+    for (let splitIndex = 1; splitIndex < words.length; splitIndex++) {
+      const candidateWidth = lineWidths([
+        words.slice(0, splitIndex).join(" "),
+        words.slice(splitIndex).join(" "),
+      ]);
+
+      if (candidateWidth < bestTwoLineWidth) {
+        bestTwoLineWidth = candidateWidth;
+      }
+    }
+
+    let bestWidth = bestTwoLineWidth;
+
+    if (bestTwoLineWidth > maxWidth && maxLines >= 3 && words.length >= 3) {
+      bestWidth = maxWidth;
+
+      for (let firstSplit = 1; firstSplit < words.length - 1; firstSplit++) {
+        for (
+          let secondSplit = firstSplit + 1;
+          secondSplit < words.length;
+          secondSplit++
+        ) {
+          const candidateWidth = lineWidths([
+            words.slice(0, firstSplit).join(" "),
+            words.slice(firstSplit, secondSplit).join(" "),
+            words.slice(secondSplit).join(" "),
+          ]);
+
+          if (candidateWidth < bestWidth) {
+            bestWidth = candidateWidth;
+          }
+        }
+      }
+    }
+
+    if (bestWidth < maxWidth) {
+      labelElement.style.width = `${Math.ceil(bestWidth + 2)}px`;
+    }
   }
 
   getTreeLineColor(opacity) {
@@ -142,9 +221,11 @@ export class Tree {
         requestAnimationFrame(() => {
           div.style.opacity = "1";
           div.style.transform = "translate(-50%, -50%) scale(1)";
+          this.updateNodeLabelWidth(div);
         });
       } else if (node.element) {
         node.element.innerHTML = label;
+        this.updateNodeLabelWidth(node.element);
       }
     });
   }
@@ -204,7 +285,7 @@ export class Tree {
       name = "???";
     }
 
-    return `<div">${name}</div>`;
+    return `<div class="tree-node-label">${name}</div>`;
   }
 
   /**
@@ -222,7 +303,7 @@ export class Tree {
     this.answerTid = answerNode.tid;
     const answerDiv = document.getElementById(`node-${answerNode.tid}`);
     if (answerDiv) {
-      answerDiv.innerHTML = `<div class="node-com">${answerNode.com_name}</div>`;
+      answerDiv.innerHTML = `<div class="tree-node-label node-com">${answerNode.com_name}</div>`;
     }
     this.updateNodeProximityStyles();
   }
@@ -266,6 +347,7 @@ export class Tree {
    * The continuous math update and paint loop. Runs via requestAnimationFrame.
    */
   tick() {
+    this.updateSpringLength();
     this.resizeCanvas(this.getRequiredHeight());
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;

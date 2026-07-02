@@ -101,6 +101,14 @@ function restartGame(tid = -1) {
 
   suggestionList = game.getSpeciesTIDs(true);
 
+  game.submitGuess("betta");
+  game.submitGuess("perch");
+  game.submitGuess("goby");
+  game.submitGuess("mackerel");
+  game.submitGuess("pipefish");
+  game.submitGuess("clownfish");
+  game.submitGuess("sailfish");
+
   treeUI.reset();
   treeUI.updateTreeLayout(game.getCurrentTree());
   inspectClade(game.getBestTID());

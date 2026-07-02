@@ -16,16 +16,25 @@ export class Tree2 {
 
     // Physics layout constants.
     this.INFLUENCE_DIST = 300;
-    this.SPRING_LENGTH = 60;
+    this.DESKTOP_SPRING_LENGTH = 60;
+    this.MOBILE_SPRING_LENGTH = 40;
+    this.SPRING_LENGTH = this.DESKTOP_SPRING_LENGTH;
     this.K_SPRING = 0.05;
     this.REPULSION = 2000;
     this.FRICTION = 0.82;
     this.GRAVITY = 0.2;
     this.MAX_FORCE = 0.5;
+    this.FRAME_INTERVAL = 1000 / 30;
 
     this.nodes = [];
     this.nodeClickHandler = null;
     this.answerTid = null;
+    this.treeLineRGB = "48, 54, 61";
+    this.activeTheme = null;
+    this.lastCanvasWidth = 0;
+    this.lastCanvasHeight = 0;
+    this.lastPixelRatio = 0;
+    this.lastContainerHeight = 0;
     this.resizeCanvas();
 
     this.previousTime = null;
@@ -35,12 +44,96 @@ export class Tree2 {
     requestAnimationFrame(this.tick);
   }
 
-  getTreeLineColor(opacity) {
-    const treeLineRGB = getComputedStyle(document.body)
-      .getPropertyValue("--color-tree-line-rgb")
-      .trim();
+  updateSpringLength() {
+    this.SPRING_LENGTH =
+      window.innerWidth <= 600
+        ? this.MOBILE_SPRING_LENGTH
+        : this.DESKTOP_SPRING_LENGTH;
+  }
 
-    return `rgba(${treeLineRGB || "48, 54, 61"}, ${opacity})`;
+  refreshThemeCache() {
+    const theme = document.body.dataset.theme || "dark";
+    if (theme === this.activeTheme) return;
+
+    this.activeTheme = theme;
+    this.treeLineRGB =
+      getComputedStyle(document.body)
+        .getPropertyValue("--color-tree-line-rgb")
+        .trim() || "48, 54, 61";
+  }
+
+  measureLabelTextWidth(labelElement, text) {
+    const computedStyle = getComputedStyle(labelElement);
+    this.ctx.save();
+    this.ctx.font =
+      computedStyle.font ||
+      `${computedStyle.fontStyle} ${computedStyle.fontWeight} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+    const width = this.ctx.measureText(text).width;
+    this.ctx.restore();
+    return width;
+  }
+
+  updateNodeLabelWidth(nodeElement) {
+    const labelElement = nodeElement.querySelector(".tree-node-label");
+    if (!labelElement) return;
+
+    labelElement.style.width = "";
+
+    const maxWidth = 92;
+    const maxLines = 3;
+    const labelText = labelElement.textContent?.trim() || "";
+    const words = labelText.split(/\s+/).filter(Boolean);
+
+    if (words.length < 2) return;
+
+    const lineWidths = (lines) =>
+      Math.max(
+        ...lines.map((line) => this.measureLabelTextWidth(labelElement, line)),
+      );
+
+    let bestTwoLineWidth = Infinity;
+    for (let splitIndex = 1; splitIndex < words.length; splitIndex++) {
+      const candidateWidth = lineWidths([
+        words.slice(0, splitIndex).join(" "),
+        words.slice(splitIndex).join(" "),
+      ]);
+
+      if (candidateWidth < bestTwoLineWidth) {
+        bestTwoLineWidth = candidateWidth;
+      }
+    }
+
+    let bestWidth = bestTwoLineWidth;
+
+    if (bestTwoLineWidth > maxWidth && maxLines >= 3 && words.length >= 3) {
+      bestWidth = maxWidth;
+
+      for (let firstSplit = 1; firstSplit < words.length - 1; firstSplit++) {
+        for (
+          let secondSplit = firstSplit + 1;
+          secondSplit < words.length;
+          secondSplit++
+        ) {
+          const candidateWidth = lineWidths([
+            words.slice(0, firstSplit).join(" "),
+            words.slice(firstSplit, secondSplit).join(" "),
+            words.slice(secondSplit).join(" "),
+          ]);
+
+          if (candidateWidth < bestWidth) {
+            bestWidth = candidateWidth;
+          }
+        }
+      }
+    }
+
+    if (bestWidth < maxWidth) {
+      labelElement.style.width = `${Math.ceil(bestWidth + 2)}px`;
+    }
+  }
+
+  getTreeLineColor(opacity) {
+    return `rgba(${this.treeLineRGB}, ${opacity})`;
   }
 
   /**
@@ -154,9 +247,11 @@ export class Tree2 {
         requestAnimationFrame(() => {
           div.style.opacity = "1";
           div.style.transform = "translate(-50%, -50%) scale(1)";
+          this.updateNodeLabelWidth(div);
         });
       } else if (node.element) {
         node.element.innerHTML = label;
+        this.updateNodeLabelWidth(node.element);
       }
     });
   }
@@ -216,7 +311,7 @@ export class Tree2 {
       name = "???";
     }
 
-    return `<div">${name}</div>`;
+    return `<div class="tree-node-label">${name}</div>`;
   }
 
   /**
@@ -234,7 +329,7 @@ export class Tree2 {
     this.answerTid = answerNode.tid;
     const answerDiv = document.getElementById(`node-${answerNode.tid}`);
     if (answerDiv) {
-      answerDiv.innerHTML = `<div class="node-com">${answerNode.com_name}</div>`;
+      answerDiv.innerHTML = `<div class="tree-node-label node-com">${answerNode.com_name}</div>`;
     }
     this.updateNodeProximityStyles();
   }
@@ -246,12 +341,28 @@ export class Tree2 {
     const width = this.container.clientWidth;
     const pixelRatio = window.devicePixelRatio || 1;
 
-    this.container.style.height = `${height}px`;
-    this.canvas.width = Math.max(1, width * pixelRatio);
-    this.canvas.height = Math.max(1, height * pixelRatio);
-    this.canvas.style.width = `${width}px`;
-    this.canvas.style.height = `${height}px`;
-    this.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    if (height !== this.lastContainerHeight) {
+      this.container.style.height = `${height}px`;
+      this.lastContainerHeight = height;
+    }
+
+    const nextCanvasWidth = Math.max(1, width * pixelRatio);
+    const nextCanvasHeight = Math.max(1, height * pixelRatio);
+
+    if (
+      nextCanvasWidth !== this.lastCanvasWidth ||
+      nextCanvasHeight !== this.lastCanvasHeight ||
+      pixelRatio !== this.lastPixelRatio
+    ) {
+      this.canvas.width = nextCanvasWidth;
+      this.canvas.height = nextCanvasHeight;
+      this.canvas.style.width = `${width}px`;
+      this.canvas.style.height = `${height}px`;
+      this.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      this.lastCanvasWidth = nextCanvasWidth;
+      this.lastCanvasHeight = nextCanvasHeight;
+      this.lastPixelRatio = pixelRatio;
+    }
   }
 
   getViewportHeight() {
@@ -280,13 +391,24 @@ export class Tree2 {
    * The continuous math update and paint loop. Runs via requestAnimationFrame.
    */
   tick(timestamp) {
-    // scale dt to prevent animation speed depending on screen refresh rate
-    // NOTE: this does mean that sufficiently slowly refreshing screen might
-    // cause numerical instabilities
+    this.refreshThemeCache();
+
+    this.updateSpringLength();
+
     if (this.previousTime === null) {
       this.previousTime = timestamp;
     }
-    let dt = (timestamp - this.previousTime) / 17.0;
+
+    const elapsed = timestamp - this.previousTime;
+    if (elapsed < this.FRAME_INTERVAL) {
+      requestAnimationFrame(this.tick);
+      return;
+    }
+
+    // scale dt to prevent animation speed depending on screen refresh rate
+    // NOTE: this does mean that sufficiently slowly refreshing screen might
+    // cause numerical instabilities
+    let dt = elapsed / 17.0;
     this.previousTime = timestamp;
 
     // if a new node has been added, add a limiter to the dynamics
@@ -343,6 +465,11 @@ export class Tree2 {
         // work out the gap between the nodes
         let dx = this.nodes[j].x - this.nodes[i].x;
         let dy = this.nodes[j].y - this.nodes[i].y;
+
+        // prevent exactly overlapping nodes
+        if (dx == 0.0) dx = 0.01;
+        if (dy == 0.0) dy = 0.01;
+
         let dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
         // distant nodes do not influence one another
@@ -380,6 +507,18 @@ export class Tree2 {
       }
     }
 
+    // count direct children
+    this.nodes.forEach((node) => {
+      node.nchildren = 0;
+      node.nchildren = 1;
+    });
+    this.nodes.forEach((node) => {
+      if (node.sub_ptid !== null) {
+        const parent = this.nodes.find((n) => n.tid === node.sub_ptid);
+        if (parent) parent.nchildren += 1;
+      }
+    });
+
     // try to ensure all linked nodes are a distance of SPRING_LENGTH apart
     this.nodes.forEach((node) => {
       if (node.sub_ptid !== null) {
@@ -389,7 +528,8 @@ export class Tree2 {
           let dy = parent.y + 60 - node.y;
           let dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
-          let currentTargetLength = node.target_link * node.inflation;
+          let currentTargetLength =
+            (node.target_link * node.inflation * (parent.nchildren + 1)) / 4;
           let displacement = dist - currentTargetLength;
           let ratio = Math.abs(displacement) / (10 * currentTargetLength);
           let force = displacement * this.K_SPRING * (1 + ratio); // increase the force as we get further from the target
@@ -407,6 +547,8 @@ export class Tree2 {
           }
         }
       }
+
+      // use a gravity-like force to ensure a top-down tree
       if (!node.isRoot) {
         node.vy += this.GRAVITY * node.inflation;
       }
