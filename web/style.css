@@ -857,6 +857,25 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   font-style: italic;
 }
 
+.species-node {
+  background: var(--color-surface-panel);
+  border-color: hsl(var(--node-proximity-hue) 62% 54%);
+  color: hsl(var(--node-proximity-hue) 68% 62%);
+}
+
+.species-node:hover {
+  background: var(--color-surface-panel-alt);
+  border-color: hsl(var(--node-proximity-hue) 70% 60%);
+  color: hsl(var(--node-proximity-hue) 74% 68%);
+}
+
+.species-node.selected {
+  background: var(--color-surface-panel-alt);
+  border-color: hsl(var(--node-proximity-hue) 78% 66%);
+  color: hsl(var(--node-proximity-hue) 82% 72%);
+  box-shadow: 0 0 8px hsl(var(--node-proximity-hue) 78% 66% / 0.3);
+}
+
 body[data-theme="light"] .tree-node {
   border-color: hsl(var(--node-proximity-hue) 42% 68%);
   background: hsl(var(--node-proximity-hue) 70% 88%);
@@ -871,6 +890,25 @@ body[data-theme="light"] .tree-node.selected {
   border-color: hsl(var(--node-proximity-hue) 62% 50%);
   background: hsl(var(--node-proximity-hue) 74% 76%);
   box-shadow: 0 0 8px hsl(var(--node-proximity-hue) 62% 50% / 0.2);
+}
+
+body[data-theme="light"] .species-node {
+  background: var(--color-surface-panel-alt);
+  border-color: hsl(var(--node-proximity-hue) 56% 52%);
+  color: hsl(var(--node-proximity-hue) 70% 34%);
+}
+
+body[data-theme="light"] .species-node:hover {
+  background: var(--color-surface-header);
+  border-color: hsl(var(--node-proximity-hue) 62% 46%);
+  color: hsl(var(--node-proximity-hue) 76% 30%);
+}
+
+body[data-theme="light"] .species-node.selected {
+  background: var(--color-surface-header);
+  border-color: hsl(var(--node-proximity-hue) 68% 40%);
+  color: hsl(var(--node-proximity-hue) 82% 26%);
+  box-shadow: 0 0 8px hsl(var(--node-proximity-hue) 68% 40% / 0.18);
 }
 
 .tree-node {
