@@ -10,12 +10,19 @@ const DEFAULT_SETTINGS = {
   // settings
   speciesPoolSize: 1, // Default to Medium (Index 1)
   rootTID: 0, // Default to system root TID 0
+  theme: "dark",
 };
 
 function loadStorage() {
-  return (
-    JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY)) || DEFAULT_SETTINGS
-  );
+  try {
+    const savedData = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY));
+    return {
+      ...DEFAULT_SETTINGS,
+      ...(savedData || {}),
+    };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
 }
 
 export function saveGameSettings(speciesPoolSize, rootTID) {
@@ -31,6 +38,17 @@ export function loadGameSettings() {
     speciesPoolSize: savedData.speciesPoolSize,
     rootTID: savedData.rootTID,
   };
+}
+
+export function saveTheme(theme) {
+  const savedData = loadStorage();
+  savedData.theme = theme;
+  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(savedData));
+}
+
+export function loadTheme() {
+  const savedData = loadStorage();
+  return savedData.theme;
 }
 
 export function saveGameStats(stats) {
