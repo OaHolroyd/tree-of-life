@@ -25,10 +25,19 @@ export class Tree2 {
 
     this.nodes = [];
     this.nodeClickHandler = null;
+    this.answerTid = null;
     this.resizeCanvas();
 
     this.tick = this.tick.bind(this);
     requestAnimationFrame(this.tick);
+  }
+
+  getTreeLineColor(opacity) {
+    const treeLineRGB = getComputedStyle(document.body)
+      .getPropertyValue("--color-tree-line-rgb")
+      .trim();
+
+    return `rgba(${treeLineRGB || "48, 54, 61"}, ${opacity})`;
   }
 
   /**
@@ -36,6 +45,7 @@ export class Tree2 {
    */
   reset() {
     this.nodes = [];
+    this.answerTid = null;
     this.overlay.innerHTML = "";
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.resizeCanvas();
@@ -52,6 +62,10 @@ export class Tree2 {
 
     visibleNodesData.forEach((cladeData) => {
       let existingNode = this.nodes.find((n) => n.tid === cladeData.tid);
+
+      if (cladeData.state === CladeState.ANSWER) {
+        this.answerTid = cladeData.tid;
+      }
 
       if (!existingNode) {
         const isRoot = cladeData.sub_ptid === null;
@@ -100,6 +114,7 @@ export class Tree2 {
     });
 
     this.syncNodeDOM();
+    this.updateNodeProximityStyles();
   }
 
   /**
@@ -111,7 +126,11 @@ export class Tree2 {
 
       if (!node.spawned) {
         const div = document.createElement("div");
-        div.className = "tree-node";
+        if (node.rank == "Species") {
+          div.className = "tree-node species-node";
+        } else {
+          div.className = "tree-node clade-node";
+        }
         div.id = `node-${node.tid}`;
         div.innerHTML = label;
 
@@ -133,20 +152,62 @@ export class Tree2 {
     });
   }
 
+  updateNodeProximityStyles() {
+    if (this.nodes.length === 0) return;
+
+    const answerTid =
+      this.answerTid ??
+      this.nodes.find((node) => node.state === CladeState.ANSWER)?.tid;
+    if (answerTid === undefined || answerTid === null) return;
+
+    const adjacency = new Map();
+    this.nodes.forEach((node) => adjacency.set(node.tid, []));
+
+    this.nodes.forEach((node) => {
+      if (node.sub_ptid !== null && adjacency.has(node.sub_ptid)) {
+        adjacency.get(node.tid).push(node.sub_ptid);
+        adjacency.get(node.sub_ptid).push(node.tid);
+      }
+    });
+
+    const distances = new Map([[answerTid, 0]]);
+    const queue = [answerTid];
+
+    while (queue.length > 0) {
+      const currentTid = queue.shift();
+      const currentDistance = distances.get(currentTid);
+
+      adjacency.get(currentTid).forEach((neighborTid) => {
+        if (!distances.has(neighborTid)) {
+          distances.set(neighborTid, currentDistance + 1);
+          queue.push(neighborTid);
+        }
+      });
+    }
+
+    const maxDistance = Math.max(...distances.values(), 0);
+
+    this.nodes.forEach((node) => {
+      if (!node.element) return;
+
+      const distance = distances.get(node.tid) ?? maxDistance;
+      const closeness = maxDistance === 0 ? 1 : 1 - distance / maxDistance;
+      const hue = Math.round(closeness * 120);
+      node.element.style.setProperty("--node-proximity-hue", `${hue}deg`);
+    });
+  }
+
   getNodeLabel(node) {
     let name = node.sci_name;
-    let className = "node-sci";
 
     if (node.rank === "Species") {
       name = node.com_name;
-      className = "node-com";
     }
     if (node.state === CladeState.ANSWER) {
       name = "???";
-      className = "node-sci";
     }
 
-    return `<div class="${className}">${name}</div>`;
+    return `<div">${name}</div>`;
   }
 
   /**
@@ -161,10 +222,12 @@ export class Tree2 {
    * Reveals the name of the answer on its node.
    */
   revealAnswer(answerNode) {
+    this.answerTid = answerNode.tid;
     const answerDiv = document.getElementById(`node-${answerNode.tid}`);
     if (answerDiv) {
       answerDiv.innerHTML = `<div class="node-com">${answerNode.com_name}</div>`;
     }
+    this.updateNodeProximityStyles();
   }
 
   /**
@@ -375,7 +438,7 @@ export class Tree2 {
             parent.y,
           );
 
-          this.ctx.strokeStyle = `rgba(48, 54, 61, ${node.inflation})`;
+          this.ctx.strokeStyle = this.getTreeLineColor(node.inflation);
           this.ctx.stroke();
         }
       }

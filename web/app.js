@@ -80,7 +80,9 @@ const pwaModal = document.getElementById("pwa-prompt-modal");
 const pwaCloseBtn = document.getElementById("close-pwa-prompt-btn");
 const pwaInstructions = document.getElementById("pwa-instructions-container");
 const nativeInstallBtn = document.getElementById("pwa-native-install-btn");
-const themeColorMetaTags = document.querySelectorAll('meta[name="theme-color"]');
+const themeColorMetaTags = document.querySelectorAll(
+  'meta[name="theme-color"]',
+);
 const backgroundColorMetaTag = document.querySelector(
   'meta[name="background-color"]',
 );
