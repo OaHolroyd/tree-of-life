@@ -28,6 +28,9 @@ export class Tree2 {
     this.answerTid = null;
     this.resizeCanvas();
 
+    this.previousTime = null;
+    this.limiter = 0.0;
+    this.newNodes = true;
     this.tick = this.tick.bind(this);
     requestAnimationFrame(this.tick);
   }
@@ -60,6 +63,7 @@ export class Tree2 {
   updateTreeLayout(visibleNodesData) {
     const width = this.container.clientWidth;
 
+    let new_clades = [];
     visibleNodesData.forEach((cladeData) => {
       let existingNode = this.nodes.find((n) => n.tid === cladeData.tid);
 
@@ -68,49 +72,54 @@ export class Tree2 {
       }
 
       if (!existingNode) {
-        const isRoot = cladeData.sub_ptid === null;
-
-        existingNode = {
-          ...cladeData,
-          x: isRoot ? width / 2 : width / 2,
-          y: isRoot ? 60 : 150,
-          vx: 0,
-          vy: 0,
-          isRoot,
-          element: null,
-          spawned: false,
-          inflation: 0.01,
-          target_link: this.SPRING_LENGTH,
-        };
-
-        if (!isRoot && cladeData.sub_ptid !== null) {
-          const parent = this.nodes.find((n) => n.tid === cladeData.sub_ptid);
-          const child = this.nodes.find((n) => n.sub_ptid === cladeData.tid);
-
-          if (parent && child) {
-            const visibleSiblings = this.nodes.filter(
-              (n) => n.sub_ptid === cladeData.sub_ptid && n.spawned,
-            );
-            const siblingOffset = visibleSiblings.length * 40 - 20;
-
-            existingNode.x = parent.x + siblingOffset;
-            existingNode.y = (parent.y + child.y) / 2;
-          } else if (parent) {
-            const visibleSiblings = this.nodes.filter(
-              (n) => n.sub_ptid === cladeData.sub_ptid && n.spawned,
-            );
-            const siblingOffset = visibleSiblings.length * 40 - 20;
-
-            existingNode.x = parent.x + siblingOffset;
-            existingNode.y = parent.y + 40;
-          }
-        }
-
-        this.nodes.push(existingNode);
+        this.newNodes = true;
+        new_clades.push(cladeData);
       } else {
         Object.assign(existingNode, cladeData);
         existingNode.isRoot = existingNode.sub_ptid === null;
       }
+    });
+
+    new_clades.forEach((cladeData) => {
+      const isRoot = cladeData.sub_ptid === null;
+
+      let existingNode = {
+        ...cladeData,
+        x: isRoot ? width / 2 : width / 2,
+        y: isRoot ? 60 : 150,
+        vx: 0,
+        vy: 0,
+        isRoot,
+        element: null,
+        spawned: false,
+        inflation: 0.01,
+        target_link: this.SPRING_LENGTH,
+      };
+
+      if (!isRoot && cladeData.sub_ptid !== null) {
+        const parent = this.nodes.find((n) => n.tid === cladeData.sub_ptid);
+        const child = this.nodes.find((n) => n.sub_ptid === cladeData.tid);
+
+        if (parent && child) {
+          const visibleSiblings = this.nodes.filter(
+            (n) => n.sub_ptid === cladeData.sub_ptid && n.spawned,
+          );
+          const siblingOffset = visibleSiblings.length * 40 - 20;
+
+          existingNode.x = parent.x + siblingOffset;
+          existingNode.y = (parent.y + child.y) / 2;
+        } else if (parent) {
+          const visibleSiblings = this.nodes.filter(
+            (n) => n.sub_ptid === cladeData.sub_ptid && n.spawned,
+          );
+          const siblingOffset = visibleSiblings.length * 40 - 20;
+
+          existingNode.x = parent.x + siblingOffset;
+          existingNode.y = parent.y + 40;
+        }
+      }
+
+      this.nodes.push(existingNode);
     });
 
     this.syncNodeDOM();
@@ -270,7 +279,25 @@ export class Tree2 {
   /**
    * The continuous math update and paint loop. Runs via requestAnimationFrame.
    */
-  tick() {
+  tick(timestamp) {
+    // scale dt to prevent animation speed depending on screen refresh rate
+    // NOTE: this does mean that sufficiently slowly refreshing screen might
+    // cause numerical instabilities
+    if (this.previousTime === null) {
+      this.previousTime = timestamp;
+    }
+    let dt = (timestamp - this.previousTime) / 17.0;
+    this.previousTime = timestamp;
+
+    // if a new node has been added, add a limiter to the dynamics
+    if (this.newNodes) {
+      this.newNodes = false;
+      this.limiter = 0.1;
+    }
+    this.limiter += dt * 0.05;
+    if (this.limiter > 1.0) this.limiter = 1.0;
+    dt *= this.limiter;
+
     this.resizeCanvas(this.getRequiredHeight());
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
@@ -305,7 +332,7 @@ export class Tree2 {
     // this prevents newly created nodes zooming about
     this.nodes.forEach((node) => {
       if (node.inflation < 1.0) {
-        node.inflation += 0.015;
+        node.inflation += dt * 0.015;
         if (node.inflation > 1.0) node.inflation = 1.0;
       }
     });
@@ -391,8 +418,8 @@ export class Tree2 {
     // move the nodes
     this.nodes.forEach((node) => {
       if (!node.isRoot) {
-        node.x += node.vx;
-        node.y += node.vy;
+        node.x += dt * node.vx;
+        node.y += dt * node.vy;
         node.vx *= this.FRICTION;
         node.vy *= this.FRICTION;
 

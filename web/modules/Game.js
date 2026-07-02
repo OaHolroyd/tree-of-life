@@ -206,7 +206,6 @@ export class Game {
   getHint() {
     this.guessesRemaining -= this.hint_cost;
     const hint = this.getHintTID();
-    console.log(`hint (${hint}: ${this.tree[hint].sci_name})`);
     this.subtree.add(hint);
     this.tree[hint].state = CladeState.VISIBLE;
     this.tree[this.answer].sub_ptid = hint;
@@ -246,12 +245,9 @@ export class Game {
       return [true, true, [this.tree[tid]]];
     }
 
-    this.subtree.add(tid);
-
     // incorrect guess, update the tree
     // set the guess to be visible then travel up until we find a node that's in the subtree
     let updated_nodes = [tid]; // record which nodes have been updated
-    this.subtree.add(tid);
     this.tree[tid].state = CladeState.VISIBLE;
     let ptid = this.tree[tid].ptid;
     while (this.tree[ptid].state === CladeState.OFF) {
@@ -261,7 +257,10 @@ export class Game {
     }
     this.tree[ptid].state = CladeState.VISIBLE;
     updated_nodes.push(ptid);
-    this.subtree.add(ptid);
+
+    // add both nodes to the subtree
+    this.subtree.add(updated_nodes[1]);
+    this.subtree.add(updated_nodes[0]);
 
     // define the subtree network
     this.tree[updated_nodes[0]].sub_ptid = ptid;
@@ -292,6 +291,8 @@ export class Game {
       has_ended = true;
     }
 
+    // ensure that the updated node list is sorted and unique
+    updated_nodes = [...new Set(updated_nodes)].toSorted((a, b) => a - b);
     return [true, has_ended, Array.from(updated_nodes, (i) => this.tree[i])];
   }
 
