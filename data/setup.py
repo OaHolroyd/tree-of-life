@@ -1,5 +1,6 @@
 from time import time, sleep
 import os
+import random
 from pathlib import Path
 import json
 import re
@@ -2399,6 +2400,185 @@ export const CLADE_LIST = [
         fp.write("];\n")
 
 
+def compute_guess_answer_mapping(nodes) -> dict[tuple[int, int], int]:
+    """Compute a mapping from (guess_tid, answer_tid) -> # remaining options"""
+    # index nodes by TID to make traversal easier
+    nodes = nodes["nodes"]
+    nodes = {node["tid"]: node for node in nodes.values()}
+
+    species_tids = [node["tid"] for node in nodes.values() if node["nchildren"] == 0]
+
+    # count the total descendants for each node
+    for node in nodes.values():
+        node["descendants"] = 0
+    while nodes[0]["descendants"] != len(species_tids):
+        for node in nodes.values():
+            node["_descendants"] = 0
+        for s_tid in species_tids:
+            nodes[s_tid]["descendants"] = 1
+            nodes[s_tid]["_descendants"] = 1
+        for node in nodes.values():
+            if node["ptid"] in nodes:
+                nodes[node["ptid"]]["_descendants"] += node["descendants"]
+
+        for node in nodes.values():
+            node["descendants"] = node["_descendants"]
+    for node in nodes.values():
+        node.pop("_descendants")
+
+    mapping = {}
+    for answer_tid in species_tids:
+        # reset the counts of remaining nodes and mark as on or off chain
+        for node in nodes.values():
+            node["remaining"] = -1
+            node["onchain"] = False
+        tid = answer_tid
+        while tid != -1:
+            nodes[tid]["onchain"] = True
+            tid = nodes[tid]["ptid"]
+
+        for guess_tid in species_tids:
+            if guess_tid == answer_tid:
+                mapping[(guess_tid, answer_tid)] = 0
+                continue
+
+            remaining = -1
+
+            # go up the tree until we find a node that has been covered
+            # or we're on chain
+            tid = guess_tid
+            ptid = nodes[tid]["ptid"]
+            while tid != -1:
+                # print(f"{nodes[tid]['sci_name']}: {nodes[tid]['descendants']}")
+                # print(f"  {nodes[ptid]['sci_name']}: {nodes[ptid]['descendants']}")
+
+                # exit conditions
+                if nodes[ptid]["onchain"]:
+                    remaining = nodes[ptid]["descendants"] - nodes[tid]["descendants"]
+                    break
+                if nodes[ptid]["remaining"] != -1:
+                    remaining = nodes[ptid]["remaining"]
+                    break
+
+                # keep going up
+                tid = ptid
+                ptid = nodes[tid]["ptid"]
+
+            # mark all of the nodes with remaining
+            tid = guess_tid
+            ptid = nodes[tid]["ptid"]
+            while tid != -1:
+                nodes[tid]["remaining"] = remaining
+
+                # exit conditions
+                if nodes[ptid]["onchain"]:
+                    break
+                if nodes[ptid]["remaining"] != -1:
+                    break
+
+                # keep going up
+                tid = ptid
+                ptid = nodes[tid]["ptid"]
+
+            mapping[(guess_tid, answer_tid)] = remaining
+
+    # for (g, a), r in mapping.items():
+    #     print(f"{nodes[g]['com_name'][0]} ({nodes[a]['com_name'][0]}): {r}")
+
+    return mapping
+
+
+def optimal_guess(nodes, mapping, possible_tids):
+    # index nodes by TID to make traversal easier
+    nodes = nodes["nodes"]
+    nodes = {node["tid"]: node for node in nodes.values()}
+
+    totals = {g: 0 for g in possible_tids}
+    for (g, a), r in mapping.items():
+        if g not in possible_tids:
+            continue
+        if a not in possible_tids:
+            continue
+        totals[g] += r
+
+    t_min = 1000000000
+    for g in possible_tids:
+        t_min = min(t_min, totals[g])
+
+    possible_tids.sort(key=lambda g: totals[g])
+    possible_guesses = [
+        tid for tid in possible_tids if totals[tid] == totals[possible_tids[0]]
+    ]
+    for i, g in enumerate(possible_guesses):
+        mean = totals[g] / len(possible_tids)
+        # print(f"  {nodes[g]['com_name'][0]:25s}: {mean:.3f}, {np.sqrt(var):.3f}")
+
+    # break ties at random
+    if len(possible_guesses) > 0:
+        g = random.choice(possible_guesses)
+        mean = totals[g] / len(possible_tids)
+        return g, nodes[g], mean
+
+    return -1, None, -1
+
+
+def make_guess(nodes, answer_tid, guess_tid, possible_tids):
+    if guess_tid == answer_tid:
+        return []
+    if guess_tid not in possible_tids:
+        return possible_tids
+
+    # index nodes by TID to make traversal easier
+    nodes = nodes["nodes"]
+    nodes = {node["tid"]: node for node in nodes.values()}
+
+    # mark nodes as being on chain
+    for node in nodes.values():
+        node["onchain"] = False
+    tid = answer_tid
+    while tid != -1:
+        nodes[tid]["onchain"] = True
+        tid = nodes[tid]["ptid"]
+
+    # find the smallest common clade
+    tid = guess_tid
+    ptid = nodes[tid]["ptid"]
+    while ptid != -1:
+        if nodes[ptid]["onchain"]:
+            break
+
+        # keep going up
+        tid = ptid
+        ptid = nodes[tid]["ptid"]
+    clade_tid = ptid
+    last_tid = tid
+
+    # print(f"GUESS : {nodes[guess_tid]['com_name'][0]}")
+    # print(f"ANS   : {nodes[answer_tid]['com_name'][0]}")
+    # print(f"CLADE : {nodes[clade_tid]['sci_name']}")
+    # print(f"LAST  : {nodes[last_tid]['sci_name']}")
+
+    # filter possible_tids down accounting for the guess
+    new_possible_tids = []
+    for possible_tid in possible_tids:
+        # print(f"  STARTING: {nodes[possible_tid]['com_name'][0]}")
+        tid = possible_tid
+        while tid != -1:
+            # print(f"    {nodes[tid]['sci_name']}")
+            if tid == last_tid:
+                break
+            if tid == clade_tid:
+                new_possible_tids.append(possible_tid)
+                # print(f"    KEEP")
+                break
+
+            tid = nodes[tid]["ptid"]
+
+    # TODO: technically we can also use hint information here
+
+    return new_possible_tids
+
+
 if __name__ == "__main__":
     with open(BASE_DIR / "species.json", "r") as fp:
         species = json.load(fp)
@@ -2438,14 +2618,52 @@ if __name__ == "__main__":
         for node in nodes["nodes"].values()
         if node["nchildren"] == 0
     }
-    for i in [0, 1, 2]:
-        tids = []
-        for sp in species:
-            if sp["level"] >= i:
-                tids.append(species_tids[sp["scientific"]])
+    tids = list(species_tids.values())
+    # for i in [0]:
+    #     tids = []
+    #     for sp in species:
+    #         if sp["level"] >= i:
+    #             tids.append(species_tids[sp["scientific"]])
 
-        nodes = limit_species(nodes, tids)
-        compute_stats(nodes)
+    #     nodes = limit_species(nodes, tids)
+    #     compute_stats(nodes)
+
+    # nodes = limit_species(nodes, [988, 749, 255, 1367, 1295, 1195, 1170])
+    # tids = [988, 749, 255, 1367, 1295, 1195, 1170]
+    # nodes = limit_species(nodes, tids)
+    # display_tree(nodes, outfile=TMP_DIR / f"tree_limited_{len(nodes['nodes'])}.html")
+    # mapping = compute_guess_answer_mapping(nodes)
+    # optimal_guess(nodes, mapping, tids)
+
+    mapping = compute_guess_answer_mapping(nodes)
+
+    num_reps = 10
+    for answer_tid in tids:
+        answer = ""
+        total_guesses = 0
+        for _ in range(num_reps):
+            possible_tids = tids
+            num_guesses = 0
+            while True:
+                num_guesses += 1
+                guess_tid, guess_node, mean = optimal_guess(
+                    nodes, mapping, possible_tids
+                )
+                possible_tids = make_guess(nodes, answer_tid, guess_tid, possible_tids)
+                if len(possible_tids) == 0:
+                    print(f"ANSWER {guess_node['com_name'][0]} ({num_guesses} guesses)")
+                    answer = guess_node["com_name"][0]
+                    break
+                else:
+                    print(
+                        f"GUESS: {guess_node['com_name'][0]}, {len(possible_tids)} possibilities, ({mean:.1f} expected)"
+                    )
+            total_guesses += num_guesses
+            print()
+        mean_guesses = total_guesses / num_reps
+
+        with open(TMP_DIR / "mean_guesses.csv", "a+") as fp:
+            fp.write(f"{answer_tid},{answer},{mean_guesses}\n")
 
     # list_species(nodes)
     # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
