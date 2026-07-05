@@ -792,8 +792,29 @@
   "Hyaenidae": {
     "text": "Hyenas or hyaenas (from Ancient Greek ὕαινα, hýaina) are feliform carnivoran mammals belonging to the family Hyaenidae. With just four extant species (each in its own genus), it is the fifth-smallest family in the order Carnivora and one of the smallest in the class Mammalia. Despite their low diversity, hyenas are unique and vital components of most African ecosystems."
   },
+  "Columbaves": {
+    "text": "Columbaves is a taxon that contains Columbimorphae (pigeons, mesites, and sandgrouse) and Otidimorphae (bustards, cuckoos, and turacos) discovered by genomic analysis by Prum et al. (2015). This conflicts with the Columbea and Otidae hypotheses in which Mirandornithes are the sister taxon to Columbimorphae and Cypselomorphae the sister taxon to Otidimorphae, respectively, found by Jarvis et al. (2014). Neither hypothesis supports the two subdivisions of Metaves and Coronoaves as previous studies had found."
+  },
+  "Ecdysozoa": {
+    "text": "Ecdysozoa is a group of protostome animals, including Arthropoda (insects, chelicerates (including arachnids), crustaceans, and myriapods), Nematoda, and several smaller phyla. The grouping of these animal phyla into a single clade was first proposed by Eernisse et al. (1992) based on a phylogenetic analysis of 141 morphological characters of ultrastructural and embryological phenotypes."
+  },
+  "Gruae": {
+    "text": "Gruae is a taxon of birds that contains the order Opisthocomiformes (hoatzin) and Gruimorphae (shorebirds and rails) identified in 2014 by genome analysis. Previous studies have placed the Hoatzin in different parts of the bird family tree; however, despite its unusual and primitive morphology, genetic studies have shown the hoatzin is not as primitive or as ancient as once thought, and that it could be a very derived bird that reverted to or retains some plesiomorphic traits."
+  },
+  "Rodentia": {
+    "text": "Rodents (from Latin rodens 'gnawing') are a group of mammals belonging to the order Rodentia characterized by a single pair of continuously growing incisors in each of the upper and lower jaws. Rodents make up about 40% of all mammal species. They are native to all major landmasses except Antarctica and several oceanic islands, though they have subsequently been introduced to most of these landmasses by human activity. Most rodents are small animals with robust bodies, short limbs, and long tails."
+  },
+  "Heloderma suspectum": {
+    "text": "The Gila monster (Heloderma suspectum) is a species of venomous lizard native to the Southwestern United States and the northwestern Mexican state of Sonora. It is a heavy, slow-moving reptile, up to 22 in (56 cm) long, and it is the only venomous lizard native to the United States. Its venomous close relatives, the four beaded lizards (all former subspecies of Heloderma horridum) inhabit Mexico and Guatemala. The Gila monster is sluggish in nature, so it is not generally dangerous and very rarely poses a real threat to humans."
+  },
+  "Pterygota": {
+    "text": "Pterygota (Ancient Greek: \u03c0\u03c4\u03b5\u03c1\u03c5\u03b3\u03c9\u03c4\u03cc\u03c2, lit. 'winged') is a subclass of insects that includes all winged insects and groups which lost them secondarily. Pterygota group comprises 99.9% of all insects. The orders not included are the Archaeognatha (jumping bristletails) and the Zygentoma (silverfishes and firebrats), two primitively wingless insect orders."
+  },
   "Polyphaga (Coleoptera)": { "sci_name": "Polyphaga" },
-  "Euthyneura (Mollusca)": { "sci_name": "Euthyneura" },
+  "Euthyneura (Mollusca)": {
+    "sci_name": "Euthyneura",
+    "text": "Euthyneura is a taxonomic infraclass of snails and slugs, which includes species exclusively from marine, aquatic and terrestrial gastropod mollusks in the clade Heterobranchia. Euthyneurans are a diverse group, containing about 40% of the known species of gastropods, including the major land snail and slug clade Stylommatophora, various sea slug lineages such as nudibranchs, the parasitic sea snail family Pyramidellidae, and several other lineages of snails and slugs from a variety of habitats."
+  },
   "Ensifera (Orthoptera)": { "sci_name": "Ensifera" },
   "Articulata (Crinoidea)": { "sci_name": "Articulata" },
   "Dictyoptera (Cohort)": { "sci_name": "Dictyoptera" },

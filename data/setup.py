@@ -2131,6 +2131,13 @@ def check_nodes_final(nodes):
         node_image = node.get("image", "")
         node_rank = node.get("rank", "clade")
 
+        if node_text.endswith("et al."):
+            print(f"WARNING: {node_name}'s text ends with 'et al.'")
+        for d in range(10):
+            if node_text.endswith(f"{d}."):
+                print(f"WARNING: {node_name}'s text ends with '{d}.'")
+                continue
+
         if node_text == "":
             missing_text += 1
 
@@ -2601,7 +2608,7 @@ if __name__ == "__main__":
 
     make_js_files(nodes)
 
-    display_names = []
+    display_names = ["Xerinae"]
     for node in nodes["nodes"].values():
         if node["nchildren"] >= 5 or node["sci_name"] in display_names:
             print(node["sci_name"])
@@ -2613,12 +2620,12 @@ if __name__ == "__main__":
     display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
     print()
 
-    species_tids = {
-        node["sci_name"]: node["tid"]
-        for node in nodes["nodes"].values()
-        if node["nchildren"] == 0
-    }
-    tids = list(species_tids.values())
+    # species_tids = {
+    #     node["sci_name"]: node["tid"]
+    #     for node in nodes["nodes"].values()
+    #     if node["nchildren"] == 0
+    # }
+    # tids = list(species_tids.values())
     # for i in [0]:
     #     tids = []
     #     for sp in species:
@@ -2635,35 +2642,35 @@ if __name__ == "__main__":
     # mapping = compute_guess_answer_mapping(nodes)
     # optimal_guess(nodes, mapping, tids)
 
-    mapping = compute_guess_answer_mapping(nodes)
+    # mapping = compute_guess_answer_mapping(nodes)
 
-    num_reps = 10
-    for answer_tid in tids:
-        answer = ""
-        total_guesses = 0
-        for _ in range(num_reps):
-            possible_tids = tids
-            num_guesses = 0
-            while True:
-                num_guesses += 1
-                guess_tid, guess_node, mean = optimal_guess(
-                    nodes, mapping, possible_tids
-                )
-                possible_tids = make_guess(nodes, answer_tid, guess_tid, possible_tids)
-                if len(possible_tids) == 0:
-                    print(f"ANSWER {guess_node['com_name'][0]} ({num_guesses} guesses)")
-                    answer = guess_node["com_name"][0]
-                    break
-                else:
-                    print(
-                        f"GUESS: {guess_node['com_name'][0]}, {len(possible_tids)} possibilities, ({mean:.1f} expected)"
-                    )
-            total_guesses += num_guesses
-            print()
-        mean_guesses = total_guesses / num_reps
+    # num_reps = 10
+    # for answer_tid in tids:
+    #     answer = ""
+    #     total_guesses = 0
+    #     for _ in range(num_reps):
+    #         possible_tids = tids
+    #         num_guesses = 0
+    #         while True:
+    #             num_guesses += 1
+    #             guess_tid, guess_node, mean = optimal_guess(
+    #                 nodes, mapping, possible_tids
+    #             )
+    #             possible_tids = make_guess(nodes, answer_tid, guess_tid, possible_tids)
+    #             if len(possible_tids) == 0:
+    #                 print(f"ANSWER {guess_node['com_name'][0]} ({num_guesses} guesses)")
+    #                 answer = guess_node["com_name"][0]
+    #                 break
+    #             else:
+    #                 print(
+    #                     f"GUESS: {guess_node['com_name'][0]}, {len(possible_tids)} possibilities, ({mean:.1f} expected)"
+    #                 )
+    #         total_guesses += num_guesses
+    #         print()
+    #     mean_guesses = total_guesses / num_reps
 
-        with open(TMP_DIR / "mean_guesses.csv", "a+") as fp:
-            fp.write(f"{answer_tid},{answer},{mean_guesses}\n")
+    #     with open(TMP_DIR / "mean_guesses.csv", "a+") as fp:
+    #         fp.write(f"{answer_tid},{answer},{mean_guesses}\n")
 
     # list_species(nodes)
     # display_tree(nodes, outfile=TMP_DIR / f"tree_full_{len(nodes['nodes'])}.html")
