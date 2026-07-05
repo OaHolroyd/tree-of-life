@@ -96,6 +96,7 @@ const VALID_THEMES = new Set(["dark", "light"]);
  * @param {int} tid - if set to -1 it will be chosen at random
  */
 function restartGame(tid = -1) {
+  guessInput.removeAttribute("disabled", "");
   game.restart(tid, game.root, game.size);
 
   suggestionList = game.getSpeciesTIDs(true);
@@ -143,6 +144,9 @@ function handleGuessSubmit() {
 
   // guess has ended the game
   if (hasEnded) {
+    // prevent further inputs
+    guessInput.setAttribute("disabled", "");
+
     // show the answer in the clade inspector and tree
     inspectClade(game.answer);
     treeUI.revealAnswer(game.tree[game.answer]);
@@ -738,12 +742,14 @@ hintBtn.addEventListener("click", () => {
 
 // 2. Hook up Restart match interaction listener
 restartBtn.addEventListener("click", () => {
-  const confirmRestart = confirm(
-    "Are you sure you want to abandon this match and start a clean game session layout?",
-  );
-  if (confirmRestart) {
-    console.log("Reinitializing gameplay loop frameworks...");
+  let confirmRestart = true;
+  if (game.state == GameState.PLAYING) {
+    confirmRestart = confirm(
+      "Are you sure you want to abandon this match and start a clean game session layout?",
+    );
+  }
 
+  if (confirmRestart) {
     restartGame();
 
     // Ensure button values adapt safely to the newly generated match state parameters
