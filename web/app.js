@@ -42,6 +42,7 @@ let activeInspectionID = -1;
 let mysteryImageInterval = null;
 let currentMysteryImageTID = -1;
 let dailyRefreshTimeout = null;
+let nextDailyCountdownInterval = null;
 let lastKnownDateKey = "";
 let configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
 let configuredRootTID = DAILY_ROOT_TID;
@@ -217,14 +218,32 @@ function handleGuessSubmit() {
     // populate the stats inside the popover
     const currentStats = game.getStats();
     modalMessage.innerHTML = `
-      Current Streak: <strong>${currentStats.currentStreak}</strong> |
-      Longest Streak: <strong>${currentStats.longestStreak}</strong><br>
-      Daily Wins: ${currentStats.won} / ${currentStats.played}<br>
-      All Games: ${currentStats.totalWon} / ${currentStats.totalPlayed}
+      <span class="game-over-stats">
+        <span class="game-over-stat-row">
+          <span class="game-over-stat-label">Current Streak</span>
+          <strong class="game-over-stat-value">${currentStats.currentStreak}</strong>
+        </span>
+        <span class="game-over-stat-row">
+          <span class="game-over-stat-label">Longest Streak</span>
+          <strong class="game-over-stat-value">${currentStats.longestStreak}</strong>
+        </span>
+        <span class="game-over-stat-row">
+          <span class="game-over-stat-label">Daily Wins</span>
+          <strong class="game-over-stat-value">${currentStats.won} / ${currentStats.played}</strong>
+        </span>
+        <span class="game-over-stat-row">
+          <span class="game-over-stat-label">All Games</span>
+          <strong class="game-over-stat-value">${currentStats.totalWon} / ${currentStats.totalPlayed}</strong>
+        </span>
+      </span>
+      <span class="game-over-next-daily">
+        <span class="game-over-next-daily-label">Next Daily</span>
+        <strong id="next-daily-countdown" class="game-over-next-daily-value">--:--:--</strong>
+      </span>
     `;
 
     // show the popover
-    modalOverlay.classList.remove("hidden");
+    toggleModalState(modalOverlay, true);
     updateSettingsLockState();
     return;
   }
@@ -430,11 +449,63 @@ function applyTheme(theme) {
   updateThemeMetaTags();
 }
 
+function getNextDailyResetTime() {
+  const nextMidnight = new Date();
+  nextMidnight.setHours(24, 0, 0, 0);
+  return nextMidnight;
+}
+
+function formatCountdownDuration(milliseconds) {
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+    2,
+    "0",
+  );
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+function updateNextDailyCountdown() {
+  const countdownElement = document.getElementById("next-daily-countdown");
+  if (!countdownElement) {
+    return;
+  }
+
+  countdownElement.textContent = formatCountdownDuration(
+    getNextDailyResetTime().getTime() - Date.now(),
+  );
+}
+
+function stopNextDailyCountdown() {
+  if (nextDailyCountdownInterval) {
+    clearInterval(nextDailyCountdownInterval);
+    nextDailyCountdownInterval = null;
+  }
+}
+
+function startNextDailyCountdown() {
+  stopNextDailyCountdown();
+  updateNextDailyCountdown();
+  nextDailyCountdownInterval = window.setInterval(
+    updateNextDailyCountdown,
+    1000,
+  );
+}
+
 function toggleModalState(targetModalElement, shouldShow) {
   if (shouldShow) {
     targetModalElement.classList.remove("hidden");
   } else {
     targetModalElement.classList.add("hidden");
+  }
+
+  if (targetModalElement === modalOverlay) {
+    if (shouldShow) {
+      startNextDailyCountdown();
+    } else {
+      stopNextDailyCountdown();
+    }
   }
 }
 
@@ -647,7 +718,7 @@ submitBtn.addEventListener("click", handleGuessSubmit);
 // Pipeline Trigger: Handle Resetting the Entire Ecosystem Loop
 restartGameBtn.addEventListener("click", () => {
   // 1. Hide the centered dialog interface
-  modalOverlay.classList.add("hidden");
+  toggleModalState(modalOverlay, false);
 
   // 2. Start the next available game for the current day state
   restartGame();
