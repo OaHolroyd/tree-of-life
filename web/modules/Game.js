@@ -385,6 +385,10 @@ export class Game {
     return this.stats;
   }
 
+  isDailyMode() {
+    return this.mode === GAME_MODE.DAILY;
+  }
+
   hasCompletedDailyGame(dateKey = getCurrentDateKey()) {
     return this.stats.lastCompletedDailyDate === dateKey;
   }

@@ -611,6 +611,22 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   color: var(--color-text-muted);
 }
 
+.game-mode-label {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  margin-bottom: 2px;
+}
+
+.guesses-left-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .count-highlight {
   color: var(--color-count);
   font-size: 1.1rem;

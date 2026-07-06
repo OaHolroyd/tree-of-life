@@ -62,6 +62,7 @@ const submitBtn = document.getElementById("submit-guess-btn");
 const hintBtn = document.getElementById("game-hint-btn");
 const restartBtn = document.getElementById("game-restart-btn");
 const guessCount = document.getElementById("guesses-count");
+const gameModeLabel = document.getElementById("game-mode-label");
 
 const modalOverlay = document.getElementById("game-over-modal");
 const modalTitle = document.getElementById("modal-title");
@@ -153,6 +154,7 @@ function restartGame(tid = -1) {
   inspectClade(game.getBestTID());
 
   updateHintButtonState();
+  updateGameModeLabel();
   guessCount.innerHTML = game.guessesRemaining;
   updateSettingsLockState();
 }
@@ -162,6 +164,12 @@ function updateHintButtonState() {
 
   hintBtn.innerHTML = `Hint (${game.hint_cost})`;
   hintBtn.disabled = !game.canHint();
+}
+
+function updateGameModeLabel() {
+  if (!gameModeLabel) return;
+
+  gameModeLabel.textContent = game.isDailyMode() ? "Daily" : "Practice";
 }
 
 function handleGuessSubmit() {
