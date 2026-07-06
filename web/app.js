@@ -971,43 +971,65 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   let deferredPrompt = null;
 
+  function isStandaloneMode() {
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function getPWAInstallPlatform() {
+    const userAgent = navigator.userAgent || window.opera;
+
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      return "ios";
+    }
+
+    if (/android/i.test(userAgent)) {
+      return "android";
+    }
+
+    return null;
+  }
+
+  function shouldUseCustomPWAPrompt() {
+    const isMobileSize = window.matchMedia("(max-width: 768px)").matches;
+    const isFirstTime = !hasOpenedBefore();
+    const platform = getPWAInstallPlatform();
+
+    return isMobileSize && isFirstTime && platform === "android" && !isStandaloneMode();
+  }
+
   // --- A. Native Android/Chrome Interception ---
   // Chrome fires this event if the site meets PWA criteria and isn't installed yet
   window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault(); // Stop the default mini-infobar from popping up
-    deferredPrompt = e; // Cache the event so we can trigger it manually later
+    if (!shouldUseCustomPWAPrompt()) {
+      deferredPrompt = null;
+      return;
+    }
 
-    // Evaluate if this is a first-time mobile visitor
-    evaluatePromptTrigger();
+    e.preventDefault();
+    deferredPrompt = e;
+
+    showPWAPrompt();
   });
 
   // --- B. Evaluate Prompt Conditions ---
   function evaluatePromptTrigger() {
-    const isMobileSize = window.matchMedia("(max-width: 768px)").matches;
-
-    // Assume your storage utility function returns false on their absolute first visit
-    const isFirstTime = !hasOpenedBefore();
-
-    if (isFirstTime && isMobileSize) {
+    if (!hasOpenedBefore() && window.matchMedia("(max-width: 768px)").matches) {
       showPWAPrompt();
     }
   }
 
   // --- C. Build Conditional UI Content Structures ---
   function showPWAPrompt() {
-    // Determine the device platform user agent profile if not explicitly flagged by Chrome
-    const userAgent = navigator.userAgent || window.opera;
-    let os = null;
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      os = "ios";
-    } else if (/android/i.test(userAgent)) {
-      os = "android";
-    } else {
+    const os = getPWAInstallPlatform();
+    if (!os) {
       return; // Exit silently on standard desktop environments
     }
 
     // Don't show the prompt if the app is already running inside PWA mode (standalone)
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    if (isStandaloneMode()) {
       return;
     }
 
