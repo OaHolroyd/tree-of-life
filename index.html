@@ -171,7 +171,11 @@
           </div>
           <div class="game-controls-bar">
             <div id="guesses-left-container" class="guesses-left-box">
-              <div id="game-mode-label" class="game-mode-label">Daily</div>
+              <div
+                id="game-mode-label"
+                class="game-mode-label"
+                data-ready="false"
+              ></div>
               <div class="guesses-left-row">
                 Guesses Left:
                 <span id="guesses-count" class="count-highlight">20</span>
@@ -182,6 +186,7 @@
               id="game-hint-btn"
               class="control-btn hint-btn"
               title="Get a Hint"
+              disabled
             >
               Hint (3)
             </button>
@@ -215,7 +220,7 @@
         <div id="clade-card" class="clade-card">
           <!--titles-->
           <div class="card-header">
-            <h2 id="clade-sci-name" class="sci-name">Metazoa</h2>
+            <h2 id="clade-sci-name" class="sci-name">Animalia</h2>
             <p id="clade-com-name" class="com-name">Animals</p>
           </div>
 

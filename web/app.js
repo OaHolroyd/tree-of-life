@@ -171,6 +171,7 @@ function updateGameModeLabel() {
   if (!gameModeLabel) return;
 
   gameModeLabel.textContent = game.isDailyMode() ? "Daily" : "Practice";
+  gameModeLabel.dataset.ready = "true";
 }
 
 function handleGuessSubmit() {

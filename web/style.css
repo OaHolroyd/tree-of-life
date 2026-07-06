@@ -620,6 +620,10 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   margin-bottom: 2px;
 }
 
+.game-mode-label[data-ready="false"] {
+  visibility: hidden;
+}
+
 .guesses-left-row {
   display: flex;
   align-items: baseline;
