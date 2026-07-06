@@ -273,11 +273,11 @@
             <div class="stats-grid">
               <div class="stat-card">
                 <span id="stat-played" class="stat-value">0</span>
-                <span class="stat-label">Played</span>
+                <span class="stat-label">Daily Played</span>
               </div>
               <div class="stat-card">
                 <span id="stat-winrate" class="stat-value">0%</span>
-                <span class="stat-label">Win %</span>
+                <span class="stat-label">Daily Win %</span>
               </div>
               <div class="stat-card">
                 <span id="stat-streak" class="stat-value">0</span>
@@ -286,6 +286,14 @@
               <div class="stat-card">
                 <span id="stat-max-streak" class="stat-value">0</span>
                 <span class="stat-label">Max Streak</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-total-played" class="stat-value">0</span>
+                <span class="stat-label">Total Played</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-total-won" class="stat-value">0</span>
+                <span class="stat-label">Total Won</span>
               </div>
             </div>
             <button id="clear-data-btn" class="danger-btn">
@@ -297,6 +305,10 @@
 
           <div class="settings-group">
             <h3>Game Settings</h3>
+            <p id="settings-lock-message" class="settings-help">
+              Today's daily uses the large species pool from Animalia. Finish it
+              to change these settings.
+            </p>
 
             <div class="setting-item">
               <label class="setting-label">Species Pool Size</label>
@@ -314,7 +326,6 @@
                   id="list-medium"
                   name="species-pool"
                   value="1"
-                  checked
                 />
                 <label for="list-medium">Medium</label>
 

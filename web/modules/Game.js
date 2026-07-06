@@ -4,12 +4,34 @@ import { loadGameStats, saveGameStats } from "./Storage.js";
 
 const NUM_CLADES = CLADE_LIST.length;
 const NUM_GUESSES = [18, 22, 25];
+export const DAILY_ROOT_TID = 0;
+export const DAILY_SPECIES_POOL_SIZE = 2;
+const GAME_MODE = Object.freeze({
+  DAILY: "daily",
+  CUSTOM: "custom",
+});
 
 export const GameState = Object.freeze({
   PLAYING: 0,
   WON: 1,
   LOST: 2,
 });
+
+function getCurrentDateKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function hashString(value) {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
 
 export class Game {
   /**
@@ -23,6 +45,7 @@ export class Game {
     this.root = root;
     this.size = size;
     this.answer = tid;
+    this.mode = GAME_MODE.CUSTOM;
     this.tree = CLADE_LIST;
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
@@ -107,15 +130,27 @@ export class Game {
     this.tree[this.answer].sub_ptid = this.root;
   }
 
+  restartDailyGame() {
+    this.mode = GAME_MODE.DAILY;
+    const dateKey = getCurrentDateKey();
+    const dailyAnswer = this.getDailySpeciesTID(dateKey);
+    this.restart(dailyAnswer, DAILY_ROOT_TID, DAILY_SPECIES_POOL_SIZE);
+  }
+
+  restartCustomGame(tid = -1, root = this.root, size = this.size) {
+    this.mode = GAME_MODE.CUSTOM;
+    this.restart(tid, root, size);
+  }
+
   /**
    * Generate the currently valid species
    * @param {boolean} includeNames - whether to also include the names in the returned array
    * @returns an array of valid species TIDs (or [name, tid] pairs) for the current setup
    */
-  getSpeciesTIDs(includeNames = false) {
+  getSpeciesTIDs(includeNames = false, root = this.root, size = this.size) {
     let tids = [];
 
-    SPECIES_LISTS[this.size].forEach((entry) => {
+    SPECIES_LISTS[size].forEach((entry) => {
       let name = entry[0];
       let tid = entry[1];
 
@@ -123,7 +158,7 @@ export class Game {
       // and only add it to the list if it does
       let stid = tid;
       while (this.tree[tid].ptid !== null) {
-        if (this.tree[tid].ptid === this.root) {
+        if (this.tree[tid].ptid === root) {
           if (includeNames) {
             tids.push([name, stid]);
           } else {
@@ -140,6 +175,15 @@ export class Game {
     }
 
     return tids;
+  }
+
+  getDailySpeciesTID(dateKey = getCurrentDateKey()) {
+    const dailySpeciesTIDs = this.getSpeciesTIDs(
+      false,
+      DAILY_ROOT_TID,
+      DAILY_SPECIES_POOL_SIZE,
+    );
+    return dailySpeciesTIDs[hashString(dateKey) % dailySpeciesTIDs.length];
   }
 
   /**
@@ -288,6 +332,7 @@ export class Game {
     let has_ended = false;
     if (this.guessesRemaining === 0) {
       this.saveGameResult(false);
+      this.state = GameState.LOST;
       has_ended = true;
     }
 
@@ -301,6 +346,23 @@ export class Game {
    * @param {boolean} isWin
    */
   saveGameResult(isWin) {
+    this.stats.totalPlayed += 1;
+
+    if (isWin) {
+      this.stats.totalWon += 1;
+    }
+
+    if (this.mode !== GAME_MODE.DAILY) {
+      saveGameStats(this.stats);
+      return;
+    }
+
+    const todayKey = getCurrentDateKey();
+    if (this.stats.lastCompletedDailyDate === todayKey) {
+      saveGameStats(this.stats);
+      return;
+    }
+
     this.stats.played += 1;
 
     if (isWin) {
@@ -313,6 +375,8 @@ export class Game {
       this.stats.currentStreak = 0; // Break the streak
     }
 
+    this.stats.lastCompletedDailyDate = todayKey;
+
     // Commit cleanly to local browser storage
     saveGameStats(this.stats);
   }
@@ -321,11 +385,18 @@ export class Game {
     return this.stats;
   }
 
+  hasCompletedDailyGame(dateKey = getCurrentDateKey()) {
+    return this.stats.lastCompletedDailyDate === dateKey;
+  }
+
   eraseStats() {
     this.stats.played = 0;
     this.stats.won = 0;
     this.stats.currentStreak = 0;
     this.stats.longestStreak = 0;
+    this.stats.totalPlayed = 0;
+    this.stats.totalWon = 0;
+    this.stats.lastCompletedDailyDate = null;
     saveGameStats(this.stats);
   }
 }

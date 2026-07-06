@@ -298,7 +298,7 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop layouts */
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 8px;
 }
@@ -340,6 +340,10 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   color: var(--color-text-muted);
   margin: 0 0 12px 0;
   line-height: 1.4;
+}
+
+.settings-help {
+  min-height: 2.5em;
 }
 
 .danger-btn {
@@ -405,6 +409,13 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   color: var(--color-accent);
   font-weight: 600;
   box-shadow: 0 1px 3px var(--color-shadow-medium);
+}
+
+.segmented-control input[type="radio"]:disabled + label,
+.custom-select:disabled,
+.secondary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* --- Custom Dropdown Menu Style --- */
@@ -1250,10 +1261,7 @@ body[data-theme="light"] .species-node.selected {
   }
 
   .stats-grid {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* 2x2 grid wrapper stack on tiny phone screens */
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
 

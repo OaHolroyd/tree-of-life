@@ -1,5 +1,10 @@
 import { CLADE_LIST } from "./data/clades.js";
-import { Game, GameState } from "./modules/Game.js";
+import {
+  DAILY_ROOT_TID,
+  DAILY_SPECIES_POOL_SIZE,
+  Game,
+  GameState,
+} from "./modules/Game.js";
 import { Tree } from "./modules/Tree.js";
 import { getSuggestions } from "./modules/Autocomplete.js";
 import {
@@ -36,6 +41,10 @@ let livePeekOffset = 0;
 let activeInspectionID = -1;
 let mysteryImageInterval = null;
 let currentMysteryImageTID = -1;
+let dailyRefreshTimeout = null;
+let lastKnownDateKey = "";
+let configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
+let configuredRootTID = DAILY_ROOT_TID;
 
 // Game and core UI state
 const game = new Game(-1, 0, 1);
@@ -74,6 +83,10 @@ const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
 const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
 const rootNodeSelect = document.getElementById("root-node-select");
+const settingsLockMessage = document.getElementById("settings-lock-message");
+const speciesPoolRadios = Array.from(
+  document.querySelectorAll('input[name="species-pool"]'),
+);
 
 const pwaModal = document.getElementById("pwa-prompt-modal");
 const pwaCloseBtn = document.getElementById("close-pwa-prompt-btn");
@@ -87,6 +100,36 @@ const backgroundColorMetaTag = document.querySelector(
 );
 const VALID_THEMES = new Set(["dark", "light"]);
 
+function getCurrentDateKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function isDailyGamePending() {
+  return !game.hasCompletedDailyGame();
+}
+
+function updateSettingsLockState() {
+  const isLocked = isDailyGamePending();
+
+  speciesPoolRadios.forEach((radio) => {
+    radio.disabled = isLocked;
+  });
+  rootNodeSelect.disabled = isLocked;
+  resetDefaultsBtn.disabled = isLocked;
+
+  if (!settingsLockMessage) {
+    return;
+  }
+
+  settingsLockMessage.textContent = isLocked
+    ? "Today's daily challenge uses the large species pool, starting from Animalia. Finish it to change these settings."
+    : "Settings apply to games you start after finishing today's daily challenge.";
+}
+
 // ====================================
 //   GAME INTERACTION FUNCTIONS
 // ====================================
@@ -97,7 +140,11 @@ const VALID_THEMES = new Set(["dark", "light"]);
  */
 function restartGame(tid = -1) {
   guessInput.removeAttribute("disabled", "");
-  game.restart(tid, game.root, game.size);
+  if (isDailyGamePending()) {
+    game.restartDailyGame();
+  } else {
+    game.restartCustomGame(tid, configuredRootTID, configuredSpeciesPoolSize);
+  }
 
   suggestionList = game.getSpeciesTIDs(true);
 
@@ -107,6 +154,7 @@ function restartGame(tid = -1) {
 
   updateHintButtonState();
   guessCount.innerHTML = game.guessesRemaining;
+  updateSettingsLockState();
 }
 
 function updateHintButtonState() {
@@ -163,11 +211,13 @@ function handleGuessSubmit() {
     modalMessage.innerHTML = `
       Current Streak: <strong>${currentStats.currentStreak}</strong> |
       Longest Streak: <strong>${currentStats.longestStreak}</strong><br>
-      Games Won: ${currentStats.won} / ${currentStats.played}
+      Daily Wins: ${currentStats.won} / ${currentStats.played}<br>
+      All Games: ${currentStats.totalWon} / ${currentStats.totalPlayed}
     `;
 
     // show the popover
     modalOverlay.classList.remove("hidden");
+    updateSettingsLockState();
     return;
   }
 
@@ -398,6 +448,8 @@ function populateSettingsStats() {
   document.getElementById("stat-winrate").textContent = `${winRate}%`;
   document.getElementById("stat-streak").textContent = stats.currentStreak;
   document.getElementById("stat-max-streak").textContent = stats.longestStreak;
+  document.getElementById("stat-total-played").textContent = stats.totalPlayed;
+  document.getElementById("stat-total-won").textContent = stats.totalWon;
 }
 
 function initializeRootNodeDropdown() {
@@ -437,14 +489,13 @@ function saveSettings() {
   const selectElement = document.getElementById("root-node-select");
 
   // 1. Gather the selected integer index from our species pool radios
-  const speciesRadios = Array.from(
-    document.querySelectorAll('input[name="species-pool"]'),
-  );
   const activeRadio = document.querySelector(
     'input[name="species-pool"]:checked',
   );
-  const speciesPoolSize = speciesRadios.indexOf(activeRadio);
+  const speciesPoolSize = speciesPoolRadios.indexOf(activeRadio);
   const rootTID = parseInt(selectElement.value, 10);
+  configuredSpeciesPoolSize = speciesPoolSize;
+  configuredRootTID = rootTID;
 
   // 3. Serialize and commit to client profile memory
   saveGameSettings(speciesPoolSize, rootTID);
@@ -455,9 +506,8 @@ function loadAndApplySettings() {
   const savedData = loadGameSettings();
 
   // 2. Synchronize the Radio buttons UI
-  const speciesRadios = document.querySelectorAll('input[name="species-pool"]');
-  if (speciesRadios[savedData.speciesPoolSize]) {
-    speciesRadios[savedData.speciesPoolSize].checked = true;
+  if (speciesPoolRadios[savedData.speciesPoolSize]) {
+    speciesPoolRadios[savedData.speciesPoolSize].checked = true;
   }
 
   // 3. Synchronize the Dropdown select element UI
@@ -466,13 +516,43 @@ function loadAndApplySettings() {
     selectElement.value = savedData.rootTID.toString();
   }
 
-  game.size = savedData.speciesPoolSize;
-  game.root = savedData.rootTID;
+  configuredSpeciesPoolSize = savedData.speciesPoolSize;
+  configuredRootTID = savedData.rootTID;
   restartGame();
+  updateSettingsLockState();
 
   // STUB: Inform your core gameplay loop modules to update their state configurations
   // game.setDifficultyPoolByIndex(settings.speciesPoolIndex);
   // game.setRootTaxonomyID(settings.rootTID);
+}
+
+function handleDailyRefresh() {
+  const currentDateKey = getCurrentDateKey();
+  if (currentDateKey === lastKnownDateKey) {
+    return;
+  }
+
+  lastKnownDateKey = currentDateKey;
+  toggleModalState(modalOverlay, false);
+  restartGame();
+  populateSettingsStats();
+}
+
+function scheduleNextDailyRefresh() {
+  if (dailyRefreshTimeout) {
+    clearTimeout(dailyRefreshTimeout);
+  }
+
+  const nextMidnight = new Date();
+  nextMidnight.setHours(24, 0, 0, 50);
+
+  dailyRefreshTimeout = window.setTimeout(
+    () => {
+      handleDailyRefresh();
+      scheduleNextDailyRefresh();
+    },
+    Math.max(1000, nextMidnight.getTime() - Date.now()),
+  );
 }
 
 function activateCladeMobileSheet() {
@@ -561,18 +641,8 @@ restartGameBtn.addEventListener("click", () => {
   // 1. Hide the centered dialog interface
   modalOverlay.classList.add("hidden");
 
-  // 2. Select a new random tid sequence out of your python or static module arrays
+  // 2. Start the next available game for the current day state
   restartGame();
-
-  // 3. Wipe out the old layout records from the canvas simulation tracker
-  treeUI.reset(); // Make sure to add this small reset hook in TreePhysics.js!
-
-  // 4. Feed the new initial state (the fresh root nodes) straight to the layout engine
-  treeUI.updateTreeLayout(game.getCurrentTree());
-
-  // 5. Re-focus inputs and sidebar information frames
-  guessCount.innerHTML = game.guessesRemaining;
-  inspectClade(0);
   guessInput.focus();
 });
 
@@ -638,6 +708,7 @@ cladeScroll.addEventListener("scroll", () => {
 // 1. Open Button Interaction Registrations
 openSettingsBtn.addEventListener("click", () => {
   populateSettingsStats();
+  updateSettingsLockState();
   toggleModalState(settingsModal, true);
 });
 
@@ -672,18 +743,25 @@ document.querySelectorAll(".modal-overlay").forEach((overlayElement) => {
 // 3. Functional Settings Administrative Storage Erasure Action Stub
 clearDataBtn.addEventListener("click", () => {
   const confirmation = confirm(
-    "Are you completely sure you want to clear your local game progress metrics? This action will permanently erase your current streaks data records.",
+    "Are you completely sure you want to clear your local game progress metrics? This action will permanently erase both daily and total stats.",
   );
   if (confirmation) {
     game.eraseStats();
     populateSettingsStats();
+    toggleModalState(modalOverlay, false);
+    restartGame();
 
     toggleModalState(settingsModal, false);
   }
 });
 
-document.querySelectorAll('input[name="species-pool"]').forEach((radio) => {
+speciesPoolRadios.forEach((radio) => {
   radio.addEventListener("change", (e) => {
+    if (isDailyGamePending()) {
+      updateSettingsLockState();
+      return;
+    }
+
     const selectedIndex = parseInt(e.target.value, 10);
     console.log(
       `Difficulty change detected! Selected species pool size: ${selectedIndex}`,
@@ -693,12 +771,17 @@ document.querySelectorAll('input[name="species-pool"]').forEach((radio) => {
     // STUB: Hook into your game loading engine here
     // game.setDifficultyPool(selectedSize);
     // game.restartMatch();
-    game.size = selectedIndex;
+    configuredSpeciesPoolSize = selectedIndex;
     restartGame(-1);
   });
 });
 
 rootNodeSelect.addEventListener("change", (e) => {
+  if (isDailyGamePending()) {
+    updateSettingsLockState();
+    return;
+  }
+
   const selectedTID = parseInt(e.target.value, 10);
   console.log(
     `Root node change detected! Selected target TID parameter: ${selectedTID}`,
@@ -708,21 +791,26 @@ rootNodeSelect.addEventListener("change", (e) => {
   // STUB: Hook into your taxonomy generation mapping framework here
   // game.setRootTaxonomyID(parseInt(selectedTID));
   // game.restartMatch();
-  game.root = selectedTID;
+  configuredRootTID = selectedTID;
   restartGame(-1);
 });
 
 resetDefaultsBtn.addEventListener("click", () => {
+  if (isDailyGamePending()) {
+    updateSettingsLockState();
+    return;
+  }
+
   console.log(
     "Restoring settings configurations back to system factory defaults...",
   );
 
   // Reset the UI states inside the settings panel wrapper DOM
-  document.getElementById("list-medium").checked = true;
+  document.getElementById("list-large").checked = true;
   rootNodeSelect.value = "0";
   saveSettings();
-  game.size = 1;
-  game.root = 0;
+  configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
+  configuredRootTID = DAILY_ROOT_TID;
   restartGame(-1);
 
   // STUB: Fire notifications to update your internal engine memory states
@@ -765,15 +853,22 @@ rightPanel.addEventListener("scroll", () => {
 // --- Global Initialization Pipeline Loop ---
 document.addEventListener("DOMContentLoaded", () => {
   // Start up the UI
+  lastKnownDateKey = getCurrentDateKey();
   treeUI.onNodeClick((clickedTid) => {
     // Route the clicked ID down to our helper function to update template cards
     inspectClade(clickedTid, true);
   });
-  restartGame();
-  startMysteryImageShuffler();
-  recalculateMobileLayout();
   initializeRootNodeDropdown();
   loadAndApplySettings();
+  startMysteryImageShuffler();
+  recalculateMobileLayout();
+  scheduleNextDailyRefresh();
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      handleDailyRefresh();
+    }
+  });
 
   // Register PWA service worker
   if ("serviceWorker" in navigator) {
