@@ -268,8 +268,24 @@ export class Game {
     let tid = -1;
     const num_species = SPECIES_LISTS[this.size].length;
     for (let i = 0; i < num_species; i++) {
-      if (guess === SPECIES_LISTS[this.size][i][0]) {
-        tid = SPECIES_LISTS[this.size][i][1];
+      // SPECIES_LISTS[this.size][i][0] can be a string or a list
+      if (
+        typeof SPECIES_LISTS[this.size][i][0] === "string" ||
+        SPECIES_LISTS[this.size][i][0] instanceof String
+      ) {
+        if (guess === SPECIES_LISTS[this.size][i][0]) {
+          tid = SPECIES_LISTS[this.size][i][1];
+        }
+      } else {
+        for (let j = 0; j < SPECIES_LISTS[this.size][i][0].length; j++) {
+          if (guess === SPECIES_LISTS[this.size][i][0][j]) {
+            tid = SPECIES_LISTS[this.size][i][1];
+          }
+        }
+      }
+
+      if (tid !== -1) {
+        break;
       }
     }
 
@@ -308,6 +324,7 @@ export class Game {
 
     // define the subtree network
     this.tree[updated_nodes[0]].sub_ptid = ptid;
+    this.tree[updated_nodes[0]].com_name = guess;
 
     // update any existing nodes that are affected by the new interim node `ptid`
     [...this.guesses, this.answer].forEach((tid) => {

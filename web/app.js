@@ -176,9 +176,9 @@ function updateGameModeLabel() {
 
 function handleGuessSubmit() {
   const guess = guessInput.value.trim();
+  console.log(`handleGuessSubmit: ${guess}`);
 
   if (guess === "") {
-    console.log("Empty guess submitted. Ignoring.");
     return;
   }
 
@@ -998,7 +998,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const isFirstTime = !hasOpenedBefore();
     const platform = getPWAInstallPlatform();
 
-    return isMobileSize && isFirstTime && platform === "android" && !isStandaloneMode();
+    return (
+      isMobileSize &&
+      isFirstTime &&
+      platform === "android" &&
+      !isStandaloneMode()
+    );
   }
 
   // --- A. Native Android/Chrome Interception ---
