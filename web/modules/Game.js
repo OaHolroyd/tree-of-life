@@ -25,12 +25,19 @@ function getCurrentDateKey() {
   return `${year}-${month}-${day}`;
 }
 
-function hashString(value) {
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
+function getDateDayNumber(dateKey) {
+  const [year, month, day] = dateKey.split("-").map((value) => parseInt(value, 10));
+  return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+}
+
+function mixUint32(value) {
+  let mixed = (value ^ 0x9e3779b9) >>> 0;
+  mixed ^= mixed >>> 16;
+  mixed = Math.imul(mixed, 0x85ebca6b) >>> 0;
+  mixed ^= mixed >>> 13;
+  mixed = Math.imul(mixed, 0xc2b2ae35) >>> 0;
+  mixed ^= mixed >>> 16;
+  return mixed >>> 0;
 }
 
 export class Game {
@@ -183,7 +190,8 @@ export class Game {
       DAILY_ROOT_TID,
       DAILY_SPECIES_POOL_SIZE,
     );
-    return dailySpeciesTIDs[hashString(dateKey) % dailySpeciesTIDs.length];
+    const mixedDaySeed = mixUint32(getDateDayNumber(dateKey));
+    return dailySpeciesTIDs[mixedDaySeed % dailySpeciesTIDs.length];
   }
 
   /**
