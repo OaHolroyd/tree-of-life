@@ -51,6 +51,7 @@ let configuredRootTID = DAILY_ROOT_TID;
 const game = new Game(-1, 0, 1);
 let suggestionList = game.getSpeciesTIDs(true);
 const treeUI = new Tree(document.getElementById("tree-container"));
+let guessInfos = [];
 
 // ====================================
 //   DOM ELEMENTS
@@ -158,6 +159,8 @@ function restartGame(tid = -1) {
   updateGameModeLabel();
   guessCount.innerHTML = game.guessesRemaining;
   updateSettingsLockState();
+
+  guessInfos = [];
 }
 
 function updateHintButtonState() {
@@ -182,8 +185,9 @@ function handleGuessSubmit() {
     return;
   }
 
-  const [isValid, hasEnded, updatedNodes] = game.submitGuess(guess);
+  const [isValid, hasEnded, updatedNodes, guessInfo] = game.submitGuess(guess);
   if (isValid) {
+    guessInfos.push(guessInfo);
     treeUI.updateTreeLayout(updatedNodes);
   }
 
