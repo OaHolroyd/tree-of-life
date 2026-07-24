@@ -6,6 +6,7 @@ const NUM_CLADES = CLADE_LIST.length;
 const NUM_GUESSES = [18, 22, 25];
 export const DAILY_ROOT_TID = 0;
 export const DAILY_SPECIES_POOL_SIZE = 2;
+
 const GAME_MODE = Object.freeze({
   DAILY: "daily",
   CUSTOM: "custom",
@@ -17,6 +18,14 @@ export const GameState = Object.freeze({
   LOST: 2,
 });
 
+export const GuessInfo = Object.freeze({
+  NONE: 0, // bad guess, no info
+  LOW: 1, // bad guess, got some info
+  MEDIUM: 2, // good guess, unfortunately no advance
+  HIGH: 3, // good guess, advanced the tree
+  ANSWER: 4, // good guess, got the answer
+});
+
 function getCurrentDateKey() {
   const now = new Date();
   const year = now.getFullYear();
@@ -26,7 +35,9 @@ function getCurrentDateKey() {
 }
 
 function getDateDayNumber(dateKey) {
-  const [year, month, day] = dateKey.split("-").map((value) => parseInt(value, 10));
+  const [year, month, day] = dateKey
+    .split("-")
+    .map((value) => parseInt(value, 10));
   return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
 }
 
@@ -245,7 +256,8 @@ export class Game {
     if (
       this.guessesRemaining > this.hint_cost &&
       this.getTurnsTaken() > 0 &&
-      this.getHintTID() !== this.answer
+      this.getHintTID() !== this.answer &&
+      this.state === GameState.PLAYING
     ) {
       return true;
     }
@@ -270,6 +282,7 @@ export class Game {
    *    whether the guess was valid,
    *    whether the game has ended,
    *    an array of nodes to be added to the tree
+   *    the level of info the guess gave
    */
   submitGuess(guess) {
     // go through the species and find the guess
@@ -299,22 +312,23 @@ export class Game {
 
     // early exit if this isn't a real guess or if we've already guessed it
     if (tid === -1 || this.guesses.includes(tid)) {
-      return [false, false, []];
+      return [false, false, [], GuessInfo.NONE];
     }
 
     this.guesses.push(tid);
     this.guessesRemaining--;
 
-    // correct answer or out of guesses means game over
+    // correct answer means game over
     if (this.answer === tid) {
       this.saveGameResult(true);
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
-      return [true, true, [this.tree[tid]]];
+      return [true, true, [this.tree[tid]], GuessInfo.ANSWER];
     }
 
     // incorrect guess, update the tree
     // set the guess to be visible then travel up until we find a node that's in the subtree
+    let info = GuessInfo.NONE; // default to a bad guess with no new info
     let updated_nodes = [tid]; // record which nodes have been updated
     this.tree[tid].state = CladeState.VISIBLE;
     let ptid = this.tree[tid].ptid;
@@ -323,6 +337,42 @@ export class Game {
       this.tree[tid].state = CladeState.HIDDEN;
       ptid = this.tree[tid].ptid;
     }
+
+    let maybe_low_info = false;
+    let maybe_high_info = false;
+
+    // if the new ptid is already the (current) ptid of the answer
+    // then this was a good guess but unlucky
+    if (
+      this.tree[ptid].state === CladeState.VISIBLE &&
+      this.tree[this.answer].sub_ptid === ptid
+    ) {
+      info = GuessInfo.MEDIUM;
+    }
+
+    // if the new ptid was hidden and is also on chain then the guess
+    // has revealed a new level so is good and lucky
+    // NOTE: we don't know if this is the case until a bit later when
+    // we've updated the visible subtree
+    else if (
+      this.tree[ptid].state === CladeState.HIDDEN &&
+      this.tree[ptid].onChain
+    ) {
+      maybe_high_info = true;
+    }
+
+    // if the ptid is off chain but was hidden and its parent is the
+    // (current) parent of the answer then technically it's a bad guess
+    // but often this gives an imperfect player some info
+    // NOTE: we don't know if this is the case until a bit later when
+    // we've updated the visible subtree
+    else if (
+      this.tree[ptid].state === CladeState.HIDDEN &&
+      !this.tree[ptid].onChain
+    ) {
+      maybe_low_info = true;
+    }
+
     this.tree[ptid].state = CladeState.VISIBLE;
     updated_nodes.push(ptid);
 
@@ -361,9 +411,30 @@ export class Game {
       has_ended = true;
     }
 
+    if (
+      maybe_low_info &&
+      this.tree[updated_nodes[1]].sub_ptid === this.tree[this.answer].sub_ptid
+    ) {
+      info = GuessInfo.LOW;
+    }
+
+    if (
+      maybe_high_info &&
+      updated_nodes[1] === this.tree[this.answer].sub_ptid
+    ) {
+      info = GuessInfo.HIGH;
+    }
+
+    console.log(`guess level: ${info}`);
+
     // ensure that the updated node list is sorted and unique
     updated_nodes = [...new Set(updated_nodes)].toSorted((a, b) => a - b);
-    return [true, has_ended, Array.from(updated_nodes, (i) => this.tree[i])];
+    return [
+      true,
+      has_ended,
+      Array.from(updated_nodes, (i) => this.tree[i]),
+      info,
+    ];
   }
 
   /**
