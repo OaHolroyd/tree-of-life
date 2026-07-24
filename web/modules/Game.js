@@ -26,7 +26,9 @@ function getCurrentDateKey() {
 }
 
 function getDateDayNumber(dateKey) {
-  const [year, month, day] = dateKey.split("-").map((value) => parseInt(value, 10));
+  const [year, month, day] = dateKey
+    .split("-")
+    .map((value) => parseInt(value, 10));
   return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
 }
 
@@ -245,7 +247,8 @@ export class Game {
     if (
       this.guessesRemaining > this.hint_cost &&
       this.getTurnsTaken() > 0 &&
-      this.getHintTID() !== this.answer
+      this.getHintTID() !== this.answer &&
+      this.state === GameState.PLAYING
     ) {
       return true;
     }
