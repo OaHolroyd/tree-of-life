@@ -1,4 +1,5 @@
 const SETTINGS_STORAGE_KEY = "clade_game_settings";
+const DAILY_SHARE_STORAGE_KEY = "clade_game_daily_share";
 
 const DEFAULT_SETTINGS = {
   // daily stats
@@ -28,7 +29,8 @@ function migrateStorageShape(savedData) {
 
   let didChange = false;
   const isLegacyStatsShape =
-    !Object.hasOwn(savedData, "totalPlayed") && Object.hasOwn(savedData, "played");
+    !Object.hasOwn(savedData, "totalPlayed") &&
+    Object.hasOwn(savedData, "played");
 
   if (isLegacyStatsShape) {
     migratedData.totalPlayed = Number.isFinite(savedData.played)
@@ -115,6 +117,28 @@ export function loadGameStats() {
     totalWon: savedData.totalWon,
     lastCompletedDailyDate: savedData.lastCompletedDailyDate,
   };
+}
+
+export function saveDailyShareContent(dateKey, content) {
+  localStorage.setItem(
+    DAILY_SHARE_STORAGE_KEY,
+    JSON.stringify({ dateKey, content }),
+  );
+}
+
+export function loadDailyShareContent(dateKey) {
+  if (!dateKey) return "";
+
+  try {
+    const savedData = JSON.parse(localStorage.getItem(DAILY_SHARE_STORAGE_KEY));
+    return savedData?.dateKey === dateKey ? savedData.content : "";
+  } catch {
+    return "";
+  }
+}
+
+export function clearDailyShareContent() {
+  localStorage.removeItem(DAILY_SHARE_STORAGE_KEY);
 }
 
 export function hasOpenedBefore() {

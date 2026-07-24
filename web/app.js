@@ -12,6 +12,9 @@ import {
   saveGameSettings,
   hasOpenedBefore,
   loadTheme,
+  loadDailyShareContent,
+  saveDailyShareContent,
+  clearDailyShareContent,
   saveTheme,
 } from "./modules/Storage.js";
 
@@ -46,9 +49,13 @@ let nextDailyCountdownInterval = null;
 let lastKnownDateKey = "";
 let configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
 let configuredRootTID = DAILY_ROOT_TID;
+let dailyShareContent;
 
 // Game and core UI state
 const game = new Game(-1, 0, 1);
+dailyShareContent = loadDailyShareContent(
+  game.getStats().lastCompletedDailyDate,
+);
 let suggestionList = game.getSpeciesTIDs(true);
 const treeUI = new Tree(document.getElementById("tree-container"));
 let guessInfos = [];
@@ -69,6 +76,7 @@ const gameModeLabel = document.getElementById("game-mode-label");
 const modalOverlay = document.getElementById("game-over-modal");
 const modalTitle = document.getElementById("modal-title");
 const modalMessage = document.getElementById("modal-message");
+const dailyShareBtn = document.getElementById("daily-share-btn");
 const restartGameBtn = document.getElementById("restart-btn");
 
 const appHeader = document.querySelector(".app-header");
@@ -170,11 +178,58 @@ function updateHintButtonState() {
   hintBtn.disabled = !game.canHint();
 }
 
+// Return the number of days since 8 July 2026
+// Since 2026-07-09 was the first daily game this
+// gives the number of the daily game
+function daysSinceStart() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const target = new Date(2026, 6, 8);
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+  return Math.round((today - target) / msPerDay);
+}
+
 function updateGameModeLabel() {
   if (!gameModeLabel) return;
 
-  gameModeLabel.textContent = game.isDailyMode() ? "Daily" : "Practice";
+  gameModeLabel.textContent = game.isDailyMode()
+    ? `Daily #${daysSinceStart()}`
+    : "Practice";
   gameModeLabel.dataset.ready = "true";
+}
+
+async function copyDailyShareText() {
+  console.log("copyDailyShareText");
+
+  const text = dailyShareContent;
+  if (!text) return;
+  console.log("here");
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const copyTarget = document.createElement("textarea");
+      copyTarget.value = text;
+      copyTarget.setAttribute("readonly", "");
+      copyTarget.style.position = "fixed";
+      copyTarget.style.opacity = "0";
+      document.body.appendChild(copyTarget);
+      copyTarget.select();
+      document.execCommand("copy");
+      copyTarget.remove();
+    }
+
+    const originalLabel = dailyShareBtn.textContent;
+    dailyShareBtn.textContent = "Copied";
+    window.setTimeout(() => {
+      dailyShareBtn.textContent = originalLabel;
+    }, 1500);
+  } catch (error) {
+    console.error("Could not copy daily result", error);
+  }
 }
 
 function handleGuessSubmit() {
@@ -218,6 +273,20 @@ function handleGuessSubmit() {
       modalTitle.textContent = "You win!";
     } else {
       modalTitle.textContent = "Game Over";
+    }
+
+    // make the sharable content
+    const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆"];
+    const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
+    if (game.isDailyMode()) {
+      const resultMessage =
+        game.state === GameState.WON ? "I completed" : "I failed to complete";
+      dailyShareContent =
+        `${resultMessage} Tree of Life #${daysSinceStart()} in ` +
+        `${game.guesses.length} guesses:` +
+        `\n${guessHistory}` +
+        `\n${window.location.href.replace(/^https?:\/\//, "")}`;
+      saveDailyShareContent(getCurrentDateKey(), dailyShareContent);
     }
 
     // populate the stats inside the popover
@@ -800,6 +869,8 @@ openFaqBtn.addEventListener("click", () => {
   toggleModalState(faqModal, true);
 });
 
+dailyShareBtn.addEventListener("click", copyDailyShareText);
+
 themeToggleBtn.addEventListener("click", () => {
   const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
   applyTheme(nextTheme);
@@ -831,6 +902,8 @@ clearDataBtn.addEventListener("click", () => {
   );
   if (confirmation) {
     game.eraseStats();
+    clearDailyShareContent();
+    dailyShareContent = "";
     populateSettingsStats();
     toggleModalState(modalOverlay, false);
     restartGame();
