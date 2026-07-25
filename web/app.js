@@ -285,7 +285,9 @@ function handleGuessSubmit() {
         `${resultMessage} Tree of Life #${daysSinceStart()} in ` +
         `${game.guesses.length} guesses:` +
         `\n${guessHistory}` +
-        `\n${window.location.href.replace(/^https?:\/\//, "")}`;
+        `\n${window.location.href
+          .replace(/^https?:\/\//, "")
+          .replace(/\/index\.html$/, "")}`;
       saveDailyShareContent(getCurrentDateKey(), dailyShareContent);
     }
 
