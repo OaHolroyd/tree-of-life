@@ -172,6 +172,7 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
 
   updateHintButtonState();
   updateGameModeLabel();
+  updateRestartButtonState();
   guessCount.innerHTML = game.guessesRemaining;
   updateSettingsLockState();
 
@@ -232,6 +233,15 @@ function updateHintButtonState() {
 
   hintBtn.innerHTML = `Hint (${game.hint_cost})`;
   hintBtn.disabled = !game.canHint();
+}
+
+function updateRestartButtonState() {
+  if (!restartBtn) return;
+
+  restartBtn.disabled = game.isDailyMode();
+  restartBtn.title = game.isDailyMode()
+    ? "Restart is disabled during the daily challenge"
+    : "Restart Match";
 }
 
 // Return the number of days since 8 July 2026
