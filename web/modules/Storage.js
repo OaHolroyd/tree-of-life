@@ -1,5 +1,6 @@
 const SETTINGS_STORAGE_KEY = "clade_game_settings";
 const DAILY_SHARE_STORAGE_KEY = "clade_game_daily_share";
+const IN_PROGRESS_GAME_STORAGE_KEY = "clade_game_in_progress";
 
 const DEFAULT_SETTINGS = {
   // daily stats
@@ -139,6 +140,28 @@ export function loadDailyShareContent(dateKey) {
 
 export function clearDailyShareContent() {
   localStorage.removeItem(DAILY_SHARE_STORAGE_KEY);
+}
+
+export function saveInProgressGame(gameData) {
+  localStorage.setItem(
+    IN_PROGRESS_GAME_STORAGE_KEY,
+    JSON.stringify(gameData),
+  );
+}
+
+export function loadInProgressGame() {
+  try {
+    const savedData = JSON.parse(
+      localStorage.getItem(IN_PROGRESS_GAME_STORAGE_KEY),
+    );
+    return savedData && typeof savedData === "object" ? savedData : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearInProgressGame() {
+  localStorage.removeItem(IN_PROGRESS_GAME_STORAGE_KEY);
 }
 
 export function hasOpenedBefore() {
