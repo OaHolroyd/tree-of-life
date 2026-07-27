@@ -67,6 +67,7 @@ export class Game {
     this.tree = CLADE_LIST;
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
+    this.guessStrings = [];
     this.state = GameState.PLAYING; // 0: playing, 1: won, 2: lost
     this.subtree = [];
     this.species_tids = [];
@@ -126,6 +127,7 @@ export class Game {
     this.answer = tid;
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
+    this.guessStrings = [];
     this.state = GameState.PLAYING;
 
     this.reset();
@@ -316,6 +318,7 @@ export class Game {
     }
 
     this.guesses.push(tid);
+    this.guessStrings.push(guess);
     this.guessesRemaining--;
 
     // correct answer means game over

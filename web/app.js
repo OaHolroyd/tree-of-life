@@ -15,6 +15,9 @@ import {
   loadDailyShareContent,
   saveDailyShareContent,
   clearDailyShareContent,
+  loadInProgressGame,
+  saveInProgressGame,
+  clearInProgressGame,
   saveTheme,
 } from "./modules/Storage.js";
 
@@ -149,8 +152,12 @@ function updateSettingsLockState() {
  * Restart the game and UI
  * @param {int} tid - if set to -1 it will be chosen at random
  */
-function restartGame(tid = -1) {
+function restartGame(tid = -1, restoreSavedProgress = false) {
   guessInput.removeAttribute("disabled", "");
+  if (!restoreSavedProgress) {
+    clearInProgressGame();
+  }
+
   if (isDailyGamePending()) {
     game.restartDailyGame();
   } else {
@@ -169,6 +176,55 @@ function restartGame(tid = -1) {
   updateSettingsLockState();
 
   guessInfos = [];
+
+  if (restoreSavedProgress) {
+    restoreInProgressGame();
+  }
+}
+
+function saveCurrentGameProgress() {
+  saveInProgressGame({
+    mode: game.isDailyMode() ? "daily" : "practice",
+    dateKey: game.isDailyMode() ? getCurrentDateKey() : null,
+    rootTID: game.root,
+    speciesPoolSize: game.size,
+    answer: game.answer,
+    guesses: [...game.guessStrings],
+  });
+}
+
+function restoreInProgressGame() {
+  const savedGame = loadInProgressGame();
+  if (!savedGame) return;
+
+  const matchesCurrentGame =
+    savedGame.mode === (game.isDailyMode() ? "daily" : "practice") &&
+    savedGame.dateKey === (game.isDailyMode() ? getCurrentDateKey() : null) &&
+    savedGame.rootTID === game.root &&
+    savedGame.speciesPoolSize === game.size &&
+    savedGame.answer === game.answer &&
+    Array.isArray(savedGame.guesses);
+
+  if (!matchesCurrentGame) {
+    clearInProgressGame();
+    return;
+  }
+
+  for (const guess of savedGame.guesses) {
+    const [isValid, hasEnded, updatedNodes, guessInfo] =
+      game.submitGuess(guess);
+    if (!isValid || hasEnded) {
+      clearInProgressGame();
+      return;
+    }
+
+    guessInfos.push(guessInfo);
+    treeUI.updateTreeLayout(updatedNodes);
+  }
+
+  guessCount.innerHTML = game.guessesRemaining;
+  updateHintButtonState();
+  inspectClade(game.getBestTID());
 }
 
 function updateHintButtonState() {
@@ -244,6 +300,12 @@ function handleGuessSubmit() {
   if (isValid) {
     guessInfos.push(guessInfo);
     treeUI.updateTreeLayout(updatedNodes);
+
+    if (hasEnded) {
+      clearInProgressGame();
+    } else {
+      saveCurrentGameProgress();
+    }
   }
 
   guessCount.innerHTML = game.guessesRemaining;
@@ -673,7 +735,7 @@ function loadAndApplySettings() {
 
   configuredSpeciesPoolSize = savedData.speciesPoolSize;
   configuredRootTID = savedData.rootTID;
-  restartGame();
+  restartGame(-1, true);
   updateSettingsLockState();
 
   // STUB: Inform your core gameplay loop modules to update their state configurations
