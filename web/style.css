@@ -278,6 +278,24 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   width: 100%;
 }
 
+.explainer-symbol-list {
+  list-style: none;
+  padding: 0 0 0 0.5em;
+  color: var(--color-text-muted);
+}
+
+.explainer-symbol-list li {
+  display: grid;
+  grid-template-columns: 1.5em minmax(0, 1fr);
+  gap: 0.6em;
+  margin-bottom: 0.5em;
+}
+
+.explainer-symbol-list li::before {
+  content: attr(data-symbol);
+  text-align: center;
+}
+
 /* --- Stats Dashboard Styles --- */
 .stats-dashboard {
   margin-bottom: 20px;

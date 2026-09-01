@@ -322,11 +322,7 @@
         <p id="modal-message">You have run out of guesses.</p>
         <div class="game-over-actions">
           <button id="restart-btn" class="restart-button">Play Again</button>
-          <button
-            id="daily-share-btn"
-            class="share-button"
-            type="button"
-          >
+          <button id="daily-share-btn" class="share-button" type="button">
             Share
           </button>
         </div>
@@ -428,10 +424,17 @@
               </div>
             </div>
             <!-- Distribution buckets are populated by app.js from persisted results. -->
-            <section class="guess-distribution" aria-labelledby="guess-distribution-title">
+            <section
+              class="guess-distribution"
+              aria-labelledby="guess-distribution-title"
+            >
               <div class="guess-distribution-header">
                 <h3 id="guess-distribution-title">Guess Distribution</h3>
-                <div class="stats-view-toggle" role="group" aria-label="Statistics view">
+                <div
+                  class="stats-view-toggle"
+                  role="group"
+                  aria-label="Statistics view"
+                >
                   <button
                     id="stats-daily-view-btn"
                     class="stats-view-btn active"
@@ -452,7 +455,10 @@
               </div>
               <div class="guess-histogram-scroll">
                 <div id="guess-histogram" class="guess-histogram"></div>
-                <div id="guess-histogram-empty" class="guess-histogram-empty hidden">
+                <div
+                  id="guess-histogram-empty"
+                  class="guess-histogram-empty hidden"
+                >
                   No guess history available
                 </div>
               </div>
@@ -481,6 +487,35 @@
               containing your guess and the answer (or a previous guess if this
               one is further away).
             </p>
+          </section>
+          <section class="faq-item">
+            <h3>What do the colours mean?</h3>
+            <p>
+              The game tree is coloured by how close a node is to the answer:
+              green is closer, red is further away.
+            </p>
+            <p>
+              After you have finished the daily game you can share how you did
+              with other people without spoiling it for them using the
+              automatically-generated share text. These give you coloured blocks
+              that correspond to your guesses throughout the game:
+            </p>
+            <ul class="explainer-symbol-list">
+              <li data-symbol="🏆">Correct answer!</li>
+              <li data-symbol="🟩">
+                Good guess which moved you further down the tree
+              </li>
+              <li data-symbol="🟨">
+                Good guess which could have been correct, you were just
+                unfortunate
+              </li>
+              <li data-symbol="🟧">
+                Guess that confirms a clade is off-path, technically unnecessary
+                but often helpful
+              </li>
+              <li data-symbol="🟥">Bad guess that didn't tell you anything</li>
+              <li data-symbol="💡">Hint</li>
+            </ul>
           </section>
           <section class="faq-item">
             <h3>What is a Clade?</h3>
