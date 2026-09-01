@@ -18,6 +18,9 @@ import {
   loadInProgressGame,
   saveInProgressGame,
   clearInProgressGame,
+  loadCompletedDailyGame,
+  saveCompletedDailyGame,
+  clearCompletedDailyGame,
   saveTheme,
 } from "./modules/Storage.js";
 
@@ -37,6 +40,8 @@ const AVAILABLE_ROOT_TIDS = [
   74, // Insecta
 ];
 const IMAGE_ROTATION_PERIOD = 1000;
+// Reserve room for the label above or beside the largest histogram bar.
+const HISTOGRAM_MAX_BAR_PERCENT = 85;
 
 // clade sheet state
 let currentFocusIndex = -1;
@@ -53,6 +58,8 @@ let lastKnownDateKey = "";
 let configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
 let configuredRootTID = DAILY_ROOT_TID;
 let dailyShareContent;
+// The statistics modal defaults to the daily distribution until switched.
+let statsHistogramMode = "daily";
 
 // Game and core UI state
 const game = new Game(-1, 0, 1);
@@ -73,6 +80,7 @@ const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
 const hintBtn = document.getElementById("game-hint-btn");
 const restartBtn = document.getElementById("game-restart-btn");
+const viewDailyResultBtn = document.getElementById("view-daily-result-btn");
 const guessCount = document.getElementById("guesses-count");
 const gameModeLabel = document.getElementById("game-mode-label");
 
@@ -91,10 +99,17 @@ const cladeImage = document.getElementById("clade-image");
 
 const faqModal = document.getElementById("faq-modal");
 const settingsModal = document.getElementById("settings-modal");
+const statsModal = document.getElementById("stats-modal");
 const themeToggleBtn = document.getElementById("nav-theme-btn");
 const openSettingsBtn = document.getElementById("nav-settings-btn");
+const openStatsBtn = document.getElementById("nav-stats-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
+// Histogram controls are rendered dynamically from the saved distributions.
+const guessHistogram = document.getElementById("guess-histogram");
+const guessHistogramEmpty = document.getElementById("guess-histogram-empty");
+const statsDailyViewBtn = document.getElementById("stats-daily-view-btn");
+const statsAllViewBtn = document.getElementById("stats-all-view-btn");
 const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
 const rootNodeSelect = document.getElementById("root-node-select");
 const settingsLockMessage = document.getElementById("settings-lock-message");
@@ -173,6 +188,7 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
   updateHintButtonState();
   updateGameModeLabel();
   updateRestartButtonState();
+  updateDailyResultButtonState();
   guessCount.innerHTML = game.guessesRemaining;
   updateSettingsLockState();
 
@@ -184,14 +200,59 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
 }
 
 function saveCurrentGameProgress() {
+  // Persist both guesses and hints so a reload restores the exact board state.
   saveInProgressGame({
     mode: game.isDailyMode() ? "daily" : "practice",
     dateKey: game.isDailyMode() ? getCurrentDateKey() : null,
     rootTID: game.root,
     speciesPoolSize: game.size,
     answer: game.answer,
+    actions: [...game.actionHistory],
     guesses: [...game.guessStrings],
   });
+}
+
+/**
+ * Replay persisted actions without saving a second result or duplicating history.
+ * @param {Array} actions - ordered guess and hint actions from storage
+ * @param {boolean} allowCompletedGame - allow the final action to end the replay
+ * @returns {boolean} whether the replay produced the expected game state
+ */
+function replayGameActions(actions, allowCompletedGame = false) {
+  let hasEnded = false;
+
+  for (let index = 0; index < actions.length; index++) {
+    const action = actions[index];
+    if (action?.type === "hint") {
+      // A hint is only valid when it was available at the original point in play.
+      if (hasEnded || !game.canHint()) return false;
+      game.getHint(false);
+      treeUI.updateTreeLayout(game.getCurrentTree());
+      continue;
+    }
+
+    if (action?.type !== "guess" || typeof action.guess !== "string") {
+      return false;
+    }
+
+    const [isValid, ended, updatedNodes, guessInfo] = game.submitGuess(
+      action.guess,
+      false,
+      false,
+    );
+    if (
+      !isValid ||
+      (ended && (!allowCompletedGame || index !== actions.length - 1))
+    ) {
+      return false;
+    }
+
+    guessInfos.push(guessInfo);
+    treeUI.updateTreeLayout(updatedNodes);
+    hasEnded = ended;
+  }
+
+  return allowCompletedGame ? hasEnded : !hasEnded;
 }
 
 function restoreInProgressGame() {
@@ -204,23 +265,20 @@ function restoreInProgressGame() {
     savedGame.rootTID === game.root &&
     savedGame.speciesPoolSize === game.size &&
     savedGame.answer === game.answer &&
-    Array.isArray(savedGame.guesses);
+    (Array.isArray(savedGame.actions) || Array.isArray(savedGame.guesses));
 
   if (!matchesCurrentGame) {
     clearInProgressGame();
     return;
   }
 
-  for (const guess of savedGame.guesses) {
-    const [isValid, hasEnded, updatedNodes, guessInfo] =
-      game.submitGuess(guess);
-    if (!isValid || hasEnded) {
-      clearInProgressGame();
-      return;
-    }
-
-    guessInfos.push(guessInfo);
-    treeUI.updateTreeLayout(updatedNodes);
+  // Older saved games predate hints in the action history.
+  const actions = Array.isArray(savedGame.actions)
+    ? savedGame.actions
+    : savedGame.guesses.map((guess) => ({ type: "guess", guess }));
+  if (!replayGameActions(actions)) {
+    clearInProgressGame();
+    return;
   }
 
   guessCount.innerHTML = game.guessesRemaining;
@@ -238,10 +296,63 @@ function updateHintButtonState() {
 function updateRestartButtonState() {
   if (!restartBtn) return;
 
-  restartBtn.disabled = game.isDailyMode();
-  restartBtn.title = game.isDailyMode()
+  const isDailyGameLocked = game.isDailyMode() && isDailyGamePending();
+  restartBtn.disabled = isDailyGameLocked;
+  restartBtn.title = isDailyGameLocked
     ? "Restart is disabled during the daily challenge"
     : "Restart Match";
+}
+
+// Enable result replay only when today's completed sequence is available.
+function updateDailyResultButtonState() {
+  if (!viewDailyResultBtn) return;
+
+  const completedDailyGame = loadCompletedDailyGame(getCurrentDateKey());
+  viewDailyResultBtn.disabled =
+    !game.hasCompletedDailyGame() || !completedDailyGame;
+}
+
+/**
+ * Rebuild today's finished daily challenge without awarding another result.
+ */
+function showCompletedDailyGame() {
+  const savedGame = loadCompletedDailyGame(getCurrentDateKey());
+  if (!savedGame) {
+    updateDailyResultButtonState();
+    return;
+  }
+
+  game.restartDailyGame();
+  if (
+    savedGame.answer !== game.answer ||
+    !(Array.isArray(savedGame.actions) || Array.isArray(savedGame.guesses))
+  ) {
+    // Discard records that no longer match the deterministic daily answer.
+    clearCompletedDailyGame();
+    restartGame();
+    return;
+  }
+
+  suggestionList = game.getSpeciesTIDs(true);
+  treeUI.reset();
+  treeUI.updateTreeLayout(game.getCurrentTree());
+  guessInfos = [];
+
+  // Retain compatibility with completed records saved before action history.
+  const actions = Array.isArray(savedGame.actions)
+    ? savedGame.actions
+    : savedGame.guesses.map((guess) => ({ type: "guess", guess }));
+  if (!replayGameActions(actions, true)) {
+    clearCompletedDailyGame();
+    restartGame();
+    return;
+  }
+
+  guessCount.innerHTML = game.guessesRemaining;
+  updateHintButtonState();
+  updateRestartButtonState();
+  updateGameModeLabel();
+  openGameOverModal();
 }
 
 // Return the number of days since 8 July 2026
@@ -298,6 +409,51 @@ async function copyDailyShareText() {
   }
 }
 
+function openGameOverModal() {
+  // Use one presentation path for live completions and replayed daily results.
+  guessInput.setAttribute("disabled", "");
+  inspectClade(game.answer);
+  treeUI.revealAnswer(game.tree[game.answer]);
+  modalTitle.textContent =
+    game.state === GameState.WON ? "You win!" : "Game Over";
+
+  const currentStats = game.getStats();
+  const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
+  const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
+  const dailyCompletion = `
+      <span class="game-over-next-daily-label">Daily game complete!</span>
+      <strong class="game-over-next-daily-value">${guessHistory}</strong>
+    `;
+  modalMessage.innerHTML = `
+    <span class="game-over-stats">
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">Current Streak</span>
+        <strong class="game-over-stat-value">${currentStats.currentStreak}</strong>
+      </span>
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">Longest Streak</span>
+        <strong class="game-over-stat-value">${currentStats.longestStreak}</strong>
+      </span>
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">Daily Wins</span>
+        <strong class="game-over-stat-value">${currentStats.won} / ${currentStats.played}</strong>
+      </span>
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">All Games</span>
+        <strong class="game-over-stat-value">${currentStats.totalWon} / ${currentStats.totalPlayed}</strong>
+      </span>
+    </span>
+    <span class="game-over-next-daily">
+      ${dailyCompletion}
+      <span class="game-over-next-daily-label">Next Daily</span>
+      <strong id="next-daily-countdown" class="game-over-next-daily-value">--:--:--</strong>
+    </span>
+  `;
+
+  toggleModalState(modalOverlay, true);
+  updateSettingsLockState();
+}
+
 function handleGuessSubmit() {
   const guess = guessInput.value.trim();
   console.log(`handleGuessSubmit: ${guess}`);
@@ -312,6 +468,14 @@ function handleGuessSubmit() {
     treeUI.updateTreeLayout(updatedNodes);
 
     if (hasEnded) {
+      if (game.isDailyMode()) {
+        // Save the exact daily sequence before clearing the active-game record.
+        saveCompletedDailyGame(getCurrentDateKey(), {
+          answer: game.answer,
+          actions: [...game.actionHistory],
+          guesses: [...game.guessStrings],
+        });
+      }
       clearInProgressGame();
     } else {
       saveCurrentGameProgress();
@@ -333,22 +497,8 @@ function handleGuessSubmit() {
 
   // guess has ended the game
   if (hasEnded) {
-    // prevent further inputs
-    guessInput.setAttribute("disabled", "");
-
-    // show the answer in the clade inspector and tree
-    inspectClade(game.answer);
-    treeUI.revealAnswer(game.tree[game.answer]);
-
-    // prepare popover text
-    if (game.state === GameState.WON) {
-      modalTitle.textContent = "You win!";
-    } else {
-      modalTitle.textContent = "Game Over";
-    }
-
     // make the sharable content
-    const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆"];
+    const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
     const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
     if (game.isDailyMode()) {
       const resultMessage =
@@ -363,36 +513,9 @@ function handleGuessSubmit() {
       saveDailyShareContent(getCurrentDateKey(), dailyShareContent);
     }
 
-    // populate the stats inside the popover
-    const currentStats = game.getStats();
-    modalMessage.innerHTML = `
-      <span class="game-over-stats">
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">Current Streak</span>
-          <strong class="game-over-stat-value">${currentStats.currentStreak}</strong>
-        </span>
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">Longest Streak</span>
-          <strong class="game-over-stat-value">${currentStats.longestStreak}</strong>
-        </span>
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">Daily Wins</span>
-          <strong class="game-over-stat-value">${currentStats.won} / ${currentStats.played}</strong>
-        </span>
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">All Games</span>
-          <strong class="game-over-stat-value">${currentStats.totalWon} / ${currentStats.totalPlayed}</strong>
-        </span>
-      </span>
-      <span class="game-over-next-daily">
-        <span class="game-over-next-daily-label">Next Daily</span>
-        <strong id="next-daily-countdown" class="game-over-next-daily-value">--:--:--</strong>
-      </span>
-    `;
-
-    // show the popover
-    toggleModalState(modalOverlay, true);
-    updateSettingsLockState();
+    openGameOverModal();
+    updateRestartButtonState();
+    updateDailyResultButtonState();
     return;
   }
 
@@ -677,6 +800,97 @@ function populateSettingsStats() {
   document.getElementById("stat-max-streak").textContent = stats.longestStreak;
   document.getElementById("stat-total-played").textContent = stats.totalPlayed;
   document.getElementById("stat-total-won").textContent = stats.totalWon;
+  renderGuessHistogram(stats);
+}
+
+/**
+ * Render the selected 26-slot distribution and its empty/highlight states.
+ * @param {object} stats - persisted daily and all-games player statistics
+ */
+function renderGuessHistogram(stats = game.getStats()) {
+  const distribution =
+    statsHistogramMode === "daily"
+      ? stats.dailyGuessDistribution
+      : stats.totalGuessDistribution;
+  const maximumCount = Math.max(...distribution, 1);
+  const hasGuessHistory = distribution.some((count) => count > 0);
+  // Render failures last, while keeping the zero index in storage for simplicity.
+  const histogramSlots = [
+    ...distribution
+      .slice(1)
+      .map((count, index) => ({ count, guess: index + 1 })),
+    { count: distribution[0], guess: 0 },
+  ];
+  const winCount = distribution
+    .slice(1)
+    .reduce((total, count) => total + count, 0);
+  const medianPosition = Math.ceil(winCount / 2);
+  let cumulativeWins = 0;
+  let medianGuess = null;
+
+  if (medianPosition > 0) {
+    // Find the weighted median win bucket for the green histogram highlight.
+    for (let guess = 1; guess <= 25; guess++) {
+      cumulativeWins += distribution[guess];
+      if (cumulativeWins >= medianPosition) {
+        medianGuess = guess;
+        break;
+      }
+    }
+  }
+
+  guessHistogram.replaceChildren(
+    ...histogramSlots.map(({ count, guess }) => {
+      const column = document.createElement("div");
+      column.className = "guess-histogram-column";
+      if (guess === 0) {
+        column.classList.add("failure");
+      } else if (guess === medianGuess) {
+        column.classList.add("median");
+      }
+      column.setAttribute(
+        "aria-label",
+        guess === 0
+          ? `${count} failed games`
+          : `${count} wins in ${guess} guesses`,
+      );
+
+      const countLabel = document.createElement("span");
+      countLabel.className = "guess-histogram-count";
+      countLabel.textContent = count || "";
+
+      const barArea = document.createElement("div");
+      barArea.className = "guess-histogram-bar-area";
+      const bar = document.createElement("div");
+      bar.className = "guess-histogram-bar";
+      const barHeight = count
+        ? `${Math.max(5, (count / maximumCount) * HISTOGRAM_MAX_BAR_PERCENT)}%`
+        : "0";
+      // CSS uses this value in either vertical or horizontal chart orientation.
+      barArea.style.setProperty("--guess-histogram-bar-height", barHeight);
+      bar.style.height = barHeight;
+      barArea.append(countLabel, bar);
+
+      const label = document.createElement("span");
+      label.className = "guess-histogram-label";
+      label.textContent = guess === 0 ? "X" : guess;
+
+      column.append(barArea, label);
+      return column;
+    }),
+  );
+
+  statsDailyViewBtn.classList.toggle("active", statsHistogramMode === "daily");
+  statsDailyViewBtn.setAttribute(
+    "aria-pressed",
+    String(statsHistogramMode === "daily"),
+  );
+  statsAllViewBtn.classList.toggle("active", statsHistogramMode === "all");
+  statsAllViewBtn.setAttribute(
+    "aria-pressed",
+    String(statsHistogramMode === "all"),
+  );
+  guessHistogramEmpty.classList.toggle("hidden", hasGuessHistory);
 }
 
 function initializeRootNodeDropdown() {
@@ -934,9 +1148,26 @@ cladeScroll.addEventListener("scroll", () => {
 
 // 1. Open Button Interaction Registrations
 openSettingsBtn.addEventListener("click", () => {
-  populateSettingsStats();
   updateSettingsLockState();
   toggleModalState(settingsModal, true);
+});
+
+openStatsBtn.addEventListener("click", () => {
+  // Refresh counters and bars each time the statistics modal opens.
+  populateSettingsStats();
+  toggleModalState(statsModal, true);
+});
+
+statsDailyViewBtn.addEventListener("click", () => {
+  // Swap only the rendered distribution; the summary remains all-time aware.
+  statsHistogramMode = "daily";
+  renderGuessHistogram();
+});
+
+statsAllViewBtn.addEventListener("click", () => {
+  // Render the all-games distribution without closing or rebuilding the modal.
+  statsHistogramMode = "all";
+  renderGuessHistogram();
 });
 
 openFaqBtn.addEventListener("click", () => {
@@ -944,6 +1175,7 @@ openFaqBtn.addEventListener("click", () => {
 });
 
 dailyShareBtn.addEventListener("click", copyDailyShareText);
+viewDailyResultBtn.addEventListener("click", showCompletedDailyGame);
 
 themeToggleBtn.addEventListener("click", () => {
   const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
@@ -977,12 +1209,14 @@ clearDataBtn.addEventListener("click", () => {
   if (confirmation) {
     game.eraseStats();
     clearDailyShareContent();
+    clearCompletedDailyGame();
     dailyShareContent = "";
     populateSettingsStats();
     toggleModalState(modalOverlay, false);
     restartGame();
 
     toggleModalState(settingsModal, false);
+    toggleModalState(statsModal, false);
   }
 });
 
@@ -1052,11 +1286,15 @@ resetDefaultsBtn.addEventListener("click", () => {
 
 // 1. Hook up Hint interaction loop listener
 hintBtn.addEventListener("click", () => {
-  game.getHint();
+  let hint_cost = game.getHint();
+  for (let i = 0; i < hint_cost; i++) {
+    guessInfos.push(5);
+  }
   treeUI.updateTreeLayout(game.getCurrentTree());
   inspectClade(game.getBestTID());
   updateHintButtonState();
   guessCount.innerHTML = game.guessesRemaining;
+  saveCurrentGameProgress();
 });
 
 // 2. Hook up Restart match interaction listener

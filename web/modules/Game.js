@@ -68,6 +68,8 @@ export class Game {
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.guessStrings = [];
+    // Record ordered guesses and hints so saved games can reproduce the tree.
+    this.actionHistory = [];
     this.state = GameState.PLAYING; // 0: playing, 1: won, 2: lost
     this.subtree = [];
     this.species_tids = [];
@@ -128,6 +130,8 @@ export class Game {
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.guessStrings = [];
+    // A restarted game must not inherit actions from the previous board.
+    this.actionHistory = [];
     this.state = GameState.PLAYING;
 
     this.reset();
@@ -268,25 +272,32 @@ export class Game {
 
   /**
    * Shows the next clade
+   * @param {boolean} recordAction - whether this hint should be persisted
    */
-  getHint() {
+  getHint(recordAction = true) {
     this.guessesRemaining -= this.hint_cost;
     const hint = this.getHintTID();
     this.subtree.add(hint);
     this.tree[hint].state = CladeState.VISIBLE;
     this.tree[this.answer].sub_ptid = hint;
+    if (recordAction) {
+      this.actionHistory.push({ type: "hint" });
+    }
+    return this.hint_cost;
   }
 
   /**
    * Handle a guess submission
    * @param {string} guess - user submitted guess string
+   * @param {boolean} saveResult - whether completion should update player stats
+   * @param {boolean} recordAction - whether this guess should be persisted
    * @returns an array of:
    *    whether the guess was valid,
    *    whether the game has ended,
    *    an array of nodes to be added to the tree
    *    the level of info the guess gave
    */
-  submitGuess(guess) {
+  submitGuess(guess, saveResult = true, recordAction = true) {
     // go through the species and find the guess
     let tid = -1;
     const num_species = SPECIES_LISTS[this.size].length;
@@ -319,11 +330,16 @@ export class Game {
 
     this.guesses.push(tid);
     this.guessStrings.push(guess);
+    if (recordAction) {
+      this.actionHistory.push({ type: "guess", guess });
+    }
     this.guessesRemaining--;
 
     // correct answer means game over
     if (this.answer === tid) {
-      this.saveGameResult(true);
+      if (saveResult) {
+        this.saveGameResult(true);
+      }
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
       return [true, true, [this.tree[tid]], GuessInfo.ANSWER];
@@ -409,7 +425,9 @@ export class Game {
 
     let has_ended = false;
     if (this.guessesRemaining === 0) {
-      this.saveGameResult(false);
+      if (saveResult) {
+        this.saveGameResult(false);
+      }
       this.state = GameState.LOST;
       has_ended = true;
     }
@@ -445,7 +463,12 @@ export class Game {
    * @param {boolean} isWin
    */
   saveGameResult(isWin) {
+    // Slot zero records failures; winning slots are indexed by turns used.
+    const resultIndex = isWin
+      ? Math.min(25, Math.max(1, this.getTurnsTaken()))
+      : 0;
     this.stats.totalPlayed += 1;
+    this.stats.totalGuessDistribution[resultIndex] += 1;
 
     if (isWin) {
       this.stats.totalWon += 1;
@@ -463,6 +486,7 @@ export class Game {
     }
 
     this.stats.played += 1;
+    this.stats.dailyGuessDistribution[resultIndex] += 1;
 
     if (isWin) {
       this.stats.won += 1;
@@ -500,6 +524,9 @@ export class Game {
     this.stats.totalPlayed = 0;
     this.stats.totalWon = 0;
     this.stats.lastCompletedDailyDate = null;
+    // Keep the histogram state consistent with the cleared summary totals.
+    this.stats.dailyGuessDistribution.fill(0);
+    this.stats.totalGuessDistribution.fill(0);
     saveGameStats(this.stats);
   }
 }

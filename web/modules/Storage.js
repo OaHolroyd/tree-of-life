@@ -1,6 +1,17 @@
 const SETTINGS_STORAGE_KEY = "clade_game_settings";
+// Holds the share text for the most recently completed daily challenge.
 const DAILY_SHARE_STORAGE_KEY = "clade_game_daily_share";
+// Holds the active game until it is completed or deliberately restarted.
 const IN_PROGRESS_GAME_STORAGE_KEY = "clade_game_in_progress";
+// Stores the completed daily run so it can be replayed without changing stats.
+const DAILY_GAME_STORAGE_KEY = "clade_game_completed_daily";
+// One failure bucket plus one bucket for each possible winning turn count.
+const GUESS_DISTRIBUTION_SIZE = 26;
+
+// Return a fresh array so profiles never share a mutable default distribution.
+function createEmptyGuessDistribution() {
+  return Array(GUESS_DISTRIBUTION_SIZE).fill(0);
+}
 
 const DEFAULT_SETTINGS = {
   // daily stats
@@ -11,6 +22,8 @@ const DEFAULT_SETTINGS = {
   totalPlayed: 0,
   totalWon: 0,
   lastCompletedDailyDate: null,
+  dailyGuessDistribution: createEmptyGuessDistribution(),
+  totalGuessDistribution: createEmptyGuessDistribution(),
 
   // settings
   speciesPoolSize: 2, // Default to Large (Index 2)
@@ -18,13 +31,30 @@ const DEFAULT_SETTINGS = {
   theme: "dark",
 };
 
+function createDefaultSettings() {
+  return {
+    ...DEFAULT_SETTINGS,
+    dailyGuessDistribution: createEmptyGuessDistribution(),
+    totalGuessDistribution: createEmptyGuessDistribution(),
+  };
+}
+
+// Reject malformed or stale distribution data before it reaches the UI.
+function isValidGuessDistribution(value) {
+  return (
+    Array.isArray(value) &&
+    value.length === GUESS_DISTRIBUTION_SIZE &&
+    value.every((count) => Number.isInteger(count) && count >= 0)
+  );
+}
+
 function migrateStorageShape(savedData) {
   if (!savedData || typeof savedData !== "object") {
-    return { data: { ...DEFAULT_SETTINGS }, didChange: true };
+    return { data: createDefaultSettings(), didChange: true };
   }
 
   const migratedData = {
-    ...DEFAULT_SETTINGS,
+    ...createDefaultSettings(),
     ...savedData,
   };
 
@@ -47,8 +77,18 @@ function migrateStorageShape(savedData) {
   }
 
   Object.entries(DEFAULT_SETTINGS).forEach(([key, defaultValue]) => {
-    if (!Object.hasOwn(migratedData, key) || migratedData[key] == null) {
-      migratedData[key] = defaultValue;
+    if (!Object.hasOwn(savedData, key) || migratedData[key] == null) {
+      migratedData[key] = Array.isArray(defaultValue)
+        ? createEmptyGuessDistribution()
+        : defaultValue;
+      didChange = true;
+    }
+  });
+
+  ["dailyGuessDistribution", "totalGuessDistribution"].forEach((key) => {
+    // Existing profiles receive a complete zero-filled distribution on migration.
+    if (!isValidGuessDistribution(migratedData[key])) {
+      migratedData[key] = createEmptyGuessDistribution();
       didChange = true;
     }
   });
@@ -65,7 +105,7 @@ function loadStorage() {
     }
     return data;
   } catch {
-    return { ...DEFAULT_SETTINGS };
+    return createDefaultSettings();
   }
 }
 
@@ -104,6 +144,9 @@ export function saveGameStats(stats) {
   savedData.totalPlayed = stats.totalPlayed;
   savedData.totalWon = stats.totalWon;
   savedData.lastCompletedDailyDate = stats.lastCompletedDailyDate;
+  // Copy arrays so storage never retains a reference to mutable game state.
+  savedData.dailyGuessDistribution = [...stats.dailyGuessDistribution];
+  savedData.totalGuessDistribution = [...stats.totalGuessDistribution];
   localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(savedData));
 }
 
@@ -117,10 +160,13 @@ export function loadGameStats() {
     totalPlayed: savedData.totalPlayed,
     totalWon: savedData.totalWon,
     lastCompletedDailyDate: savedData.lastCompletedDailyDate,
+    dailyGuessDistribution: [...savedData.dailyGuessDistribution],
+    totalGuessDistribution: [...savedData.totalGuessDistribution],
   };
 }
 
 export function saveDailyShareContent(dateKey, content) {
+  // Associate the share result with its date to prevent stale daily shares.
   localStorage.setItem(
     DAILY_SHARE_STORAGE_KEY,
     JSON.stringify({ dateKey, content }),
@@ -143,6 +189,7 @@ export function clearDailyShareContent() {
 }
 
 export function saveInProgressGame(gameData) {
+  // Replace the single active-game snapshot after every valid action.
   localStorage.setItem(
     IN_PROGRESS_GAME_STORAGE_KEY,
     JSON.stringify(gameData),
@@ -162,6 +209,34 @@ export function loadInProgressGame() {
 
 export function clearInProgressGame() {
   localStorage.removeItem(IN_PROGRESS_GAME_STORAGE_KEY);
+}
+
+export function saveCompletedDailyGame(dateKey, gameData) {
+  // Only the current daily game is retained; each completed result replaces it.
+  localStorage.setItem(
+    DAILY_GAME_STORAGE_KEY,
+    JSON.stringify({ dateKey, ...gameData }),
+  );
+}
+
+export function loadCompletedDailyGame(dateKey) {
+  try {
+    const savedData = JSON.parse(localStorage.getItem(DAILY_GAME_STORAGE_KEY));
+    if (savedData?.dateKey !== dateKey) {
+      // A prior day's result cannot be replayed as today's daily challenge.
+      localStorage.removeItem(DAILY_GAME_STORAGE_KEY);
+      return null;
+    }
+
+    return savedData;
+  } catch {
+    return null;
+  }
+}
+
+export function clearCompletedDailyGame() {
+  // Clearing profile statistics must also remove the replayable daily result.
+  localStorage.removeItem(DAILY_GAME_STORAGE_KEY);
 }
 
 export function hasOpenedBefore() {

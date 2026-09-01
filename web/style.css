@@ -211,12 +211,6 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   display: block;
 }
 
-.nav-icon-btn:hover .nav-svg-icon {
-  transform: rotate(
-    30deg
-  ); /* Optional fun micro-interaction: gears slightly rotate on hover */
-}
-
 /* --- Modal Architecture Profiles --- */
 .modal-header {
   display: flex;
@@ -301,6 +295,129 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 8px;
+}
+
+/* Guess-distribution controls and chart. */
+.guess-distribution {
+  margin: 20px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.guess-distribution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.guess-distribution-header h3 {
+  margin: 0;
+}
+
+.stats-view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.stats-view-btn {
+  border: 0;
+  border-right: 1px solid var(--color-border-default);
+  background: var(--color-surface-panel-alt);
+  color: var(--color-text-muted);
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.stats-view-btn:last-child {
+  border-right: 0;
+}
+
+.stats-view-btn.active {
+  background: var(--color-accent);
+  color: var(--color-text-contrast);
+}
+
+.guess-histogram-scroll {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.guess-histogram-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 4px;
+  background: var(--color-surface-panel-alt);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.guess-histogram {
+  display: grid;
+  grid-template-columns: repeat(26, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  max-width: 100%;
+  height: 120px;
+  box-sizing: border-box;
+}
+
+.guess-histogram-column {
+  display: grid;
+  grid-template-rows: 1fr 13px;
+  min-width: 0;
+  text-align: center;
+}
+
+.guess-histogram-column.failure .guess-histogram-bar {
+  background: var(--color-danger);
+}
+
+.guess-histogram-column.median .guess-histogram-bar {
+  background: var(--color-success);
+}
+
+.guess-histogram-count,
+.guess-histogram-label {
+  color: var(--color-text-muted);
+  font-size: 0.58rem;
+  line-height: 1;
+}
+
+.guess-histogram-bar-area {
+  position: relative;
+  display: flex;
+  align-items: end;
+  min-height: 0;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.guess-histogram-count {
+  position: absolute;
+  bottom: calc(var(--guess-histogram-bar-height) + 3px);
+  width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.guess-histogram-bar {
+  width: 100%;
+  min-height: 0;
+  background: var(--color-accent);
+  border-radius: 3px 3px 0 0;
 }
 
 .stat-card {
@@ -470,8 +587,8 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 
 /* --- Left Panel UI Layout --- */
 .left-panel {
-  width: 350px;
-  min-width: 350px; /* Prevents shrinking */
+  width: 360px;
+  min-width: 360px; /* Prevents shrinking */
   min-height: 0;
   background: var(--color-surface-panel);
   border-right: 1px solid var(--color-border-muted);
@@ -698,10 +815,20 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   padding: 0 12px; /* Narrower square padding footprint for standalone icons */
 }
 
-.restart-btn:hover {
+.restart-btn:hover:not(:disabled) {
   background-color: var(--color-danger-soft-hover);
   border-color: var(--color-danger);
   color: var(--color-text-primary);
+}
+
+/* Daily results can be viewed after completion, while unfinished dailies stay locked. */
+.restart-btn:disabled,
+.daily-result-btn:disabled {
+  background-color: var(--color-surface-panel-alt);
+  border-color: var(--color-border-default);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .restart-btn .control-svg-icon {
@@ -712,9 +839,17 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   transition: transform 0.25s ease;
 }
 
-/* Fun micro-interaction: The circular arrow rotates backward when hovered */
-.restart-btn:hover .control-svg-icon {
-  transform: rotate(-180deg);
+/* Blue history control for reopening the completed daily board. */
+.daily-result-btn {
+  background-color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  color: var(--color-text-contrast);
+  padding: 0 10px;
+}
+
+.daily-result-btn:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 /* --- Clade Info Card Component --- */
@@ -1351,5 +1486,62 @@ body[data-theme="light"] .species-node.selected {
 
   .stat-value {
     font-size: 1.3rem;
+  }
+}
+
+/* Use readable horizontal rows when 26 vertical labels no longer fit. */
+@media (max-width: 550px) {
+  #stats-modal .modal-content.floating-window {
+    max-height: calc(100vh - 32px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  #stats-modal .modal-body {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .guess-histogram {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: auto;
+  }
+
+  .guess-histogram-column {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-rows: 20px;
+    gap: 6px;
+    height: 20px;
+    align-items: center;
+  }
+
+  .guess-histogram-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .guess-histogram-bar-area {
+    grid-column: 2;
+    grid-row: 1;
+    height: 20px;
+    border-bottom: 0;
+    border-left: 1px solid var(--color-border-default);
+  }
+
+  .guess-histogram-bar {
+    width: var(--guess-histogram-bar-height);
+    height: 100% !important;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .guess-histogram-count {
+    top: 50%;
+    bottom: auto;
+    left: calc(var(--guess-histogram-bar-height) + 4px);
+    width: auto;
+    transform: translateY(-50%);
   }
 }
