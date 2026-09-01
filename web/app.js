@@ -418,8 +418,7 @@ function openGameOverModal() {
     game.state === GameState.WON ? "You win!" : "Game Over";
 
   const currentStats = game.getStats();
-  const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
-  const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
+  const guessHistory = getDailyGuessHistory();
   const dailyCompletion = `
       <span class="game-over-next-daily-label">Daily game complete!</span>
       <strong class="game-over-next-daily-value">${guessHistory}</strong>
@@ -454,6 +453,23 @@ function openGameOverModal() {
   updateSettingsLockState();
 }
 
+// Return today's saved daily result markers, even when a practice game ended.
+function getDailyGuessHistory() {
+  const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
+  const savedGame = loadCompletedDailyGame(getCurrentDateKey());
+
+  if (Array.isArray(savedGame?.guessInfos)) {
+    return savedGame.guessInfos.map((info) => symbols[info] ?? "").join("");
+  }
+
+  // Fall back to the active daily board or legacy share text during migration.
+  if (game.isDailyMode()) {
+    return guessInfos.map((info) => symbols[info] ?? "").join("");
+  }
+
+  return loadDailyShareContent(getCurrentDateKey()).split("\n")[1] ?? "";
+}
+
 function handleGuessSubmit() {
   const guess = guessInput.value.trim();
   console.log(`handleGuessSubmit: ${guess}`);
@@ -474,6 +490,7 @@ function handleGuessSubmit() {
           answer: game.answer,
           actions: [...game.actionHistory],
           guesses: [...game.guessStrings],
+          guessInfos: [...guessInfos],
         });
       }
       clearInProgressGame();
