@@ -157,7 +157,36 @@ export class Game {
   restartDailyGame() {
     this.mode = GAME_MODE.DAILY;
     const dateKey = getCurrentDateKey();
-    const dailyAnswer = this.getDailySpeciesTID(dateKey);
+    let dailyAnswer = this.getDailySpeciesTID(dateKey);
+
+    // add some custom overrides for special dates
+    if (dateKey.endsWith("12-25")) {
+      // Christmas
+      dailyAnswer = 1277;
+    }
+    if (dateKey.endsWith("08-25")) {
+      // Birthday
+      const options = [
+        762, 662, 139, 1163, 1337, 1336, 1286, 940, 730, 1331, 1267, 381, 1127,
+        1009, 764, 1215, 467, 706, 854, 646, 1138, 604, 125,
+      ];
+      const currentYear = new Date().getFullYear();
+      const yearIndex =
+        (((currentYear - 2027) % options.length) + options.length) %
+        options.length;
+      dailyAnswer = options[yearIndex];
+    }
+
+    // Keep date overrides playable if the species or clade data changes later.
+    const dailySpeciesTIDs = this.getSpeciesTIDs(
+      false,
+      DAILY_ROOT_TID,
+      DAILY_SPECIES_POOL_SIZE,
+    );
+    if (!dailySpeciesTIDs.includes(dailyAnswer)) {
+      dailyAnswer = this.getDailySpeciesTID(dateKey);
+    }
+
     this.restart(dailyAnswer, DAILY_ROOT_TID, DAILY_SPECIES_POOL_SIZE);
   }
 
