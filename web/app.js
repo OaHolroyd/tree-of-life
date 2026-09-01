@@ -95,8 +95,10 @@ const cladeImage = document.getElementById("clade-image");
 
 const faqModal = document.getElementById("faq-modal");
 const settingsModal = document.getElementById("settings-modal");
+const statsModal = document.getElementById("stats-modal");
 const themeToggleBtn = document.getElementById("nav-theme-btn");
 const openSettingsBtn = document.getElementById("nav-settings-btn");
+const openStatsBtn = document.getElementById("nav-stats-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
 const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
@@ -1022,9 +1024,13 @@ cladeScroll.addEventListener("scroll", () => {
 
 // 1. Open Button Interaction Registrations
 openSettingsBtn.addEventListener("click", () => {
-  populateSettingsStats();
   updateSettingsLockState();
   toggleModalState(settingsModal, true);
+});
+
+openStatsBtn.addEventListener("click", () => {
+  populateSettingsStats();
+  toggleModalState(statsModal, true);
 });
 
 openFaqBtn.addEventListener("click", () => {
@@ -1073,6 +1079,7 @@ clearDataBtn.addEventListener("click", () => {
     restartGame();
 
     toggleModalState(settingsModal, false);
+    toggleModalState(statsModal, false);
   }
 });
 

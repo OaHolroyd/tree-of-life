@@ -211,12 +211,6 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   display: block;
 }
 
-.nav-icon-btn:hover .nav-svg-icon {
-  transform: rotate(
-    30deg
-  ); /* Optional fun micro-interaction: gears slightly rotate on hover */
-}
-
 /* --- Modal Architecture Profiles --- */
 .modal-header {
   display: flex;
@@ -470,8 +464,8 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 
 /* --- Left Panel UI Layout --- */
 .left-panel {
-  width: 350px;
-  min-width: 350px; /* Prevents shrinking */
+  width: 360px;
+  min-width: 360px; /* Prevents shrinking */
   min-height: 0;
   background: var(--color-surface-panel);
   border-right: 1px solid var(--color-border-muted);
@@ -719,11 +713,6 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   stroke: currentColor;
   display: block;
   transition: transform 0.25s ease;
-}
-
-/* Fun micro-interaction: The circular arrow rotates backward when hovered */
-.restart-btn:hover:not(:disabled) .control-svg-icon {
-  transform: rotate(-180deg);
 }
 
 .daily-result-btn {

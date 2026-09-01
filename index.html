@@ -108,7 +108,8 @@
         <button
           id="nav-settings-btn"
           class="nav-icon-btn"
-          title="Settings & Data"
+          title="Game Settings"
+          aria-label="Game Settings"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -126,6 +127,31 @@
               d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
             ></path>
             <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+
+        <button
+          id="nav-stats-btn"
+          class="nav-icon-btn"
+          title="Statistics"
+          aria-label="Statistics"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="nav-svg-icon"
+          >
+            <path d="M3 3v18h18"></path>
+            <path d="M7 16v-5"></path>
+            <path d="M12 16V7"></path>
+            <path d="M17 16v-8"></path>
           </svg>
         </button>
 
@@ -307,45 +333,10 @@
     <div id="settings-modal" class="modal-overlay hidden">
       <div class="modal-content floating-window">
         <div class="modal-header">
-          <h2>Game Settings & Data</h2>
+          <h2>Game Settings</h2>
           <button class="close-modal-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <div class="stats-dashboard">
-            <h3>Statistics</h3>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <span id="stat-played" class="stat-value">0</span>
-                <span class="stat-label">Daily Played</span>
-              </div>
-              <div class="stat-card">
-                <span id="stat-winrate" class="stat-value">0%</span>
-                <span class="stat-label">Daily Win %</span>
-              </div>
-              <div class="stat-card">
-                <span id="stat-streak" class="stat-value">0</span>
-                <span class="stat-label">Current Streak</span>
-              </div>
-              <div class="stat-card">
-                <span id="stat-max-streak" class="stat-value">0</span>
-                <span class="stat-label">Max Streak</span>
-              </div>
-              <div class="stat-card">
-                <span id="stat-total-played" class="stat-value">0</span>
-                <span class="stat-label">Total Played</span>
-              </div>
-              <div class="stat-card">
-                <span id="stat-total-won" class="stat-value">0</span>
-                <span class="stat-label">Total Won</span>
-              </div>
-            </div>
-            <button id="clear-data-btn" class="danger-btn">
-              Reset Statistics
-            </button>
-          </div>
-
-          <hr class="modal-divider" />
-
           <div class="settings-group">
             <h3>Game Settings</h3>
             <p id="settings-lock-message" class="settings-help">
@@ -391,6 +382,48 @@
 
             <button id="reset-defaults-btn" class="secondary-btn">
               Reset to Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="stats-modal" class="modal-overlay hidden">
+      <div class="modal-content floating-window">
+        <div class="modal-header">
+          <h2>Statistics</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="stats-dashboard">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span id="stat-played" class="stat-value">0</span>
+                <span class="stat-label">Daily Played</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-winrate" class="stat-value">0%</span>
+                <span class="stat-label">Daily Win %</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-streak" class="stat-value">0</span>
+                <span class="stat-label">Current Streak</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-max-streak" class="stat-value">0</span>
+                <span class="stat-label">Max Streak</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-total-played" class="stat-value">0</span>
+                <span class="stat-label">Total Played</span>
+              </div>
+              <div class="stat-card">
+                <span id="stat-total-won" class="stat-value">0</span>
+                <span class="stat-label">Total Won</span>
+              </div>
+            </div>
+            <button id="clear-data-btn" class="danger-btn">
+              Reset Statistics
             </button>
           </div>
         </div>
