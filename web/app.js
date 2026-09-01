@@ -221,7 +221,10 @@ function replayGameActions(actions, allowCompletedGame = false) {
       false,
       false,
     );
-    if (!isValid || (ended && (!allowCompletedGame || index !== actions.length - 1))) {
+    if (
+      !isValid ||
+      (ended && (!allowCompletedGame || index !== actions.length - 1))
+    ) {
       return false;
     }
 
@@ -273,8 +276,9 @@ function updateHintButtonState() {
 function updateRestartButtonState() {
   if (!restartBtn) return;
 
-  restartBtn.disabled = game.isDailyMode();
-  restartBtn.title = game.isDailyMode()
+  const isDailyGameLocked = game.isDailyMode() && isDailyGamePending();
+  restartBtn.disabled = isDailyGameLocked;
+  restartBtn.title = isDailyGameLocked
     ? "Restart is disabled during the daily challenge"
     : "Restart Match";
 }
@@ -383,7 +387,8 @@ function openGameOverModal() {
   guessInput.setAttribute("disabled", "");
   inspectClade(game.answer);
   treeUI.revealAnswer(game.tree[game.answer]);
-  modalTitle.textContent = game.state === GameState.WON ? "You win!" : "Game Over";
+  modalTitle.textContent =
+    game.state === GameState.WON ? "You win!" : "Game Over";
 
   const currentStats = game.getStats();
   modalMessage.innerHTML = `
@@ -474,6 +479,7 @@ function handleGuessSubmit() {
     }
 
     openGameOverModal();
+    updateRestartButtonState();
     updateDailyResultButtonState();
     return;
   }
