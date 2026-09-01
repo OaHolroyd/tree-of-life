@@ -2,6 +2,11 @@ const SETTINGS_STORAGE_KEY = "clade_game_settings";
 const DAILY_SHARE_STORAGE_KEY = "clade_game_daily_share";
 const IN_PROGRESS_GAME_STORAGE_KEY = "clade_game_in_progress";
 const DAILY_GAME_STORAGE_KEY = "clade_game_completed_daily";
+const GUESS_DISTRIBUTION_SIZE = 26;
+
+function createEmptyGuessDistribution() {
+  return Array(GUESS_DISTRIBUTION_SIZE).fill(0);
+}
 
 const DEFAULT_SETTINGS = {
   // daily stats
@@ -12,6 +17,8 @@ const DEFAULT_SETTINGS = {
   totalPlayed: 0,
   totalWon: 0,
   lastCompletedDailyDate: null,
+  dailyGuessDistribution: createEmptyGuessDistribution(),
+  totalGuessDistribution: createEmptyGuessDistribution(),
 
   // settings
   speciesPoolSize: 2, // Default to Large (Index 2)
@@ -19,13 +26,29 @@ const DEFAULT_SETTINGS = {
   theme: "dark",
 };
 
+function createDefaultSettings() {
+  return {
+    ...DEFAULT_SETTINGS,
+    dailyGuessDistribution: createEmptyGuessDistribution(),
+    totalGuessDistribution: createEmptyGuessDistribution(),
+  };
+}
+
+function isValidGuessDistribution(value) {
+  return (
+    Array.isArray(value) &&
+    value.length === GUESS_DISTRIBUTION_SIZE &&
+    value.every((count) => Number.isInteger(count) && count >= 0)
+  );
+}
+
 function migrateStorageShape(savedData) {
   if (!savedData || typeof savedData !== "object") {
-    return { data: { ...DEFAULT_SETTINGS }, didChange: true };
+    return { data: createDefaultSettings(), didChange: true };
   }
 
   const migratedData = {
-    ...DEFAULT_SETTINGS,
+    ...createDefaultSettings(),
     ...savedData,
   };
 
@@ -48,8 +71,17 @@ function migrateStorageShape(savedData) {
   }
 
   Object.entries(DEFAULT_SETTINGS).forEach(([key, defaultValue]) => {
-    if (!Object.hasOwn(migratedData, key) || migratedData[key] == null) {
-      migratedData[key] = defaultValue;
+    if (!Object.hasOwn(savedData, key) || migratedData[key] == null) {
+      migratedData[key] = Array.isArray(defaultValue)
+        ? createEmptyGuessDistribution()
+        : defaultValue;
+      didChange = true;
+    }
+  });
+
+  ["dailyGuessDistribution", "totalGuessDistribution"].forEach((key) => {
+    if (!isValidGuessDistribution(migratedData[key])) {
+      migratedData[key] = createEmptyGuessDistribution();
       didChange = true;
     }
   });
@@ -66,7 +98,7 @@ function loadStorage() {
     }
     return data;
   } catch {
-    return { ...DEFAULT_SETTINGS };
+    return createDefaultSettings();
   }
 }
 
@@ -105,6 +137,8 @@ export function saveGameStats(stats) {
   savedData.totalPlayed = stats.totalPlayed;
   savedData.totalWon = stats.totalWon;
   savedData.lastCompletedDailyDate = stats.lastCompletedDailyDate;
+  savedData.dailyGuessDistribution = [...stats.dailyGuessDistribution];
+  savedData.totalGuessDistribution = [...stats.totalGuessDistribution];
   localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(savedData));
 }
 
@@ -118,6 +152,8 @@ export function loadGameStats() {
     totalPlayed: savedData.totalPlayed,
     totalWon: savedData.totalWon,
     lastCompletedDailyDate: savedData.lastCompletedDailyDate,
+    dailyGuessDistribution: [...savedData.dailyGuessDistribution],
+    totalGuessDistribution: [...savedData.totalGuessDistribution],
   };
 }
 

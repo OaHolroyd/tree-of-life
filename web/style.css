@@ -297,6 +297,104 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   margin-bottom: 8px;
 }
 
+.guess-distribution {
+  margin: 20px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.guess-distribution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.guess-distribution-header h3 {
+  margin: 0;
+}
+
+.stats-view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.stats-view-btn {
+  border: 0;
+  border-right: 1px solid var(--color-border-default);
+  background: var(--color-surface-panel-alt);
+  color: var(--color-text-muted);
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.stats-view-btn:last-child {
+  border-right: 0;
+}
+
+.stats-view-btn.active {
+  background: var(--color-accent);
+  color: var(--color-text-contrast);
+}
+
+.guess-histogram-scroll {
+  width: 100%;
+}
+
+.guess-histogram {
+  display: grid;
+  grid-template-columns: repeat(26, minmax(0, 1fr));
+  gap: 3px;
+  height: 150px;
+}
+
+.guess-histogram-column {
+  display: grid;
+  grid-template-rows: 1fr 16px;
+  min-width: 0;
+  text-align: center;
+}
+
+.guess-histogram-column.failure .guess-histogram-bar {
+  background: var(--color-danger);
+}
+
+.guess-histogram-column.median .guess-histogram-bar {
+  background: var(--color-success);
+}
+
+.guess-histogram-count,
+.guess-histogram-label {
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.guess-histogram-bar-area {
+  position: relative;
+  display: flex;
+  align-items: end;
+  min-height: 0;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.guess-histogram-count {
+  position: absolute;
+  bottom: calc(var(--guess-histogram-bar-height) + 3px);
+  width: 100%;
+}
+
+.guess-histogram-bar {
+  width: 100%;
+  min-height: 0;
+  background: var(--color-accent);
+  border-radius: 3px 3px 0 0;
+}
+
 .stat-card {
   background: var(--color-surface-panel-alt);
   border: 1px solid var(--color-border-default);

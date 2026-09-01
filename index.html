@@ -396,6 +396,7 @@
         </div>
         <div class="modal-body">
           <div class="stats-dashboard">
+            <h3>Summary</h3>
             <div class="stats-grid">
               <div class="stat-card">
                 <span id="stat-played" class="stat-value">0</span>
@@ -422,6 +423,32 @@
                 <span class="stat-label">Total Won</span>
               </div>
             </div>
+            <section class="guess-distribution" aria-labelledby="guess-distribution-title">
+              <div class="guess-distribution-header">
+                <h3 id="guess-distribution-title">Guess Distribution</h3>
+                <div class="stats-view-toggle" role="group" aria-label="Statistics view">
+                  <button
+                    id="stats-daily-view-btn"
+                    class="stats-view-btn active"
+                    type="button"
+                    aria-pressed="true"
+                  >
+                    Daily
+                  </button>
+                  <button
+                    id="stats-all-view-btn"
+                    class="stats-view-btn"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    All
+                  </button>
+                </div>
+              </div>
+              <div class="guess-histogram-scroll">
+                <div id="guess-histogram" class="guess-histogram"></div>
+              </div>
+            </section>
             <button id="clear-data-btn" class="danger-btn">
               Reset Statistics
             </button>

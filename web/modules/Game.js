@@ -457,7 +457,11 @@ export class Game {
    * @param {boolean} isWin
    */
   saveGameResult(isWin) {
+    const resultIndex = isWin
+      ? Math.min(25, Math.max(1, this.getTurnsTaken()))
+      : 0;
     this.stats.totalPlayed += 1;
+    this.stats.totalGuessDistribution[resultIndex] += 1;
 
     if (isWin) {
       this.stats.totalWon += 1;
@@ -475,6 +479,7 @@ export class Game {
     }
 
     this.stats.played += 1;
+    this.stats.dailyGuessDistribution[resultIndex] += 1;
 
     if (isWin) {
       this.stats.won += 1;
@@ -512,6 +517,8 @@ export class Game {
     this.stats.totalPlayed = 0;
     this.stats.totalWon = 0;
     this.stats.lastCompletedDailyDate = null;
+    this.stats.dailyGuessDistribution.fill(0);
+    this.stats.totalGuessDistribution.fill(0);
     saveGameStats(this.stats);
   }
 }

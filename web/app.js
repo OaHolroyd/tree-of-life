@@ -56,6 +56,7 @@ let lastKnownDateKey = "";
 let configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
 let configuredRootTID = DAILY_ROOT_TID;
 let dailyShareContent;
+let statsHistogramMode = "daily";
 
 // Game and core UI state
 const game = new Game(-1, 0, 1);
@@ -101,6 +102,9 @@ const openSettingsBtn = document.getElementById("nav-settings-btn");
 const openStatsBtn = document.getElementById("nav-stats-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
+const guessHistogram = document.getElementById("guess-histogram");
+const statsDailyViewBtn = document.getElementById("stats-daily-view-btn");
+const statsAllViewBtn = document.getElementById("stats-all-view-btn");
 const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
 const rootNodeSelect = document.getElementById("root-node-select");
 const settingsLockMessage = document.getElementById("settings-lock-message");
@@ -767,6 +771,85 @@ function populateSettingsStats() {
   document.getElementById("stat-max-streak").textContent = stats.longestStreak;
   document.getElementById("stat-total-played").textContent = stats.totalPlayed;
   document.getElementById("stat-total-won").textContent = stats.totalWon;
+  renderGuessHistogram(stats);
+}
+
+function renderGuessHistogram(stats = game.getStats()) {
+  const distribution =
+    statsHistogramMode === "daily"
+      ? stats.dailyGuessDistribution
+      : stats.totalGuessDistribution;
+  const maximumCount = Math.max(...distribution, 1);
+  const histogramSlots = [
+    ...distribution
+      .slice(1)
+      .map((count, index) => ({ count, guess: index + 1 })),
+    { count: distribution[0], guess: 0 },
+  ];
+  const winCount = distribution
+    .slice(1)
+    .reduce((total, count) => total + count, 0);
+  const medianPosition = Math.ceil(winCount / 2);
+  let cumulativeWins = 0;
+  let medianGuess = null;
+
+  if (medianPosition > 0) {
+    for (let guess = 1; guess <= 25; guess++) {
+      cumulativeWins += distribution[guess];
+      if (cumulativeWins >= medianPosition) {
+        medianGuess = guess;
+        break;
+      }
+    }
+  }
+
+  guessHistogram.replaceChildren(
+    ...histogramSlots.map(({ count, guess }) => {
+      const column = document.createElement("div");
+      column.className = "guess-histogram-column";
+      if (guess === 0) {
+        column.classList.add("failure");
+      } else if (guess === medianGuess) {
+        column.classList.add("median");
+      }
+      column.setAttribute(
+        "aria-label",
+        guess === 0
+          ? `${count} failed games`
+          : `${count} wins in ${guess} guesses`,
+      );
+
+      const countLabel = document.createElement("span");
+      countLabel.className = "guess-histogram-count";
+      countLabel.textContent = count || "";
+
+      const barArea = document.createElement("div");
+      barArea.className = "guess-histogram-bar-area";
+      const bar = document.createElement("div");
+      bar.className = "guess-histogram-bar";
+      const barHeight = count
+        ? `${Math.max(5, (count / maximumCount) * 100)}%`
+        : "0";
+      barArea.style.setProperty("--guess-histogram-bar-height", barHeight);
+      bar.style.height = barHeight;
+      barArea.append(countLabel, bar);
+
+      const label = document.createElement("span");
+      label.className = "guess-histogram-label";
+      label.textContent = guess === 0 ? "X" : guess;
+
+      column.append(barArea, label);
+      return column;
+    }),
+  );
+
+  statsDailyViewBtn.classList.toggle("active", statsHistogramMode === "daily");
+  statsDailyViewBtn.setAttribute(
+    "aria-pressed",
+    String(statsHistogramMode === "daily"),
+  );
+  statsAllViewBtn.classList.toggle("active", statsHistogramMode === "all");
+  statsAllViewBtn.setAttribute("aria-pressed", String(statsHistogramMode === "all"));
 }
 
 function initializeRootNodeDropdown() {
@@ -1031,6 +1114,16 @@ openSettingsBtn.addEventListener("click", () => {
 openStatsBtn.addEventListener("click", () => {
   populateSettingsStats();
   toggleModalState(statsModal, true);
+});
+
+statsDailyViewBtn.addEventListener("click", () => {
+  statsHistogramMode = "daily";
+  renderGuessHistogram();
+});
+
+statsAllViewBtn.addEventListener("click", () => {
+  statsHistogramMode = "all";
+  renderGuessHistogram();
 });
 
 openFaqBtn.addEventListener("click", () => {
