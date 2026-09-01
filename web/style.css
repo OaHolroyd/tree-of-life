@@ -344,6 +344,7 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 .guess-histogram-scroll {
   position: relative;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .guess-histogram-empty {
@@ -365,13 +366,16 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 .guess-histogram {
   display: grid;
   grid-template-columns: repeat(26, minmax(0, 1fr));
-  gap: 3px;
-  height: 150px;
+  gap: 2px;
+  width: 100%;
+  max-width: 100%;
+  height: 120px;
+  box-sizing: border-box;
 }
 
 .guess-histogram-column {
   display: grid;
-  grid-template-rows: 1fr 16px;
+  grid-template-rows: 1fr 13px;
   min-width: 0;
   text-align: center;
 }
@@ -387,7 +391,7 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 .guess-histogram-count,
 .guess-histogram-label {
   color: var(--color-text-muted);
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   line-height: 1;
 }
 
@@ -403,6 +407,9 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   position: absolute;
   bottom: calc(var(--guess-histogram-bar-height) + 3px);
   width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 
 .guess-histogram-bar {
@@ -1476,5 +1483,61 @@ body[data-theme="light"] .species-node.selected {
 
   .stat-value {
     font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 550px) {
+  #stats-modal .modal-content.floating-window {
+    max-height: calc(100vh - 32px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  #stats-modal .modal-body {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .guess-histogram {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: auto;
+  }
+
+  .guess-histogram-column {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-rows: 20px;
+    gap: 6px;
+    height: 20px;
+    align-items: center;
+  }
+
+  .guess-histogram-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .guess-histogram-bar-area {
+    grid-column: 2;
+    grid-row: 1;
+    height: 20px;
+    border-bottom: 0;
+    border-left: 1px solid var(--color-border-default);
+  }
+
+  .guess-histogram-bar {
+    width: var(--guess-histogram-bar-height);
+    height: 100% !important;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .guess-histogram-count {
+    top: 50%;
+    bottom: auto;
+    left: calc(var(--guess-histogram-bar-height) + 4px);
+    width: auto;
+    transform: translateY(-50%);
   }
 }

@@ -40,6 +40,7 @@ const AVAILABLE_ROOT_TIDS = [
   74, // Insecta
 ];
 const IMAGE_ROTATION_PERIOD = 1000;
+const HISTOGRAM_MAX_BAR_PERCENT = 85;
 
 // clade sheet state
 let currentFocusIndex = -1;
@@ -830,7 +831,10 @@ function renderGuessHistogram(stats = game.getStats()) {
       const bar = document.createElement("div");
       bar.className = "guess-histogram-bar";
       const barHeight = count
-        ? `${Math.max(5, (count / maximumCount) * 100)}%`
+        ? `${Math.max(
+            5,
+            (count / maximumCount) * HISTOGRAM_MAX_BAR_PERCENT,
+          )}%`
         : "0";
       barArea.style.setProperty("--guess-histogram-bar-height", barHeight);
       bar.style.height = barHeight;
