@@ -1,9 +1,14 @@
 const SETTINGS_STORAGE_KEY = "clade_game_settings";
+// Holds the share text for the most recently completed daily challenge.
 const DAILY_SHARE_STORAGE_KEY = "clade_game_daily_share";
+// Holds the active game until it is completed or deliberately restarted.
 const IN_PROGRESS_GAME_STORAGE_KEY = "clade_game_in_progress";
+// Stores the completed daily run so it can be replayed without changing stats.
 const DAILY_GAME_STORAGE_KEY = "clade_game_completed_daily";
+// One failure bucket plus one bucket for each possible winning turn count.
 const GUESS_DISTRIBUTION_SIZE = 26;
 
+// Return a fresh array so profiles never share a mutable default distribution.
 function createEmptyGuessDistribution() {
   return Array(GUESS_DISTRIBUTION_SIZE).fill(0);
 }
@@ -34,6 +39,7 @@ function createDefaultSettings() {
   };
 }
 
+// Reject malformed or stale distribution data before it reaches the UI.
 function isValidGuessDistribution(value) {
   return (
     Array.isArray(value) &&
@@ -80,6 +86,7 @@ function migrateStorageShape(savedData) {
   });
 
   ["dailyGuessDistribution", "totalGuessDistribution"].forEach((key) => {
+    // Existing profiles receive a complete zero-filled distribution on migration.
     if (!isValidGuessDistribution(migratedData[key])) {
       migratedData[key] = createEmptyGuessDistribution();
       didChange = true;
@@ -137,6 +144,7 @@ export function saveGameStats(stats) {
   savedData.totalPlayed = stats.totalPlayed;
   savedData.totalWon = stats.totalWon;
   savedData.lastCompletedDailyDate = stats.lastCompletedDailyDate;
+  // Copy arrays so storage never retains a reference to mutable game state.
   savedData.dailyGuessDistribution = [...stats.dailyGuessDistribution];
   savedData.totalGuessDistribution = [...stats.totalGuessDistribution];
   localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(savedData));
@@ -158,6 +166,7 @@ export function loadGameStats() {
 }
 
 export function saveDailyShareContent(dateKey, content) {
+  // Associate the share result with its date to prevent stale daily shares.
   localStorage.setItem(
     DAILY_SHARE_STORAGE_KEY,
     JSON.stringify({ dateKey, content }),
@@ -180,6 +189,7 @@ export function clearDailyShareContent() {
 }
 
 export function saveInProgressGame(gameData) {
+  // Replace the single active-game snapshot after every valid action.
   localStorage.setItem(
     IN_PROGRESS_GAME_STORAGE_KEY,
     JSON.stringify(gameData),
@@ -202,6 +212,7 @@ export function clearInProgressGame() {
 }
 
 export function saveCompletedDailyGame(dateKey, gameData) {
+  // Only the current daily game is retained; each completed result replaces it.
   localStorage.setItem(
     DAILY_GAME_STORAGE_KEY,
     JSON.stringify({ dateKey, ...gameData }),
@@ -212,6 +223,7 @@ export function loadCompletedDailyGame(dateKey) {
   try {
     const savedData = JSON.parse(localStorage.getItem(DAILY_GAME_STORAGE_KEY));
     if (savedData?.dateKey !== dateKey) {
+      // A prior day's result cannot be replayed as today's daily challenge.
       localStorage.removeItem(DAILY_GAME_STORAGE_KEY);
       return null;
     }
@@ -223,6 +235,7 @@ export function loadCompletedDailyGame(dateKey) {
 }
 
 export function clearCompletedDailyGame() {
+  // Clearing profile statistics must also remove the replayable daily result.
   localStorage.removeItem(DAILY_GAME_STORAGE_KEY);
 }
 

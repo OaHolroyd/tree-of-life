@@ -105,6 +105,7 @@
           </svg>
         </button>
 
+        <!-- Opens configuration controls without mixing in player statistics. -->
         <button
           id="nav-settings-btn"
           class="nav-icon-btn"
@@ -130,6 +131,7 @@
           </svg>
         </button>
 
+        <!-- Opens the separate player statistics dashboard. -->
         <button
           id="nav-stats-btn"
           class="nav-icon-btn"
@@ -241,6 +243,7 @@
               </svg>
             </button>
 
+            <!-- Reopens today's saved daily result after the challenge is complete. -->
             <button
               id="view-daily-result-btn"
               class="control-btn daily-result-btn"
@@ -388,6 +391,7 @@
       </div>
     </div>
 
+    <!-- Dedicated statistics modal, kept separate from game configuration. -->
     <div id="stats-modal" class="modal-overlay hidden">
       <div class="modal-content floating-window">
         <div class="modal-header">
@@ -423,6 +427,7 @@
                 <span class="stat-label">Total Won</span>
               </div>
             </div>
+            <!-- Distribution buckets are populated by app.js from persisted results. -->
             <section class="guess-distribution" aria-labelledby="guess-distribution-title">
               <div class="guess-distribution-header">
                 <h3 id="guess-distribution-title">Guess Distribution</h3>

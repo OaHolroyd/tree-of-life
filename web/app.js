@@ -40,6 +40,7 @@ const AVAILABLE_ROOT_TIDS = [
   74, // Insecta
 ];
 const IMAGE_ROTATION_PERIOD = 1000;
+// Reserve room for the label above or beside the largest histogram bar.
 const HISTOGRAM_MAX_BAR_PERCENT = 85;
 
 // clade sheet state
@@ -57,6 +58,7 @@ let lastKnownDateKey = "";
 let configuredSpeciesPoolSize = DAILY_SPECIES_POOL_SIZE;
 let configuredRootTID = DAILY_ROOT_TID;
 let dailyShareContent;
+// The statistics modal defaults to the daily distribution until switched.
 let statsHistogramMode = "daily";
 
 // Game and core UI state
@@ -103,6 +105,7 @@ const openSettingsBtn = document.getElementById("nav-settings-btn");
 const openStatsBtn = document.getElementById("nav-stats-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
+// Histogram controls are rendered dynamically from the saved distributions.
 const guessHistogram = document.getElementById("guess-histogram");
 const guessHistogramEmpty = document.getElementById("guess-histogram-empty");
 const statsDailyViewBtn = document.getElementById("stats-daily-view-btn");
@@ -197,6 +200,7 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
 }
 
 function saveCurrentGameProgress() {
+  // Persist both guesses and hints so a reload restores the exact board state.
   saveInProgressGame({
     mode: game.isDailyMode() ? "daily" : "practice",
     dateKey: game.isDailyMode() ? getCurrentDateKey() : null,
@@ -208,12 +212,19 @@ function saveCurrentGameProgress() {
   });
 }
 
+/**
+ * Replay persisted actions without saving a second result or duplicating history.
+ * @param {Array} actions - ordered guess and hint actions from storage
+ * @param {boolean} allowCompletedGame - allow the final action to end the replay
+ * @returns {boolean} whether the replay produced the expected game state
+ */
 function replayGameActions(actions, allowCompletedGame = false) {
   let hasEnded = false;
 
   for (let index = 0; index < actions.length; index++) {
     const action = actions[index];
     if (action?.type === "hint") {
+      // A hint is only valid when it was available at the original point in play.
       if (hasEnded || !game.canHint()) return false;
       game.getHint(false);
       treeUI.updateTreeLayout(game.getCurrentTree());
@@ -261,6 +272,7 @@ function restoreInProgressGame() {
     return;
   }
 
+  // Older saved games predate hints in the action history.
   const actions = Array.isArray(savedGame.actions)
     ? savedGame.actions
     : savedGame.guesses.map((guess) => ({ type: "guess", guess }));
@@ -291,6 +303,7 @@ function updateRestartButtonState() {
     : "Restart Match";
 }
 
+// Enable result replay only when today's completed sequence is available.
 function updateDailyResultButtonState() {
   if (!viewDailyResultBtn) return;
 
@@ -299,6 +312,9 @@ function updateDailyResultButtonState() {
     !game.hasCompletedDailyGame() || !completedDailyGame;
 }
 
+/**
+ * Rebuild today's finished daily challenge without awarding another result.
+ */
 function showCompletedDailyGame() {
   const savedGame = loadCompletedDailyGame(getCurrentDateKey());
   if (!savedGame) {
@@ -311,6 +327,7 @@ function showCompletedDailyGame() {
     savedGame.answer !== game.answer ||
     !(Array.isArray(savedGame.actions) || Array.isArray(savedGame.guesses))
   ) {
+    // Discard records that no longer match the deterministic daily answer.
     clearCompletedDailyGame();
     restartGame();
     return;
@@ -321,6 +338,7 @@ function showCompletedDailyGame() {
   treeUI.updateTreeLayout(game.getCurrentTree());
   guessInfos = [];
 
+  // Retain compatibility with completed records saved before action history.
   const actions = Array.isArray(savedGame.actions)
     ? savedGame.actions
     : savedGame.guesses.map((guess) => ({ type: "guess", guess }));
@@ -392,6 +410,7 @@ async function copyDailyShareText() {
 }
 
 function openGameOverModal() {
+  // Use one presentation path for live completions and replayed daily results.
   guessInput.setAttribute("disabled", "");
   inspectClade(game.answer);
   treeUI.revealAnswer(game.tree[game.answer]);
@@ -399,6 +418,12 @@ function openGameOverModal() {
     game.state === GameState.WON ? "You win!" : "Game Over";
 
   const currentStats = game.getStats();
+  const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
+  const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
+  const dailyCompletion = `
+      <span class="game-over-next-daily-label">Daily game complete!</span>
+      <strong class="game-over-next-daily-value">${guessHistory}</strong>
+    `;
   modalMessage.innerHTML = `
     <span class="game-over-stats">
       <span class="game-over-stat-row">
@@ -419,6 +444,7 @@ function openGameOverModal() {
       </span>
     </span>
     <span class="game-over-next-daily">
+      ${dailyCompletion}
       <span class="game-over-next-daily-label">Next Daily</span>
       <strong id="next-daily-countdown" class="game-over-next-daily-value">--:--:--</strong>
     </span>
@@ -443,6 +469,7 @@ function handleGuessSubmit() {
 
     if (hasEnded) {
       if (game.isDailyMode()) {
+        // Save the exact daily sequence before clearing the active-game record.
         saveCompletedDailyGame(getCurrentDateKey(), {
           answer: game.answer,
           actions: [...game.actionHistory],
@@ -471,7 +498,7 @@ function handleGuessSubmit() {
   // guess has ended the game
   if (hasEnded) {
     // make the sharable content
-    const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆"];
+    const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
     const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
     if (game.isDailyMode()) {
       const resultMessage =
@@ -776,6 +803,10 @@ function populateSettingsStats() {
   renderGuessHistogram(stats);
 }
 
+/**
+ * Render the selected 26-slot distribution and its empty/highlight states.
+ * @param {object} stats - persisted daily and all-games player statistics
+ */
 function renderGuessHistogram(stats = game.getStats()) {
   const distribution =
     statsHistogramMode === "daily"
@@ -783,6 +814,7 @@ function renderGuessHistogram(stats = game.getStats()) {
       : stats.totalGuessDistribution;
   const maximumCount = Math.max(...distribution, 1);
   const hasGuessHistory = distribution.some((count) => count > 0);
+  // Render failures last, while keeping the zero index in storage for simplicity.
   const histogramSlots = [
     ...distribution
       .slice(1)
@@ -797,6 +829,7 @@ function renderGuessHistogram(stats = game.getStats()) {
   let medianGuess = null;
 
   if (medianPosition > 0) {
+    // Find the weighted median win bucket for the green histogram highlight.
     for (let guess = 1; guess <= 25; guess++) {
       cumulativeWins += distribution[guess];
       if (cumulativeWins >= medianPosition) {
@@ -831,11 +864,9 @@ function renderGuessHistogram(stats = game.getStats()) {
       const bar = document.createElement("div");
       bar.className = "guess-histogram-bar";
       const barHeight = count
-        ? `${Math.max(
-            5,
-            (count / maximumCount) * HISTOGRAM_MAX_BAR_PERCENT,
-          )}%`
+        ? `${Math.max(5, (count / maximumCount) * HISTOGRAM_MAX_BAR_PERCENT)}%`
         : "0";
+      // CSS uses this value in either vertical or horizontal chart orientation.
       barArea.style.setProperty("--guess-histogram-bar-height", barHeight);
       bar.style.height = barHeight;
       barArea.append(countLabel, bar);
@@ -855,7 +886,10 @@ function renderGuessHistogram(stats = game.getStats()) {
     String(statsHistogramMode === "daily"),
   );
   statsAllViewBtn.classList.toggle("active", statsHistogramMode === "all");
-  statsAllViewBtn.setAttribute("aria-pressed", String(statsHistogramMode === "all"));
+  statsAllViewBtn.setAttribute(
+    "aria-pressed",
+    String(statsHistogramMode === "all"),
+  );
   guessHistogramEmpty.classList.toggle("hidden", hasGuessHistory);
 }
 
@@ -1119,16 +1153,19 @@ openSettingsBtn.addEventListener("click", () => {
 });
 
 openStatsBtn.addEventListener("click", () => {
+  // Refresh counters and bars each time the statistics modal opens.
   populateSettingsStats();
   toggleModalState(statsModal, true);
 });
 
 statsDailyViewBtn.addEventListener("click", () => {
+  // Swap only the rendered distribution; the summary remains all-time aware.
   statsHistogramMode = "daily";
   renderGuessHistogram();
 });
 
 statsAllViewBtn.addEventListener("click", () => {
+  // Render the all-games distribution without closing or rebuilding the modal.
   statsHistogramMode = "all";
   renderGuessHistogram();
 });
@@ -1249,7 +1286,10 @@ resetDefaultsBtn.addEventListener("click", () => {
 
 // 1. Hook up Hint interaction loop listener
 hintBtn.addEventListener("click", () => {
-  game.getHint();
+  let hint_cost = game.getHint();
+  for (let i = 0; i < hint_cost; i++) {
+    guessInfos.push(5);
+  }
   treeUI.updateTreeLayout(game.getCurrentTree());
   inspectClade(game.getBestTID());
   updateHintButtonState();

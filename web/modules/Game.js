@@ -68,6 +68,7 @@ export class Game {
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.guessStrings = [];
+    // Record ordered guesses and hints so saved games can reproduce the tree.
     this.actionHistory = [];
     this.state = GameState.PLAYING; // 0: playing, 1: won, 2: lost
     this.subtree = [];
@@ -129,6 +130,7 @@ export class Game {
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.guessStrings = [];
+    // A restarted game must not inherit actions from the previous board.
     this.actionHistory = [];
     this.state = GameState.PLAYING;
 
@@ -270,6 +272,7 @@ export class Game {
 
   /**
    * Shows the next clade
+   * @param {boolean} recordAction - whether this hint should be persisted
    */
   getHint(recordAction = true) {
     this.guessesRemaining -= this.hint_cost;
@@ -280,11 +283,14 @@ export class Game {
     if (recordAction) {
       this.actionHistory.push({ type: "hint" });
     }
+    return this.hint_cost;
   }
 
   /**
    * Handle a guess submission
    * @param {string} guess - user submitted guess string
+   * @param {boolean} saveResult - whether completion should update player stats
+   * @param {boolean} recordAction - whether this guess should be persisted
    * @returns an array of:
    *    whether the guess was valid,
    *    whether the game has ended,
@@ -457,6 +463,7 @@ export class Game {
    * @param {boolean} isWin
    */
   saveGameResult(isWin) {
+    // Slot zero records failures; winning slots are indexed by turns used.
     const resultIndex = isWin
       ? Math.min(25, Math.max(1, this.getTurnsTaken()))
       : 0;
@@ -517,6 +524,7 @@ export class Game {
     this.stats.totalPlayed = 0;
     this.stats.totalWon = 0;
     this.stats.lastCompletedDailyDate = null;
+    // Keep the histogram state consistent with the cleared summary totals.
     this.stats.dailyGuessDistribution.fill(0);
     this.stats.totalGuessDistribution.fill(0);
     saveGameStats(this.stats);
