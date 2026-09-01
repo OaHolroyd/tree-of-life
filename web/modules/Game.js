@@ -68,6 +68,7 @@ export class Game {
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.guessStrings = [];
+    this.actionHistory = [];
     this.state = GameState.PLAYING; // 0: playing, 1: won, 2: lost
     this.subtree = [];
     this.species_tids = [];
@@ -128,6 +129,7 @@ export class Game {
     this.guessesRemaining = NUM_GUESSES[this.size];
     this.guesses = [];
     this.guessStrings = [];
+    this.actionHistory = [];
     this.state = GameState.PLAYING;
 
     this.reset();
@@ -269,12 +271,15 @@ export class Game {
   /**
    * Shows the next clade
    */
-  getHint() {
+  getHint(recordAction = true) {
     this.guessesRemaining -= this.hint_cost;
     const hint = this.getHintTID();
     this.subtree.add(hint);
     this.tree[hint].state = CladeState.VISIBLE;
     this.tree[this.answer].sub_ptid = hint;
+    if (recordAction) {
+      this.actionHistory.push({ type: "hint" });
+    }
   }
 
   /**
@@ -286,7 +291,7 @@ export class Game {
    *    an array of nodes to be added to the tree
    *    the level of info the guess gave
    */
-  submitGuess(guess) {
+  submitGuess(guess, saveResult = true, recordAction = true) {
     // go through the species and find the guess
     let tid = -1;
     const num_species = SPECIES_LISTS[this.size].length;
@@ -319,11 +324,16 @@ export class Game {
 
     this.guesses.push(tid);
     this.guessStrings.push(guess);
+    if (recordAction) {
+      this.actionHistory.push({ type: "guess", guess });
+    }
     this.guessesRemaining--;
 
     // correct answer means game over
     if (this.answer === tid) {
-      this.saveGameResult(true);
+      if (saveResult) {
+        this.saveGameResult(true);
+      }
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
       return [true, true, [this.tree[tid]], GuessInfo.ANSWER];
@@ -409,7 +419,9 @@ export class Game {
 
     let has_ended = false;
     if (this.guessesRemaining === 0) {
-      this.saveGameResult(false);
+      if (saveResult) {
+        this.saveGameResult(false);
+      }
       this.state = GameState.LOST;
       has_ended = true;
     }

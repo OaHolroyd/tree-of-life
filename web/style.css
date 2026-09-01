@@ -698,10 +698,19 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
   padding: 0 12px; /* Narrower square padding footprint for standalone icons */
 }
 
-.restart-btn:hover {
+.restart-btn:hover:not(:disabled) {
   background-color: var(--color-danger-soft-hover);
   border-color: var(--color-danger);
   color: var(--color-text-primary);
+}
+
+.restart-btn:disabled,
+.daily-result-btn:disabled {
+  background-color: var(--color-surface-panel-alt);
+  border-color: var(--color-border-default);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .restart-btn .control-svg-icon {
@@ -713,8 +722,20 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 }
 
 /* Fun micro-interaction: The circular arrow rotates backward when hovered */
-.restart-btn:hover .control-svg-icon {
+.restart-btn:hover:not(:disabled) .control-svg-icon {
   transform: rotate(-180deg);
+}
+
+.daily-result-btn {
+  background-color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  color: var(--color-text-contrast);
+  padding: 0 10px;
+}
+
+.daily-result-btn:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 /* --- Clade Info Card Component --- */

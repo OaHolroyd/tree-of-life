@@ -18,6 +18,9 @@ import {
   loadInProgressGame,
   saveInProgressGame,
   clearInProgressGame,
+  loadCompletedDailyGame,
+  saveCompletedDailyGame,
+  clearCompletedDailyGame,
   saveTheme,
 } from "./modules/Storage.js";
 
@@ -73,6 +76,7 @@ const dropdown = document.getElementById("suggestions-dropdown");
 const submitBtn = document.getElementById("submit-guess-btn");
 const hintBtn = document.getElementById("game-hint-btn");
 const restartBtn = document.getElementById("game-restart-btn");
+const viewDailyResultBtn = document.getElementById("view-daily-result-btn");
 const guessCount = document.getElementById("guesses-count");
 const gameModeLabel = document.getElementById("game-mode-label");
 
@@ -173,6 +177,7 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
   updateHintButtonState();
   updateGameModeLabel();
   updateRestartButtonState();
+  updateDailyResultButtonState();
   guessCount.innerHTML = game.guessesRemaining;
   updateSettingsLockState();
 
@@ -190,8 +195,42 @@ function saveCurrentGameProgress() {
     rootTID: game.root,
     speciesPoolSize: game.size,
     answer: game.answer,
+    actions: [...game.actionHistory],
     guesses: [...game.guessStrings],
   });
+}
+
+function replayGameActions(actions, allowCompletedGame = false) {
+  let hasEnded = false;
+
+  for (let index = 0; index < actions.length; index++) {
+    const action = actions[index];
+    if (action?.type === "hint") {
+      if (hasEnded || !game.canHint()) return false;
+      game.getHint(false);
+      treeUI.updateTreeLayout(game.getCurrentTree());
+      continue;
+    }
+
+    if (action?.type !== "guess" || typeof action.guess !== "string") {
+      return false;
+    }
+
+    const [isValid, ended, updatedNodes, guessInfo] = game.submitGuess(
+      action.guess,
+      false,
+      false,
+    );
+    if (!isValid || (ended && (!allowCompletedGame || index !== actions.length - 1))) {
+      return false;
+    }
+
+    guessInfos.push(guessInfo);
+    treeUI.updateTreeLayout(updatedNodes);
+    hasEnded = ended;
+  }
+
+  return allowCompletedGame ? hasEnded : !hasEnded;
 }
 
 function restoreInProgressGame() {
@@ -204,23 +243,19 @@ function restoreInProgressGame() {
     savedGame.rootTID === game.root &&
     savedGame.speciesPoolSize === game.size &&
     savedGame.answer === game.answer &&
-    Array.isArray(savedGame.guesses);
+    (Array.isArray(savedGame.actions) || Array.isArray(savedGame.guesses));
 
   if (!matchesCurrentGame) {
     clearInProgressGame();
     return;
   }
 
-  for (const guess of savedGame.guesses) {
-    const [isValid, hasEnded, updatedNodes, guessInfo] =
-      game.submitGuess(guess);
-    if (!isValid || hasEnded) {
-      clearInProgressGame();
-      return;
-    }
-
-    guessInfos.push(guessInfo);
-    treeUI.updateTreeLayout(updatedNodes);
+  const actions = Array.isArray(savedGame.actions)
+    ? savedGame.actions
+    : savedGame.guesses.map((guess) => ({ type: "guess", guess }));
+  if (!replayGameActions(actions)) {
+    clearInProgressGame();
+    return;
   }
 
   guessCount.innerHTML = game.guessesRemaining;
@@ -242,6 +277,52 @@ function updateRestartButtonState() {
   restartBtn.title = game.isDailyMode()
     ? "Restart is disabled during the daily challenge"
     : "Restart Match";
+}
+
+function updateDailyResultButtonState() {
+  if (!viewDailyResultBtn) return;
+
+  const completedDailyGame = loadCompletedDailyGame(getCurrentDateKey());
+  viewDailyResultBtn.disabled =
+    !game.hasCompletedDailyGame() || !completedDailyGame;
+}
+
+function showCompletedDailyGame() {
+  const savedGame = loadCompletedDailyGame(getCurrentDateKey());
+  if (!savedGame) {
+    updateDailyResultButtonState();
+    return;
+  }
+
+  game.restartDailyGame();
+  if (
+    savedGame.answer !== game.answer ||
+    !(Array.isArray(savedGame.actions) || Array.isArray(savedGame.guesses))
+  ) {
+    clearCompletedDailyGame();
+    restartGame();
+    return;
+  }
+
+  suggestionList = game.getSpeciesTIDs(true);
+  treeUI.reset();
+  treeUI.updateTreeLayout(game.getCurrentTree());
+  guessInfos = [];
+
+  const actions = Array.isArray(savedGame.actions)
+    ? savedGame.actions
+    : savedGame.guesses.map((guess) => ({ type: "guess", guess }));
+  if (!replayGameActions(actions, true)) {
+    clearCompletedDailyGame();
+    restartGame();
+    return;
+  }
+
+  guessCount.innerHTML = game.guessesRemaining;
+  updateHintButtonState();
+  updateRestartButtonState();
+  updateGameModeLabel();
+  openGameOverModal();
 }
 
 // Return the number of days since 8 July 2026
@@ -298,6 +379,42 @@ async function copyDailyShareText() {
   }
 }
 
+function openGameOverModal() {
+  guessInput.setAttribute("disabled", "");
+  inspectClade(game.answer);
+  treeUI.revealAnswer(game.tree[game.answer]);
+  modalTitle.textContent = game.state === GameState.WON ? "You win!" : "Game Over";
+
+  const currentStats = game.getStats();
+  modalMessage.innerHTML = `
+    <span class="game-over-stats">
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">Current Streak</span>
+        <strong class="game-over-stat-value">${currentStats.currentStreak}</strong>
+      </span>
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">Longest Streak</span>
+        <strong class="game-over-stat-value">${currentStats.longestStreak}</strong>
+      </span>
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">Daily Wins</span>
+        <strong class="game-over-stat-value">${currentStats.won} / ${currentStats.played}</strong>
+      </span>
+      <span class="game-over-stat-row">
+        <span class="game-over-stat-label">All Games</span>
+        <strong class="game-over-stat-value">${currentStats.totalWon} / ${currentStats.totalPlayed}</strong>
+      </span>
+    </span>
+    <span class="game-over-next-daily">
+      <span class="game-over-next-daily-label">Next Daily</span>
+      <strong id="next-daily-countdown" class="game-over-next-daily-value">--:--:--</strong>
+    </span>
+  `;
+
+  toggleModalState(modalOverlay, true);
+  updateSettingsLockState();
+}
+
 function handleGuessSubmit() {
   const guess = guessInput.value.trim();
   console.log(`handleGuessSubmit: ${guess}`);
@@ -312,6 +429,13 @@ function handleGuessSubmit() {
     treeUI.updateTreeLayout(updatedNodes);
 
     if (hasEnded) {
+      if (game.isDailyMode()) {
+        saveCompletedDailyGame(getCurrentDateKey(), {
+          answer: game.answer,
+          actions: [...game.actionHistory],
+          guesses: [...game.guessStrings],
+        });
+      }
       clearInProgressGame();
     } else {
       saveCurrentGameProgress();
@@ -333,20 +457,6 @@ function handleGuessSubmit() {
 
   // guess has ended the game
   if (hasEnded) {
-    // prevent further inputs
-    guessInput.setAttribute("disabled", "");
-
-    // show the answer in the clade inspector and tree
-    inspectClade(game.answer);
-    treeUI.revealAnswer(game.tree[game.answer]);
-
-    // prepare popover text
-    if (game.state === GameState.WON) {
-      modalTitle.textContent = "You win!";
-    } else {
-      modalTitle.textContent = "Game Over";
-    }
-
     // make the sharable content
     const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆"];
     const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
@@ -363,36 +473,8 @@ function handleGuessSubmit() {
       saveDailyShareContent(getCurrentDateKey(), dailyShareContent);
     }
 
-    // populate the stats inside the popover
-    const currentStats = game.getStats();
-    modalMessage.innerHTML = `
-      <span class="game-over-stats">
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">Current Streak</span>
-          <strong class="game-over-stat-value">${currentStats.currentStreak}</strong>
-        </span>
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">Longest Streak</span>
-          <strong class="game-over-stat-value">${currentStats.longestStreak}</strong>
-        </span>
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">Daily Wins</span>
-          <strong class="game-over-stat-value">${currentStats.won} / ${currentStats.played}</strong>
-        </span>
-        <span class="game-over-stat-row">
-          <span class="game-over-stat-label">All Games</span>
-          <strong class="game-over-stat-value">${currentStats.totalWon} / ${currentStats.totalPlayed}</strong>
-        </span>
-      </span>
-      <span class="game-over-next-daily">
-        <span class="game-over-next-daily-label">Next Daily</span>
-        <strong id="next-daily-countdown" class="game-over-next-daily-value">--:--:--</strong>
-      </span>
-    `;
-
-    // show the popover
-    toggleModalState(modalOverlay, true);
-    updateSettingsLockState();
+    openGameOverModal();
+    updateDailyResultButtonState();
     return;
   }
 
@@ -944,6 +1026,7 @@ openFaqBtn.addEventListener("click", () => {
 });
 
 dailyShareBtn.addEventListener("click", copyDailyShareText);
+viewDailyResultBtn.addEventListener("click", showCompletedDailyGame);
 
 themeToggleBtn.addEventListener("click", () => {
   const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
@@ -977,6 +1060,7 @@ clearDataBtn.addEventListener("click", () => {
   if (confirmation) {
     game.eraseStats();
     clearDailyShareContent();
+    clearCompletedDailyGame();
     dailyShareContent = "";
     populateSettingsStats();
     toggleModalState(modalOverlay, false);
@@ -1057,6 +1141,7 @@ hintBtn.addEventListener("click", () => {
   inspectClade(game.getBestTID());
   updateHintButtonState();
   guessCount.innerHTML = game.guessesRemaining;
+  saveCurrentGameProgress();
 });
 
 // 2. Hook up Restart match interaction listener
