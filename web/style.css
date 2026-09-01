@@ -342,7 +342,24 @@ body[data-theme="light"] .theme-toggle-btn .theme-icon-moon {
 }
 
 .guess-histogram-scroll {
+  position: relative;
   width: 100%;
+}
+
+.guess-histogram-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 4px;
+  background: var(--color-surface-panel-alt);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .guess-histogram {

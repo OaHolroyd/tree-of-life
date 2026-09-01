@@ -103,6 +103,7 @@ const openStatsBtn = document.getElementById("nav-stats-btn");
 const openFaqBtn = document.getElementById("nav-faq-btn");
 const clearDataBtn = document.getElementById("clear-data-btn");
 const guessHistogram = document.getElementById("guess-histogram");
+const guessHistogramEmpty = document.getElementById("guess-histogram-empty");
 const statsDailyViewBtn = document.getElementById("stats-daily-view-btn");
 const statsAllViewBtn = document.getElementById("stats-all-view-btn");
 const resetDefaultsBtn = document.getElementById("reset-defaults-btn");
@@ -780,6 +781,7 @@ function renderGuessHistogram(stats = game.getStats()) {
       ? stats.dailyGuessDistribution
       : stats.totalGuessDistribution;
   const maximumCount = Math.max(...distribution, 1);
+  const hasGuessHistory = distribution.some((count) => count > 0);
   const histogramSlots = [
     ...distribution
       .slice(1)
@@ -850,6 +852,7 @@ function renderGuessHistogram(stats = game.getStats()) {
   );
   statsAllViewBtn.classList.toggle("active", statsHistogramMode === "all");
   statsAllViewBtn.setAttribute("aria-pressed", String(statsHistogramMode === "all"));
+  guessHistogramEmpty.classList.toggle("hidden", hasGuessHistory);
 }
 
 function initializeRootNodeDropdown() {
