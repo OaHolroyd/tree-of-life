@@ -396,8 +396,11 @@ export class Game {
 
     // early exit if this isn't a real guess or if we've already guessed it
     if (tid === -1 || this.guesses.includes(tid)) {
-      return [false, false, [], GuessInfo.NONE];
+      return [false, false, [], GuessInfo.NONE, 0.0];
     }
+
+    // compare the score of this guess and the optimal guess
+    const guessScore = this.getGuessScore(tid, true);
 
     this.guesses.push(tid);
     this.guessStrings.push(guess);
@@ -413,7 +416,7 @@ export class Game {
       }
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
-      return [true, true, [this.tree[tid]], GuessInfo.ANSWER];
+      return [true, true, [this.tree[tid]], GuessInfo.ANSWER, guessScore];
     }
 
     // incorrect guess, update the tree
@@ -526,6 +529,7 @@ export class Game {
       has_ended,
       Array.from(updated_nodes, (i) => this.tree[i]),
       info,
+      guessScore,
     ];
   }
 
@@ -630,9 +634,51 @@ export class Game {
     return tid;
   }
 
+  // Compute a score for a guess at this point, optionally scaled compared to
+  // the score of the optimal guess
+  getGuessScore(tid, scaled = false) {
+    let score = 0;
+    const bestCladeTid = this.getBestTID();
+
+    // Start at the TID and go up the chain until we hit the current best clade
+    // (or the root as a backup)
+    while (true) {
+      // end conditions:
+      // 1) we hit the current best clade
+      if (tid === bestCladeTid) {
+        break;
+      }
+      // we hit the root
+      if (tid === null) {
+        score = 0;
+        break;
+      }
+      // 3) we hit an incorrect node (so this wasn't a valid guess)
+      if (
+        this.tree[tid].onChain === false &&
+        this.tree[tid].state !== CladeState.OFF
+      ) {
+        score = 0;
+        break;
+      }
+
+      score += this.tree[tid].num_leaves;
+
+      // continue up the chain
+      tid = this.tree[tid].ptid;
+    }
+
+    if (scaled) {
+      const optimalScore = this.getGuessScore(this.getOptimalGuess());
+      score /= optimalScore;
+    }
+
+    return score;
+  }
+
   // compute the chain of optimal guesses, returning a list of TIDs
   // representing the guesses
-  getOptimalPlay() {
+  getOptimalGuesses() {
     // Clone the game so we don't mutate the original
     const simulation = Object.create(Object.getPrototypeOf(this));
     Object.assign(simulation, this, {

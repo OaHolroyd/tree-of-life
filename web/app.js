@@ -198,7 +198,7 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
     restoreInProgressGame();
   }
 
-  const optimal_tids = game.getOptimalPlay();
+  const optimal_tids = game.getOptimalGuesses();
   console.log(`OPTIMAL PLAY: ${optimal_tids.length} TURNS`);
   optimal_tids.forEach((tid) => {
     const node = game.tree[tid];
@@ -242,11 +242,8 @@ function replayGameActions(actions, allowCompletedGame = false) {
       return false;
     }
 
-    const [isValid, ended, updatedNodes, guessInfo] = game.submitGuess(
-      action.guess,
-      false,
-      false,
-    );
+    const [isValid, ended, updatedNodes, guessInfo, guessScore] =
+      game.submitGuess(action.guess, false, false);
     if (
       !isValid ||
       (ended && (!allowCompletedGame || index !== actions.length - 1))
@@ -254,7 +251,7 @@ function replayGameActions(actions, allowCompletedGame = false) {
       return false;
     }
 
-    guessInfos.push(guessInfo);
+    guessInfos.push({ info: guessInfo, score: guessScore });
     treeUI.updateTreeLayout(updatedNodes);
     hasEnded = ended;
   }
@@ -426,11 +423,18 @@ function openGameOverModal() {
 
   const currentStats = game.getStats();
   const guessHistory = getDailyGuessHistory();
+  const guessScoreRows = getGuessScoreRows();
   const dailyCompletion = `
       <span class="game-over-next-daily-label">Daily game complete!</span>
       <strong class="game-over-next-daily-value">${guessHistory}</strong>
     `;
   modalMessage.innerHTML = `
+    <details class="game-over-guess-scores">
+      <summary>Game analysis</summary>
+      <ol class="game-over-guess-score-list">
+        ${guessScoreRows}
+      </ol>
+    </details>
     <span class="game-over-stats">
       <span class="game-over-stat-row">
         <span class="game-over-stat-label">Current Streak</span>
@@ -460,18 +464,43 @@ function openGameOverModal() {
   updateSettingsLockState();
 }
 
+// Pair submitted species with their score entries, skipping hint markers.
+function getGuessScoreRows() {
+  const scoredGuesses = guessInfos.filter(
+    (entry) =>
+      entry && typeof entry === "object" && Number.isFinite(entry.score),
+  );
+
+  return game.guessStrings
+    .map((guess, index) => {
+      const score = scoredGuesses[index]?.score;
+      const displayedScore = Number.isFinite(score)
+        ? Math.round(score * 100)
+        : "--";
+      return `
+        <li class="game-over-guess-score-row">
+          <span class="game-over-guess-name">${guess}</span>
+          <strong class="game-over-guess-score-value">${displayedScore}</strong>
+        </li>
+      `;
+    })
+    .join("");
+}
+
 // Return today's saved daily result markers, even when a practice game ended.
 function getDailyGuessHistory() {
   const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
   const savedGame = loadCompletedDailyGame(getCurrentDateKey());
 
   if (Array.isArray(savedGame?.guessInfos)) {
-    return savedGame.guessInfos.map((info) => symbols[info] ?? "").join("");
+    return savedGame.guessInfos
+      .map((info) => symbols[info.info] ?? "")
+      .join("");
   }
 
   // Fall back to the active daily board or legacy share text during migration.
   if (game.isDailyMode()) {
-    return guessInfos.map((info) => symbols[info] ?? "").join("");
+    return guessInfos.map((info) => symbols[info.info] ?? "").join("");
   }
 
   return loadDailyShareContent(getCurrentDateKey()).split("\n")[1] ?? "";
@@ -485,9 +514,11 @@ function handleGuessSubmit() {
     return;
   }
 
-  const [isValid, hasEnded, updatedNodes, guessInfo] = game.submitGuess(guess);
+  const [isValid, hasEnded, updatedNodes, guessInfo, guessScore] =
+    game.submitGuess(guess);
   if (isValid) {
-    guessInfos.push(guessInfo);
+    console.log(`  guess score: ${guessScore * 100}`);
+    guessInfos.push({ info: guessInfo, score: guessScore });
     treeUI.updateTreeLayout(updatedNodes);
 
     if (hasEnded) {
@@ -523,7 +554,9 @@ function handleGuessSubmit() {
   if (hasEnded) {
     // make the sharable content
     const symbols = ["🟥", "🟧", "🟨", "🟩", "🏆", "💡"];
-    const guessHistory = guessInfos.map((info) => symbols[info] ?? "").join("");
+    const guessHistory = guessInfos
+      .map((info) => symbols[info.info] ?? "")
+      .join("");
     if (game.isDailyMode()) {
       const resultMessage =
         game.state === GameState.WON ? "I completed" : "I failed to complete";
