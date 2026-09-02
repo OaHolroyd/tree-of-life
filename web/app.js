@@ -197,6 +197,13 @@ function restartGame(tid = -1, restoreSavedProgress = false) {
   if (restoreSavedProgress) {
     restoreInProgressGame();
   }
+
+  const optimal_tids = game.getOptimalPlay();
+  console.log(`OPTIMAL PLAY: ${optimal_tids.length} TURNS`);
+  optimal_tids.forEach((tid) => {
+    const node = game.tree[tid];
+    console.log(`  ${node.com_name}`);
+  });
 }
 
 function saveCurrentGameProgress() {
@@ -498,7 +505,6 @@ function handleGuessSubmit() {
       saveCurrentGameProgress();
     }
   }
-  game.getOptimalGuess();
 
   guessCount.innerHTML = game.guessesRemaining;
   updateHintButtonState();

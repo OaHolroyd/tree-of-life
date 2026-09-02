@@ -74,6 +74,7 @@ export class Game {
     this.subtree = [];
     this.species_tids = [];
     this.restart(tid, this.root, this.size);
+    this.computeChildren();
 
     // Load existing stats or initialize fresh defaults
     this.stats = loadGameStats();
@@ -600,13 +601,13 @@ export class Game {
     saveGameStats(this.stats);
   }
 
-  // compute the optimal guess at this point
+  // compute the optimal guess at this point in the game
   getOptimalGuess() {
     // start at the best-known clade
     let tid = this.getBestTID();
 
     while (true) {
-      if (this.tree[tid].num_leaves === 1) {
+      if (this.tree[tid].rank === "Species") {
         break;
       }
 
@@ -626,6 +627,55 @@ export class Game {
         this.tree[i].num_leaves > this.tree[max].num_leaves ? i : max,
       );
     }
-    console.log(`BEST GUESS: ${this.tree[tid].com_name}`);
+    return tid;
+  }
+
+  // compute the chain of optimal guesses, returning a list of TIDs
+  // representing the guesses
+  getOptimalPlay() {
+    // Clone the game so we don't mutate the original
+    const simulation = Object.create(Object.getPrototypeOf(this));
+    Object.assign(simulation, this, {
+      tree: this.tree.map((node) => ({
+        ...node,
+        children: [...node.children],
+      })),
+      guesses: [...this.guesses],
+      guessStrings: [...this.guessStrings],
+      actionHistory: [...this.actionHistory],
+      subtree: new Set(this.subtree),
+      species_tids: [...this.species_tids],
+      stats: {
+        ...this.stats,
+        dailyGuessDistribution: [...this.stats.dailyGuessDistribution],
+        totalGuessDistribution: [...this.stats.totalGuessDistribution],
+      },
+    });
+
+    // Construct a helper map from tid -> name
+    const guessNames = new Map(
+      SPECIES_LISTS[this.size].map(([names, tid]) => [
+        tid,
+        Array.isArray(names) ? names[0] : names,
+      ]),
+    );
+    const optimalGuesses = [];
+
+    // Play through the game, using the optimal guess each time
+    while (simulation.state === GameState.PLAYING) {
+      const guessTID = simulation.getOptimalGuess();
+      const guessName = guessNames.get(guessTID);
+      if (guessName === undefined) {
+        throw new Error(`Optimal guess TID ${guessTID} is not a valid species`);
+      }
+
+      const [isValid] = simulation.submitGuess(guessName, false, false);
+      if (!isValid) {
+        throw new Error(`Could not simulate optimal guess TID ${guessTID}`);
+      }
+      optimalGuesses.push(guessTID);
+    }
+
+    return optimalGuesses;
   }
 }
