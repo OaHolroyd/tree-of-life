@@ -1224,7 +1224,7 @@ body[data-theme="light"] .species-node.selected {
 }
 
 .game-over-guess-scores summary {
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 600;
@@ -1268,7 +1268,7 @@ body[data-theme="light"] .species-node.selected {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
 }
 
 .game-over-next-daily-value {
