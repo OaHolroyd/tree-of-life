@@ -2,6 +2,8 @@ import { CLADE_LIST, CladeState } from "../data/clades.js";
 import { SPECIES_LISTS } from "../data/species.js";
 import { loadGameStats, saveGameStats } from "./Storage.js";
 
+const USE_HINT_STATUS = true;
+
 const NUM_CLADES = CLADE_LIST.length;
 const NUM_GUESSES = [18, 22, 25];
 export const DAILY_ROOT_TID = 0;
@@ -608,7 +610,9 @@ export class Game {
   // compute the optimal guess at this point in the game
   getOptimalGuess() {
     // start at the best-known clade
-    let tid = this.getBestTID();
+    const bestCladeTid = this.getBestTID();
+    const answerIsDirectChild = this.getHintTID() === this.answer;
+    let tid = bestCladeTid;
 
     while (true) {
       if (this.tree[tid].rank === "Species") {
@@ -622,7 +626,26 @@ export class Game {
           this.tree[child_tid].onChain ||
           this.tree[child_tid].state === CladeState.OFF
         ) {
-          options.push(child_tid);
+          // Hint status only constrains direct children of the current best clade.
+          if (USE_HINT_STATUS && tid === bestCladeTid) {
+            if (!answerIsDirectChild) {
+              // if the hint button is available then the answer cannot
+              // be a direct child of the current best guess, so we should
+              // ignore direct children that are species
+              if (this.tree[child_tid].rank !== "Species") {
+                options.push(child_tid);
+              }
+            } else {
+              // if the hint button is not available then the answer must
+              // be a direct child of the current best guess, so we should
+              // only register direct children that are species
+              if (this.tree[child_tid].rank === "Species") {
+                options.push(child_tid);
+              }
+            }
+          } else {
+            options.push(child_tid);
+          }
         }
       });
 
@@ -639,6 +662,23 @@ export class Game {
   getGuessScore(tid, scaled = false) {
     let score = 0;
     const bestCladeTid = this.getBestTID();
+
+    // optionally account for hint status
+    if (USE_HINT_STATUS) {
+      if (this.getHintTID() !== this.answer) {
+        // if the hint is available then the answer cannot be a direct
+        // child of the current best clade
+        if (this.tree[tid].ptid === bestCladeTid) {
+          return 0;
+        }
+      } else {
+        // if the hint is not available then the answer must be a direct
+        // child of the current best clade
+        if (this.tree[tid].ptid !== bestCladeTid) {
+          return 0;
+        }
+      }
+    }
 
     // Start at the TID and go up the chain until we hit the current best clade
     // (or the root as a backup)

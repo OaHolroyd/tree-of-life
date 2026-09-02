@@ -1239,7 +1239,7 @@ body[data-theme="light"] .species-node.selected {
   margin: 12px 0 0;
   padding-left: 28px;
   overflow-y: auto;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
 .game-over-guess-score-row {
@@ -1250,7 +1250,7 @@ body[data-theme="light"] .species-node.selected {
 }
 
 .game-over-guess-score-value {
-  color: var(--color-text-primary);
+  color: var(--color-text-muted);
   margin-right: 12px;
 }
 
