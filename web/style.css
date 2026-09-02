@@ -1232,26 +1232,57 @@ body[data-theme="light"] .species-node.selected {
   letter-spacing: 0.08em;
 }
 
-.game-over-guess-score-list {
-  display: grid;
-  gap: 6px;
+.game-over-guess-scores .game-over-guess-score-explainer {
+  margin: 10px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.game-over-guess-score-table-wrap {
   max-height: 180px;
-  margin: 12px 0 0;
-  padding-left: 28px;
   overflow-y: auto;
+}
+
+.game-over-guess-score-table {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  table-layout: fixed;
   color: var(--color-text-muted);
 }
 
-.game-over-guess-score-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+.game-over-guess-score-table th,
+.game-over-guess-score-table td {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border-default);
 }
 
-.game-over-guess-score-value {
-  color: var(--color-text-muted);
-  margin-right: 12px;
+.game-over-guess-score-table th {
+  text-align: left;
+  font-weight: 400;
+}
+
+.game-over-guess-score-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface-header);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.game-over-guess-score-table th:first-child {
+  width: 56%;
+  overflow-wrap: anywhere;
+}
+
+.game-over-guess-score-table th:not(:first-child),
+.game-over-guess-score-table td {
+  width: 22%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .game-over-next-daily {

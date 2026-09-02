@@ -242,7 +242,7 @@ function replayGameActions(actions, allowCompletedGame = false) {
       return false;
     }
 
-    const [isValid, ended, updatedNodes, guessInfo, guessScore] =
+    const [isValid, ended, updatedNodes, guessInfo, guessScore, guessLuck] =
       game.submitGuess(action.guess, false, false);
     if (
       !isValid ||
@@ -251,7 +251,7 @@ function replayGameActions(actions, allowCompletedGame = false) {
       return false;
     }
 
-    guessInfos.push({ info: guessInfo, score: guessScore });
+    guessInfos.push({ info: guessInfo, score: guessScore, luck: guessLuck });
     treeUI.updateTreeLayout(updatedNodes);
     hasEnded = ended;
   }
@@ -431,9 +431,23 @@ function openGameOverModal() {
   modalMessage.innerHTML = `
     <details class="game-over-guess-scores">
       <summary>Game analysis</summary>
-      <ol class="game-over-guess-score-list">
-        ${guessScoreRows}
-      </ol>
+      <p class="game-over-guess-score-explainer">
+        Skill measures how strong a guess was compared to the optimal guess which is given a score of 100. Luck measures how useful its actual result was, with 50 being typical.
+      </p>
+      <div class="game-over-guess-score-table-wrap">
+        <table class="game-over-guess-score-table">
+          <thead>
+            <tr>
+              <th scope="col">Guess</th>
+              <th scope="col">Skill</th>
+              <th scope="col">Luck</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${guessScoreRows}
+          </tbody>
+        </table>
+      </div>
     </details>
     <span class="game-over-stats">
       <span class="game-over-stat-row">
@@ -474,14 +488,19 @@ function getGuessScoreRows() {
   return game.guessStrings
     .map((guess, index) => {
       const score = scoredGuesses[index]?.score;
+      const luck = scoredGuesses[index]?.luck;
       const displayedScore = Number.isFinite(score)
         ? Math.round(score * 100)
         : "--";
+      const displayedLuck = Number.isFinite(luck)
+        ? Math.round(luck * 100)
+        : "--";
       return `
-        <li class="game-over-guess-score-row">
-          <span class="game-over-guess-name">${guess}</span>
-          <strong class="game-over-guess-score-value">${displayedScore}</strong>
-        </li>
+        <tr>
+          <th scope="row">${guess}</th>
+          <td>${displayedScore}</td>
+          <td>${displayedLuck}</td>
+        </tr>
       `;
     })
     .join("");
@@ -514,11 +533,12 @@ function handleGuessSubmit() {
     return;
   }
 
-  const [isValid, hasEnded, updatedNodes, guessInfo, guessScore] =
+  const [isValid, hasEnded, updatedNodes, guessInfo, guessScore, guessLuck] =
     game.submitGuess(guess);
   if (isValid) {
     console.log(`  guess score: ${guessScore * 100}`);
-    guessInfos.push({ info: guessInfo, score: guessScore });
+    console.log(`  guess luck: ${guessLuck * 100}`);
+    guessInfos.push({ info: guessInfo, score: guessScore, luck: guessLuck });
     treeUI.updateTreeLayout(updatedNodes);
 
     if (hasEnded) {

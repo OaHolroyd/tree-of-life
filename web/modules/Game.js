@@ -369,6 +369,7 @@ export class Game {
    *    whether the game has ended,
    *    an array of nodes to be added to the tree
    *    the level of info the guess gave
+   *    the skill score and luck score, each normalized to 0-1
    */
   submitGuess(guess, saveResult = true, recordAction = true) {
     // go through the species and find the guess
@@ -398,11 +399,12 @@ export class Game {
 
     // early exit if this isn't a real guess or if we've already guessed it
     if (tid === -1 || this.guesses.includes(tid)) {
-      return [false, false, [], GuessInfo.NONE, 0.0];
+      return [false, false, [], GuessInfo.NONE, 0.0, 0.0];
     }
 
     // compare the score of this guess and the optimal guess
     const guessScore = this.getGuessScore(tid, true);
+    const guessLuck = this.getGuessLuckScore(tid);
 
     this.guesses.push(tid);
     this.guessStrings.push(guess);
@@ -418,7 +420,14 @@ export class Game {
       }
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
-      return [true, true, [this.tree[tid]], GuessInfo.ANSWER, guessScore];
+      return [
+        true,
+        true,
+        [this.tree[tid]],
+        GuessInfo.ANSWER,
+        guessScore,
+        guessLuck,
+      ];
     }
 
     // incorrect guess, update the tree
@@ -532,6 +541,7 @@ export class Game {
       Array.from(updated_nodes, (i) => this.tree[i]),
       info,
       guessScore,
+      guessLuck,
     ];
   }
 
@@ -714,6 +724,103 @@ export class Game {
     }
 
     return score;
+  }
+
+  // Return species still compatible with the closest known answer clade.
+  getPlausibleSpeciesTIDs() {
+    const bestCladeTid = this.getBestTID();
+
+    return this.species_tids.filter((speciesTid) => {
+      if (this.guesses.includes(speciesTid)) {
+        return false;
+      }
+
+      let tid = speciesTid;
+      while (tid !== null) {
+        if (tid === bestCladeTid) {
+          return true;
+        }
+
+        // A visible off-chain node proves this candidate is already eliminated.
+        if (
+          this.tree[tid].onChain === false &&
+          this.tree[tid].state !== CladeState.OFF
+        ) {
+          return false;
+        }
+
+        tid = this.tree[tid].ptid;
+      }
+      return false;
+    });
+  }
+
+  // Find the lowest clade shared by a submitted guess and possible answer.
+  getLowestCommonAncestor(firstTid, secondTid) {
+    const firstAncestors = new Set();
+    let tid = firstTid;
+    while (tid !== null) {
+      firstAncestors.add(tid);
+      tid = this.tree[tid].ptid;
+    }
+
+    tid = secondTid;
+    while (!firstAncestors.has(tid)) {
+      tid = this.tree[tid].ptid;
+    }
+    return tid;
+  }
+
+  /**
+   * Score how unusually informative this guess's observed outcome is.
+   * @param {int} guessTid - the submitted species TID
+   * @returns {number} a 0-1 percentile, where 1 is the luckiest outcome
+   */
+  getGuessLuckScore(guessTid) {
+    const plausibleSpeciesTIDs = this.getPlausibleSpeciesTIDs();
+    if (plausibleSpeciesTIDs.length === 0) {
+      return 0;
+    }
+
+    // Candidates sharing an outcome clade leave the same number of answers.
+    const outcomeCounts = new Map();
+    plausibleSpeciesTIDs.forEach((answerTid) => {
+      const outcomeTid =
+        answerTid === guessTid
+          ? "answer"
+          : this.getLowestCommonAncestor(guessTid, answerTid);
+      outcomeCounts.set(outcomeTid, (outcomeCounts.get(outcomeTid) ?? 0) + 1);
+    });
+
+    const actualOutcomeTid =
+      this.answer === guessTid
+        ? "answer"
+        : this.getLowestCommonAncestor(guessTid, this.answer);
+    const actualOutcomeCount = outcomeCounts.get(actualOutcomeTid);
+    if (!actualOutcomeCount) {
+      return 0;
+    }
+
+    // An outcome that rules out no candidates cannot be a lucky result.
+    if (actualOutcomeCount === plausibleSpeciesTIDs.length) {
+      return 0;
+    }
+
+    let lessInformativeCount = 0;
+    let equalInformativeCount = 0;
+    outcomeCounts.forEach((count) => {
+      if (count > actualOutcomeCount) {
+        lessInformativeCount += count;
+      } else if (count === actualOutcomeCount) {
+        equalInformativeCount += count;
+      }
+    });
+
+    // Mid-rank ties make a typical outcome score 0.5 instead of 0 or 1.
+    return (
+      (lessInformativeCount + equalInformativeCount / 2) /
+      plausibleSpeciesTIDs.length
+    );
   }
 
   // compute the chain of optimal guesses, returning a list of TIDs
