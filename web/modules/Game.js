@@ -79,10 +79,41 @@ export class Game {
     this.stats = loadGameStats();
   }
 
+  computeChildren() {
+    // Compute the total number of leaves below every node
+    // reset the number of leaves so only valid species are non-zero
+    this.tree.forEach((node) => {
+      node.num_leaves = 0;
+      node.children = new Set([]);
+    });
+
+    // start at each leaf and go  the tree, incrementing the number of
+    // leaves beneath each node as we do so
+    SPECIES_LISTS[this.size].forEach((entry) => {
+      let tid = entry[1];
+
+      while (true) {
+        this.tree[tid].num_leaves += 1;
+        let ptid = this.tree[tid].ptid;
+
+        if (ptid === null) {
+          break;
+        }
+
+        this.tree[ptid].children.add(tid);
+        tid = ptid;
+      }
+    });
+
+    this.tree.forEach((node) => {
+      node.children = Array.from(node.children);
+    });
+  }
+
   /**
    * Reset the game to a blank state (all nodes hidden and off-chain)
    */
-  reset() {
+  reset(deep_reset = false) {
     // reset the nodes
     for (let i = 0; i < NUM_CLADES; i++) {
       this.tree[i].state = CladeState.OFF;
@@ -96,6 +127,11 @@ export class Game {
       let tid = entry[1];
       this.tree[tid].com_name = name;
     });
+
+    // TODO: also this.tree[0].num_leaves exists
+    if (deep_reset) {
+      this.computeChildren();
+    }
   }
 
   /**
@@ -114,7 +150,12 @@ export class Game {
    * @param {int} root - taxon ID (ie the position in CLADE_DATABASE) of the root node
    * @param {int} size - size of the species list (0/1/2, small/medium/large)
    */
-  restart(tid = -1, root = 0, size = 1) {
+  restart(tid = -1, root = 0, size = 2) {
+    let deep_reset = false;
+    if (this.root !== root || this.size !== size) {
+      deep_reset = true;
+    }
+
     this.hint_cost = 3;
     this.root = root;
     this.size = size;
@@ -134,7 +175,7 @@ export class Game {
     this.actionHistory = [];
     this.state = GameState.PLAYING;
 
-    this.reset();
+    this.reset(deep_reset);
 
     this.subtree = new Set([this.root, tid]);
 
@@ -557,5 +598,34 @@ export class Game {
     this.stats.dailyGuessDistribution.fill(0);
     this.stats.totalGuessDistribution.fill(0);
     saveGameStats(this.stats);
+  }
+
+  // compute the optimal guess at this point
+  getOptimalGuess() {
+    // start at the best-known clade
+    let tid = this.getBestTID();
+
+    while (true) {
+      if (this.tree[tid].num_leaves === 1) {
+        break;
+      }
+
+      // only retain children that are on the correct branch or have not been guessed
+      let options = [];
+      this.tree[tid].children.forEach((child_tid) => {
+        if (
+          this.tree[child_tid].onChain ||
+          this.tree[child_tid].state === CladeState.OFF
+        ) {
+          options.push(child_tid);
+        }
+      });
+
+      // pick next TID
+      tid = options.reduce((max, i) =>
+        this.tree[i].num_leaves > this.tree[max].num_leaves ? i : max,
+      );
+    }
+    console.log(`BEST GUESS: ${this.tree[tid].com_name}`);
   }
 }

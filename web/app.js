@@ -498,6 +498,7 @@ function handleGuessSubmit() {
       saveCurrentGameProgress();
     }
   }
+  game.getOptimalGuess();
 
   guessCount.innerHTML = game.guessesRemaining;
   updateHintButtonState();
