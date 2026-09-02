@@ -2,6 +2,8 @@ import { CLADE_LIST, CladeState } from "../data/clades.js";
 import { SPECIES_LISTS } from "../data/species.js";
 import { loadGameStats, saveGameStats } from "./Storage.js";
 
+const USE_HINT_STATUS = true;
+
 const NUM_CLADES = CLADE_LIST.length;
 const NUM_GUESSES = [18, 22, 25];
 export const DAILY_ROOT_TID = 0;
@@ -74,15 +76,47 @@ export class Game {
     this.subtree = [];
     this.species_tids = [];
     this.restart(tid, this.root, this.size);
+    this.computeChildren();
 
     // Load existing stats or initialize fresh defaults
     this.stats = loadGameStats();
   }
 
+  computeChildren() {
+    // Compute the total number of leaves below every node
+    // reset the number of leaves so only valid species are non-zero
+    this.tree.forEach((node) => {
+      node.num_leaves = 0;
+      node.children = new Set([]);
+    });
+
+    // start at each leaf and go  the tree, incrementing the number of
+    // leaves beneath each node as we do so
+    SPECIES_LISTS[this.size].forEach((entry) => {
+      let tid = entry[1];
+
+      while (true) {
+        this.tree[tid].num_leaves += 1;
+        let ptid = this.tree[tid].ptid;
+
+        if (ptid === null) {
+          break;
+        }
+
+        this.tree[ptid].children.add(tid);
+        tid = ptid;
+      }
+    });
+
+    this.tree.forEach((node) => {
+      node.children = Array.from(node.children);
+    });
+  }
+
   /**
    * Reset the game to a blank state (all nodes hidden and off-chain)
    */
-  reset() {
+  reset(deep_reset = false) {
     // reset the nodes
     for (let i = 0; i < NUM_CLADES; i++) {
       this.tree[i].state = CladeState.OFF;
@@ -96,6 +130,11 @@ export class Game {
       let tid = entry[1];
       this.tree[tid].com_name = name;
     });
+
+    // TODO: also this.tree[0].num_leaves exists
+    if (deep_reset) {
+      this.computeChildren();
+    }
   }
 
   /**
@@ -114,7 +153,12 @@ export class Game {
    * @param {int} root - taxon ID (ie the position in CLADE_DATABASE) of the root node
    * @param {int} size - size of the species list (0/1/2, small/medium/large)
    */
-  restart(tid = -1, root = 0, size = 1) {
+  restart(tid = -1, root = 0, size = 2) {
+    let deep_reset = false;
+    if (this.root !== root || this.size !== size) {
+      deep_reset = true;
+    }
+
     this.hint_cost = 3;
     this.root = root;
     this.size = size;
@@ -134,7 +178,7 @@ export class Game {
     this.actionHistory = [];
     this.state = GameState.PLAYING;
 
-    this.reset();
+    this.reset(deep_reset);
 
     this.subtree = new Set([this.root, tid]);
 
@@ -325,6 +369,7 @@ export class Game {
    *    whether the game has ended,
    *    an array of nodes to be added to the tree
    *    the level of info the guess gave
+   *    the skill score and luck score, each normalized to 0-1
    */
   submitGuess(guess, saveResult = true, recordAction = true) {
     // go through the species and find the guess
@@ -354,8 +399,12 @@ export class Game {
 
     // early exit if this isn't a real guess or if we've already guessed it
     if (tid === -1 || this.guesses.includes(tid)) {
-      return [false, false, [], GuessInfo.NONE];
+      return [false, false, [], GuessInfo.NONE, 0.0, 0.0];
     }
+
+    // compare the score of this guess and the optimal guess
+    const guessScore = this.getGuessScore(tid, true);
+    const guessLuck = this.getGuessLuckScore(tid);
 
     this.guesses.push(tid);
     this.guessStrings.push(guess);
@@ -371,7 +420,14 @@ export class Game {
       }
       this.state = GameState.WON;
       this.tree[tid].state = CladeState.VISIBLE;
-      return [true, true, [this.tree[tid]], GuessInfo.ANSWER];
+      return [
+        true,
+        true,
+        [this.tree[tid]],
+        GuessInfo.ANSWER,
+        guessScore,
+        guessLuck,
+      ];
     }
 
     // incorrect guess, update the tree
@@ -484,6 +540,8 @@ export class Game {
       has_ended,
       Array.from(updated_nodes, (i) => this.tree[i]),
       info,
+      guessScore,
+      guessLuck,
     ];
   }
 
@@ -557,5 +615,260 @@ export class Game {
     this.stats.dailyGuessDistribution.fill(0);
     this.stats.totalGuessDistribution.fill(0);
     saveGameStats(this.stats);
+  }
+
+  // compute the optimal guess at this point in the game
+  getOptimalGuess() {
+    // start at the best-known clade
+    const bestCladeTid = this.getBestTID();
+    const answerIsDirectChild = this.getHintTID() === this.answer;
+    let tid = bestCladeTid;
+
+    while (true) {
+      if (this.tree[tid].rank === "Species") {
+        break;
+      }
+
+      // only retain children that are on the correct branch or have not been guessed
+      let options = [];
+      this.tree[tid].children.forEach((child_tid) => {
+        if (
+          this.tree[child_tid].onChain ||
+          this.tree[child_tid].state === CladeState.OFF
+        ) {
+          // Hint status only constrains direct children of the current best clade.
+          if (USE_HINT_STATUS && tid === bestCladeTid) {
+            if (!answerIsDirectChild) {
+              // if the hint button is available then the answer cannot
+              // be a direct child of the current best guess, so we should
+              // ignore direct children that are species
+              if (this.tree[child_tid].rank !== "Species") {
+                options.push(child_tid);
+              }
+            } else {
+              // if the hint button is not available then the answer must
+              // be a direct child of the current best guess, so we should
+              // only register direct children that are species
+              if (this.tree[child_tid].rank === "Species") {
+                options.push(child_tid);
+              }
+            }
+          } else {
+            options.push(child_tid);
+          }
+        }
+      });
+
+      // pick next TID
+      tid = options.reduce((max, i) =>
+        this.tree[i].num_leaves > this.tree[max].num_leaves ? i : max,
+      );
+    }
+    return tid;
+  }
+
+  // Compute a score for a guess at this point, optionally scaled compared to
+  // the score of the optimal guess
+  getGuessScore(tid, scaled = false) {
+    let score = 0;
+    const bestCladeTid = this.getBestTID();
+
+    // optionally account for hint status
+    if (USE_HINT_STATUS) {
+      if (this.getHintTID() !== this.answer) {
+        // if the hint is available then the answer cannot be a direct
+        // child of the current best clade
+        if (this.tree[tid].ptid === bestCladeTid) {
+          return 0;
+        }
+      } else {
+        // if the hint is not available then the answer must be a direct
+        // child of the current best clade
+        if (this.tree[tid].ptid !== bestCladeTid) {
+          return 0;
+        }
+      }
+    }
+
+    // Start at the TID and go up the chain until we hit the current best clade
+    // (or the root as a backup)
+    while (true) {
+      // end conditions:
+      // 1) we hit the current best clade
+      if (tid === bestCladeTid) {
+        break;
+      }
+      // we hit the root
+      if (tid === null) {
+        score = 0;
+        break;
+      }
+      // 3) we hit an incorrect node (so this wasn't a valid guess)
+      if (
+        this.tree[tid].onChain === false &&
+        this.tree[tid].state !== CladeState.OFF
+      ) {
+        score = 0;
+        break;
+      }
+
+      score += this.tree[tid].num_leaves;
+
+      // continue up the chain
+      tid = this.tree[tid].ptid;
+    }
+
+    if (scaled) {
+      const optimalScore = this.getGuessScore(this.getOptimalGuess());
+      score /= optimalScore;
+    }
+
+    return score;
+  }
+
+  // Return species still compatible with the closest known answer clade.
+  getPlausibleSpeciesTIDs() {
+    const bestCladeTid = this.getBestTID();
+
+    return this.species_tids.filter((speciesTid) => {
+      if (this.guesses.includes(speciesTid)) {
+        return false;
+      }
+
+      let tid = speciesTid;
+      while (tid !== null) {
+        if (tid === bestCladeTid) {
+          return true;
+        }
+
+        // A visible off-chain node proves this candidate is already eliminated.
+        if (
+          this.tree[tid].onChain === false &&
+          this.tree[tid].state !== CladeState.OFF
+        ) {
+          return false;
+        }
+
+        tid = this.tree[tid].ptid;
+      }
+      return false;
+    });
+  }
+
+  // Find the lowest clade shared by a submitted guess and possible answer.
+  getLowestCommonAncestor(firstTid, secondTid) {
+    const firstAncestors = new Set();
+    let tid = firstTid;
+    while (tid !== null) {
+      firstAncestors.add(tid);
+      tid = this.tree[tid].ptid;
+    }
+
+    tid = secondTid;
+    while (!firstAncestors.has(tid)) {
+      tid = this.tree[tid].ptid;
+    }
+    return tid;
+  }
+
+  /**
+   * Score how unusually informative this guess's observed outcome is.
+   * @param {int} guessTid - the submitted species TID
+   * @returns {number} a 0-1 percentile, where 1 is the luckiest outcome
+   */
+  getGuessLuckScore(guessTid) {
+    const plausibleSpeciesTIDs = this.getPlausibleSpeciesTIDs();
+    if (plausibleSpeciesTIDs.length === 0) {
+      return 0;
+    }
+
+    // Candidates sharing an outcome clade leave the same number of answers.
+    const outcomeCounts = new Map();
+    plausibleSpeciesTIDs.forEach((answerTid) => {
+      const outcomeTid =
+        answerTid === guessTid
+          ? "answer"
+          : this.getLowestCommonAncestor(guessTid, answerTid);
+      outcomeCounts.set(outcomeTid, (outcomeCounts.get(outcomeTid) ?? 0) + 1);
+    });
+
+    const actualOutcomeTid =
+      this.answer === guessTid
+        ? "answer"
+        : this.getLowestCommonAncestor(guessTid, this.answer);
+    const actualOutcomeCount = outcomeCounts.get(actualOutcomeTid);
+    if (!actualOutcomeCount) {
+      return 0;
+    }
+
+    // An outcome that rules out no candidates cannot be a lucky result.
+    if (actualOutcomeCount === plausibleSpeciesTIDs.length) {
+      return 0;
+    }
+
+    let lessInformativeCount = 0;
+    let equalInformativeCount = 0;
+    outcomeCounts.forEach((count) => {
+      if (count > actualOutcomeCount) {
+        lessInformativeCount += count;
+      } else if (count === actualOutcomeCount) {
+        equalInformativeCount += count;
+      }
+    });
+
+    // Mid-rank ties make a typical outcome score 0.5 instead of 0 or 1.
+    return (
+      (lessInformativeCount + equalInformativeCount / 2) /
+      plausibleSpeciesTIDs.length
+    );
+  }
+
+  // compute the chain of optimal guesses, returning a list of TIDs
+  // representing the guesses
+  getOptimalGuesses() {
+    // Clone the game so we don't mutate the original
+    const simulation = Object.create(Object.getPrototypeOf(this));
+    Object.assign(simulation, this, {
+      tree: this.tree.map((node) => ({
+        ...node,
+        children: [...node.children],
+      })),
+      guesses: [...this.guesses],
+      guessStrings: [...this.guessStrings],
+      actionHistory: [...this.actionHistory],
+      subtree: new Set(this.subtree),
+      species_tids: [...this.species_tids],
+      stats: {
+        ...this.stats,
+        dailyGuessDistribution: [...this.stats.dailyGuessDistribution],
+        totalGuessDistribution: [...this.stats.totalGuessDistribution],
+      },
+    });
+
+    // Construct a helper map from tid -> name
+    const guessNames = new Map(
+      SPECIES_LISTS[this.size].map(([names, tid]) => [
+        tid,
+        Array.isArray(names) ? names[0] : names,
+      ]),
+    );
+    const optimalGuesses = [];
+
+    // Play through the game, using the optimal guess each time
+    while (simulation.state === GameState.PLAYING) {
+      const guessTID = simulation.getOptimalGuess();
+      const guessName = guessNames.get(guessTID);
+      if (guessName === undefined) {
+        throw new Error(`Optimal guess TID ${guessTID} is not a valid species`);
+      }
+
+      const [isValid] = simulation.submitGuess(guessName, false, false);
+      if (!isValid) {
+        throw new Error(`Could not simulate optimal guess TID ${guessTID}`);
+      }
+      optimalGuesses.push(guessTID);
+    }
+
+    return optimalGuesses;
   }
 }
